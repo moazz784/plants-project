@@ -6,7 +6,7 @@ export default function
   return (
     <div>
         <section className='w-full min-h-screen bg-[url(/background.jpg)] relative bg-cover bg-center overflow-hidden '>
-        <h1 className='text-9xl text-amber-300 hover:text-green-500'>moazzz</h1>
+        {/* <h1 className='text-9xl text-amber-300 hover:text-green-500'>moazzz</h1> */}
        <img
   src={image201}
   alt="image"
