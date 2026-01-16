@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* 1. الحالة البدائية: الموقع كله مخفي تماماً */
+#root > :not(.preloader) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* يمنع التفاعل مع العناصر وهي مخفية */
+}
+
+/* 2. الحالة النهائية: لما الـ Preloader يبعت إشارة إتمام */
+.content-ready #root > :not(.preloader) {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
+}
+
+/* 3. تنسيق الـ Preloader (تأكد من الـ z-index) */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background-color: #2b0628; /* لونك المفضل */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 99999; /* أعلى قيمة ممكنة */
+}
+
+/* تحسين شكل الخط والعداد */
+.loader-line {
+  position: absolute;
+  width: 100%;
+  height: 2px; /* خليناه أوضح شوية */
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.loader-number {
+  color: white;
+  font-size: clamp(3rem, 10vw, 5rem); /* حجم متجاوب مع الشاشات */
+  font-weight: 700;
+  font-variant-numeric: tabular-nums; /* بيمنع الأرقام من الرعشة وهي بتتغير */
+  z-index: 10;
+}

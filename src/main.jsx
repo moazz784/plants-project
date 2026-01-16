@@ -1,0 +1,11 @@
+import './i18n'; 
+import { useTranslation } from 'react-i18next';
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+ 
+    <App />
+ 
+)
