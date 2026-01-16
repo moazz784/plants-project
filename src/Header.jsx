@@ -5,7 +5,7 @@ import { Languages, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; // حرف l صغير مش كبير
-import imge2 from './assets/img-2.jpg';لهفg
+import imge2 from './assets/img-2.jpg'
 
 export default function Header() {
   const navigate = useNavigate();

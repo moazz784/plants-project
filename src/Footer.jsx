@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
-import imge1 from './assets/Logo.png';
+import imge1 from './assets/logo.png'; // حرف l صغير مش كبير
 import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
