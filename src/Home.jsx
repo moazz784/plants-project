@@ -4,6 +4,8 @@ import uploadIcon from "./assets/Vector.png";
 import checkIcon from "./assets/Group.png";
 import scanIcon from "./assets/Vector (1).png";
 import chatbotImg from "./assets/chatbot.png";
+import planto from "./assets/planto.jpg"
+import { useNavigate } from "react-router-dom";
 import Footer from './Footer';
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, StopCircle } from "lucide-react";
@@ -15,6 +17,7 @@ export default function AboutPage() {
   const [inputValue, setInputValue] = useState('');
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,7 +65,7 @@ export default function AboutPage() {
         <img
           src={image201}
           alt="image"
-          className="absolute -bottom-15 left-[-100px] md:left-1/2 md:-translate-x-1/2 w-[350px] md:w-[630px] z-10"
+          className="absolute -bottom-15 left-[-100px] md:left-1/2 lg:-translate-x-1/2  md:-translate-x-[30%] w-[350px] md:w-[370px] lg:w-[630px] z-10"
         />
 
         <div className='flex flex-col md:flex-row w-full z-20 min-h-[80vh] relative'>
@@ -70,39 +73,49 @@ export default function AboutPage() {
           <div className="flex flex-col items-start gap-4 md:gap-[100px] pt-6 md:pt-0 md:items-center md:flex-row md:justify-between w-full">
 
             <div className='flex flex-col items-start text-left gap-10 md:gap-60 max-w-2xl text-black py-2 md:py-5'>
-              <h1 className='text-[30px] md:text-[70px] font-kufam leading-[0.95]'>
+              <h1 className='text-[30px] md:text-[43px] lg:text-[70px] font-kufam leading-[0.95]'>
                 Experience ever- evolving Technology
               </h1>
 
               <div>
-                <h2 className='text-[25px] md:text-[40px] font-kufam mb-1'>
+                <h2 className='text-[25px] md:text-[30px] lg:text-[40px] font-kufam mb-1'>
                   SMART AI MODEL
                 </h2>
-                <p className='text-[10px] md:text-[15px] font-poppins text-gray-600 max-w-[440px]'>
+                <p className='text-[10px] md:text-[11px] lg:text-[15px] font-poppins text-gray-600 md:max-w-[270px] lg:max-w-[500px]'>
                   Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui, dolorum cupiditate. Soluta temporibus illum voluptas iste dolores, tempora accusamus eos quam eius error. Modi velit reiciendis tempore impedit officia suscipit!
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-row md:flex-col items-center justify-center gap-11 md:gap-10 mt-8 md:mt-32 px-[10px]">
+            <div className="flex flex-row
+  md:flex-col
+  items-center
+  justify-between
+  gap-11 md:gap-10
+  mt-8 md:mt-32
+  w-full
+  md:w-auto
+  px-4">
 
               <div className="flex flex-col items-center">
-                <div className="w-12 md:w-16 h-12 md:h-16 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg">
-                  <img src={uploadIcon} className="w-6 h-6 invert" />
+                <div className="w-12 md:w-14 h-12 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg">
+                 
+                  <img src={scanIcon} className="w-7 h-7 invert" />
                 </div>
-                <div className="w-16 md:w-auto h-0 md:h-24 border-t-2 md:border-l-2 border-dotted border-green-700/30"></div>
+                <div className="w-16 md:w-auto h-px md:h-24 border-t-2 md:border-l-2 border-dotted border-green-700/30"></div>
               </div>
 
               <div className="flex flex-col items-center">
-                <div className="w-12 md:w-16 h-12 md:h-16 rounded-full bg-white flex items-center justify-center shadow-lg border">
+                <div className="w-12 md:w-14 h-12 md:h-14 rounded-full bg-white flex items-center justify-center shadow-lg border">
                   <img src={checkIcon} className="w-8 h-8" />
                 </div>
-                <div className="w-16 md:w-auto h-0 md:h-24 border-t-2 md:border-l-2 border-dotted border-green-700/30"></div>
+                <div className="w-16 md:w-auto h-px md:h-24 border-t-2 md:border-l-2 border-dotted border-green-700/30">
+                </div>
               </div>
-
+               
               <div className="flex flex-col items-center">
-                <div className="w-12 md:w-16 h-12 md:h-16 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg">
-                  <img src={scanIcon} className="w-7 h-7 invert" />
+                <div className="w-12 md:w-14 h-12 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg">
+                   <img src={uploadIcon} className="w-6 h-6 invert" />
                 </div>
               </div>
 
@@ -119,7 +132,7 @@ export default function AboutPage() {
           )}
           <img
             src={chatbotImg}
-            className="w-[450px] md:w-[600px] cursor-pointer"
+            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer"
             onClick={() => setOpenChat(!openChat)}
           />
         </div>
@@ -183,13 +196,57 @@ export default function AboutPage() {
         </AnimatePresence>
 
       </section>
-      <section className='w-full h-dvh bg-red-800'>
+      <section className='w-full h-auto bg-white flex  justify-center items-center '>
+        <div className='flex flex-col-reverse justify-center items-center lg:flex-row gap-10 py-12'>
+    <div className="left">
+      <img className='w-[300px] lg:w-[550px] h-[255px] lg:h-[430px] transition-transform duration-500 hover:scale-105' src={planto}/>
+    </div>
+    <div className="right flex flex-col  gap-3">
+      <h1 className=' font-[var(--font-kufam)] text-[38px] lg:text-[83px] text-[#388F4C]  '>ABOUT US</h1>
+      <h1 className='font-[var(--font-poppins)] text-[17px]  lg:text-[38px]  text-[#355f3f] pl-1.5 lg:pl-0 max-w-[310px] lg:max-w-[530px] '>LeafScan Ai Model to detact information of leafs</h1>
+      <p className='max-w-[300px] pl-1.5 lg:pl-0 lg:max-w-[650px] text-[11px]  lg:text-[15px]'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium alias totam nihil ut dolorum dolor dolore ducimus enim libero rerum reprehenderit asperiores nemo ipsam commodi iusto impedit, autem aliquid? Quos?</p>
+     <div className='flex justify-center lg:justify-end  mt-4'>
 
+      <button
+      onClick={() => {
+    navigate("/about");   // ينقلك للصفحة
+    window.scrollTo(0, 0); // يضمن بدء الصفحة من فوق
+  }}
+      
+  className="
+    flex items-center gap-3
+    bg-green-700 text-white
+    cursor-pointer
+    px-5 lg:px-9 py-2
+    rounded-full
+    hover:bg-green-800
+    transition
+  "
+>
+  <span className="text-sm font-[var(--font-kufam)]">
+    <h2>Show More</h2>
+  </span>
+
+  <span
+    className="
+      w-8 h-8
+      flex items-center justify-center
+      bg-white text-green-700
+      rounded-full
+      text-sm font-bold
+    "
+  >
+    →
+  </span>
+</button>
+     </div>
+
+    </div>
+        </div>
       </section>
 
       <Footer />
     </div>
   );
 }
-
 
