@@ -13,11 +13,22 @@ const resources = {
       contact_us: "Contact Us",
       logout: "Log out",
 
-      // ===== About Page =====
+      // ===== Hero Section =====
+      hero_title: "Experience ever-evolving Technology",
+      hero_model_name: "SMART AI MODEL",
+      hero_description: "Advanced visual diagnostics for total plant protection. Our AI analyzes image data to detect early-stage pathologies and pest threats with pinpoint accuracy. Simply upload a photo to unlock instant health insights and prevent potential risks before they take root.",
+      
+      // ===== Chatbot Section =====
+      chat_with_me: "Chat with me",
+      customer_chat: "Customer Chat",
+      type_message: "Type your message...",
+      send: "Send",
+
+      // ===== About Section (The one with plant photo) =====
       about_title: "ABOUT US",
-      who_we_are: "WHO WE ARE?",
-      about_description:
-        "We are dedicated to revolutionizing agriculture through advanced Artificial Intelligence. Our platform provides an instant and accurate detection of plant diseases just by analyzing a photo. By bridging the gap between technology and nature, we empower farmers and plant lovers to protect their crops, ensure food security, and promote healthier ecosystems with smart, data-driven insights.",
+      about_subtitle: "LeafScan AI Model to detect information of leaves",
+      about_description: "Our AI-driven model transforms simple photography into a powerful diagnostic engine. By utilizing advanced image recognition, we detect early-stage pathologies and pest threats that are invisible to the naked eye. We are committed to providing instant, accurate insights to help you protect your plants and ensure they thrive through every season.",
+      show_more: "Show More",
 
       // ===== Our Numbers Section =====
       numbers_title: "OUR NUMBERS",
@@ -33,8 +44,7 @@ const resources = {
       footer_contact: "Contact us",
       footer_privacy: "Privacy Policy",
       footer_terms: "Terms & Conditions",
-      footer_copyright:
-        "© Copyright {{year}}, All Rights Reserved @moazz alsadeq developer",
+      footer_copyright: "© Copyright {{year}}, All Rights Reserved @moazz alsadeq developer",
     },
   },
 
@@ -48,11 +58,22 @@ const resources = {
       contact_us: "تواصل معنا",
       logout: "تسجيل الخروج",
 
-      // ===== About Page =====
+      // ===== Hero Section =====
+      hero_title: "اختبر التكنولوجيا دائمـة التطـور",
+      hero_model_name: "نموذج الذكاء الاصطناعي الذكي",
+      hero_description: "تشخيصات بصرية متطورة لحماية شاملة لنباتاتك. يقوم نظام الذكاء الاصطناعي لدينا بتحليل بيانات الصور للكشف عن مسببات الأمراض وتهديدات الآفات في مراحلها المبكرة وبدقة متناهية. ما عليك سوى رفع صورة للحصول على رؤى فورية حول حالة النبتة الصحية، ومنع المخاطر المحتملة قبل أن تتفاقم.",
+      
+      // ===== Chatbot Section =====
+      chat_with_me: "تحدث معي",
+      customer_chat: "دردشة العملاء",
+      type_message: "اكتب رسالتك هنا...",
+      send: "إرسال",
+
+      // ===== About Section =====
       about_title: "من نحن",
-      who_we_are: "من نحن؟",
-      about_description:
-        "نحن ملتزمون بإحداث ثورة في الزراعة من خلال الذكاء الاصطناعي المتقدم. توفر منصتنا كشفاً فورياً ودقيقاً لأمراض النباتات بمجرد تحليل الصورة. من خلال سد الفجوة بين التكنولوجيا والطبيعة، نمكن المزارعين ومحبي النباتات من حماية محاصيلهم، وضمان الأمن الغذائي، وتعزيز أنظمة بيئية أكثر صحة من خلال رؤى ذكية قائمة على البيانات.",
+      about_subtitle: "نموذج LeafScan للذكاء الاصطناعي للكشف عن بيانات صحة أوراق الشجر",
+      about_description: "يقوم نموذجنا المدعوم بالذكاء الاصطناعي بتحويل الصور البسيطة إلى محرك تشخيصي قوي. من خلال استخدام تقنيات التعرف المتقدم على الصور، نكشف عن أمراض النبات وتهديدات الآفات في مراحلها المبكرة التي لا تُرى بالعين المجردة. نحن ملتزمون بتقديم رؤى فورية ودقيقة لمساعدتك في حماية نباتاتك وضمان ازدهارها في كل الفصول.",
+      show_more: "عرض المزيد",
 
       // ===== Our Numbers Section =====
       numbers_title: "أرقامنا",
@@ -68,8 +89,7 @@ const resources = {
       footer_contact: "تواصل معنا",
       footer_privacy: "سياسة الخصوصية",
       footer_terms: "الشروط والأحكام",
-      footer_copyright:
-        "© حقوق النشر {{year}}، جميع الحقوق محفوظة @معاذ الصادق",
+      footer_copyright: "© حقوق النشر {{year}}، جميع الحقوق محفوظة @معاذ الصادق",
     },
   },
 };
