@@ -19,7 +19,7 @@ export default function AboutUs() {
             </h1>
             
             <h3 className="text-2xl md:text-3xl font-medium text-black">
-              {t('who_we_are')}
+              {t('who_we_are ')}
             </h3>
             
             <p className="text-lg md:text-xl lg:text-2xl font-light text-gray-800 leading-relaxed text-justify">

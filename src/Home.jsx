@@ -4,11 +4,14 @@ import uploadIcon from "./assets/Vector.png";
 import checkIcon from "./assets/Group.png";
 import scanIcon from "./assets/Vector (1).png";
 import chatbotImg from "./assets/chatbot.png";
+import planko from "./assets/plank2.png"
+import plankoo from "./assets/plank3.png"
 import planto from "./assets/planto.jpg"
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, StopCircle, Send } from "lucide-react"; 
 import { useTranslation } from "react-i18next";
+import Footer from './Footer';
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
@@ -90,7 +93,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* --- Icons Timeline (تعديل الخط ليكون أفقي في الموبايل) --- */}
+            
             <div className="flex flex-row md:flex-col items-center justify-between gap-2 md:gap-10 mt-8 md:mt-32 w-full md:w-auto px-2">
               
               <div className="flex flex-row md:flex-col items-center flex-1 md:flex-none">
@@ -190,7 +193,7 @@ export default function AboutPage() {
           </div>
           <div className={`right flex flex-col gap-3 px-4 ${isArabic ? 'text-right' : 'text-left'}`}>
             <h1 className='font-kufam text-[38px] lg:text-[83px] text-[#388F4C] uppercase'>{t("about_title")}</h1>
-            <h1 className='font-poppins text-[17px] lg:text-[38px] text-[#388F4C] max-w-[310px] lg:max-w-[530px] leading-tight '>{t("about_subtitle")}</h1>
+            <h1 className='font-poppins text-[17px] lg:text-[35px] text-[#388F4C] max-w-[310px] lg:max-w-[530px] leading-tight '>{t("about_subtitle")}</h1>
             <p className='max-w-[300px] lg:max-w-[650px] text-[11px] lg:text-[15px] text-gray-700 leading-relaxed'>{t("about_description")}</p>
             <div className={`flex mt-6 ${isArabic ? 'justify-start' : 'justify-end'}`}>
               <button onClick={() => { navigate("/about"); window.scrollTo(0, 0); }} className="flex items-center gap-3 bg-green-700 text-white px-5 lg:px-9 py-2 rounded-full hover:bg-green-800 transition shadow-lg group">
@@ -201,6 +204,54 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+       <div className="w-full py-16 px-4 bg-white font-sans text-center">
+  {/* العناوين المترجمة */}
+  <div className="mb-12">
+    <h1 className="text-5xl md:text-6xl font-medium text-[#3d8c40] mb-2">
+      {t("services_title")}
+    </h1>
+    <p className="text-[#5cb85c] text-lg md:text-xl">
+      {t("services_subtitle")}
+    </p>
+  </div>
+
+  <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+    
+    {/* الكارت الأول: Detect vital Signs */}
+    <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
+      {/* التعديل: اللون الأسود 25%، حواف يمين دائرية فقط، نص أبيض */}
+      <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full ">
+        <span className="text-[#000000] font-bold text-lg">
+          {t("service_vital_signs")}
+        </span>
+      </div>
+      
+      <img 
+        src={plankoo} 
+        alt="Plant vital signs" 
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+    </div>
+
+    {/* الكارت الثاني: Detect Suitable Dust */}
+    <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
+      {/* التعديل: اللون الأسود 25%، حواف يمين دائرية فقط، نص أبيض */}
+      <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full shadow-sm">
+        <span className="text-[#000000] font-bold text-lg">
+          {t("service_suitable_dust")}
+        </span>
+      </div>
+      
+      <img 
+        src={planko} 
+        alt="Soil health" 
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+    </div>
+
+  </div>
+</div>
+      <Footer/>
     </div>
   );
 }

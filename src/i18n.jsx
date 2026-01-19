@@ -24,11 +24,13 @@ const resources = {
       type_message: "Type your message...",
       send: "Send",
 
-      // ===== About Section (The one with plant photo) =====
+      // ===== About Section =====
       about_title: "ABOUT US",
       about_subtitle: "LeafScan AI Model to detect information of leaves",
       about_description: "Our AI-driven model transforms simple photography into a powerful diagnostic engine. By utilizing advanced image recognition, we detect early-stage pathologies and pest threats that are invisible to the naked eye. We are committed to providing instant, accurate insights to help you protect your plants and ensure they thrive through every season.",
       show_more: "Show More",
+      
+
 
       // ===== Our Numbers Section =====
       numbers_title: "OUR NUMBERS",
@@ -37,6 +39,12 @@ const resources = {
       test_plants: "Tests plants",
       vital_signs: "Detect vital Signs",
       suitable_dust: "Detect Suitable Dust",
+
+      // ===== Our Services Section (New) =====
+      services_title: "Our Services",
+      services_subtitle: "Our Services in this field Care Plant Health",
+      service_vital_signs: "Detect vital Signs",
+      service_suitable_dust: "Detect Suitable Dust",
 
       // ===== Footer =====
       footer_about: "About",
@@ -82,6 +90,12 @@ const resources = {
       test_plants: "نباتات تم فحصها",
       vital_signs: "كشف العلامات الحيوية",
       suitable_dust: "كشف التربة المناسبة",
+
+      // ===== Our Services Section (New) =====
+      services_title: "خدماتنا",
+      services_subtitle: "خدماتنا في هذا المجال تهتم بصحة النبات",
+      service_vital_signs: "كشف العلامات الحيوية",
+      service_suitable_dust: "كشف التربة المناسبة",
 
       // ===== Footer =====
       footer_about: "من نحن",
