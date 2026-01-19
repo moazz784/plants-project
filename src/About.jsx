@@ -22,7 +22,7 @@ export default function AboutUs() {
               {t('who_we_are ')}
             </h3>
             
-            <p className="text-lg md:text-xl lg:text-2xl font-light text-gray-800 leading-relaxed text-justify">
+            <p className="text-lg md:text-xl lg:text-2xl font-extralight text-gray-800 leading-relaxed text-justify">
               {t('about_description')}
             </p>
           </div>

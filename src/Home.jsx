@@ -119,7 +119,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Chatbot Launcher */}
+        
         <div className={`absolute bottom-2 z-50 flex flex-col items-center ${isArabic ? '-left-36 md:-left-20' : '-right-36 md:-right-20'}`}>
           {showText && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-full shadow-md">
@@ -129,7 +129,7 @@ export default function AboutPage() {
           <img src={chatbotImg} className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer hover:scale-105 transition-transform" onClick={() => setOpenChat(!openChat)} alt="chatbot" />
         </div>
 
-        {/* Chat Window */}
+        
        <AnimatePresence>
           {openChat && (
             <motion.div
@@ -157,7 +157,7 @@ export default function AboutPage() {
               </div>
 
               <div className="p-3 bg-white border-t flex items-center gap-2">
-                {/* Voice Recording Button inside Chat */}
+                
                 <button 
                   onClick={recording ? stopRecording : startRecording}
                   className={`p-3 rounded-full transition-all ${recording ? 'bg-red-500 animate-pulse text-white' : 'bg-gray-100 text-green-600 hover:bg-green-100'}`}
@@ -185,7 +185,7 @@ export default function AboutPage() {
         </AnimatePresence>
       </section>
 
-      {/* About Section */}
+    
       <section className='w-full h-auto bg-white flex justify-center items-center'>
         <div className='flex flex-col-reverse justify-center items-center lg:flex-row gap-10 py-12'>
           <div className="left">
@@ -205,7 +205,7 @@ export default function AboutPage() {
         </div>
       </section>
        <div className="w-full py-16 px-4 bg-white font-sans text-center">
-  {/* العناوين المترجمة */}
+
   <div className="mb-12">
     <h1 className="text-5xl md:text-6xl font-medium text-[#3d8c40] mb-2">
       {t("services_title")}
@@ -217,9 +217,9 @@ export default function AboutPage() {
 
   <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
     
-    {/* الكارت الأول: Detect vital Signs */}
+    
     <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
-      {/* التعديل: اللون الأسود 25%، حواف يمين دائرية فقط، نص أبيض */}
+      
       <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full ">
         <span className="text-[#000000] font-bold text-lg">
           {t("service_vital_signs")}
@@ -233,9 +233,8 @@ export default function AboutPage() {
       />
     </div>
 
-    {/* الكارت الثاني: Detect Suitable Dust */}
     <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
-      {/* التعديل: اللون الأسود 25%، حواف يمين دائرية فقط، نص أبيض */}
+      
       <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full shadow-sm">
         <span className="text-[#000000] font-bold text-lg">
           {t("service_suitable_dust")}
