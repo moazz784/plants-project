@@ -10,6 +10,7 @@ import Preloader from "./Preloader";
 import Contact from "./Contact";
 import Momo from "./Momo"
 import Services from "./Services"
+import { Toaster } from "react-hot-toast";
 export default function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function App() {
 
   return (
     <>
-      
+      <Toaster/>
       {loading && <Preloader onComplete={() => setLoading(false)} />}
       {!loading && (
         <div className="page">

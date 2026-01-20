@@ -5,7 +5,7 @@ import { Languages, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; 
-import imge2 from './assets/img-2.jpg'
+import imge2 from './assets/img-2.jpg';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function Header() {
     const header = headerRef.current;
     if (!header) return;
 
-    const leafIcons = [ '🍃'];
+    const leafIcons = ['🍃'];
     const leafCount = 17; 
 
     for (let i = 0; i < leafCount; i++) {
@@ -50,6 +50,12 @@ export default function Header() {
         onComplete: () => leaf.remove()
       });
     }
+  }; 
+
+  
+  const handleLogout = () => {
+    localStorage.removeItem("hasloged");
+    navigate("/login");
   };
 
   return (
@@ -101,7 +107,11 @@ export default function Header() {
           <div className="flex items-center gap-3 border-l px-4 border-gray-200 rtl:border-l-0 rtl:border-r">
             <div className="hidden sm:flex flex-col items-end rtl:items-start">
               <span className="text-sm font-bold text-gray-900 leading-tight">Mai Ahmed</span>
-              <span className="text-[15px] text-gray-500 cursor-pointer hover:text-red-500 transition">
+              
+              <span 
+                onClick={handleLogout} 
+                className="text-[15px] text-gray-500 cursor-pointer hover:text-red-500 transition"
+              >
                 {t('logout')} →
               </span>
             </div>
@@ -145,7 +155,8 @@ export default function Header() {
                 </button>
                 <div className="flex flex-col items-center border-t border-gray-100 pt-4">
                     <span className="text-gray-900 font-bold mb-1 text-lg">Mai Ahmed</span>
-                    <button className="text-red-500 font-medium flex items-center gap-2">
+                    
+                    <button onClick={handleLogout} className="text-red-500 font-medium flex items-center gap-2">
                         <LogOut size={18}/> {t('logout')}
                     </button>
                 </div>

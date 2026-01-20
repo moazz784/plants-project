@@ -22,7 +22,12 @@ export default function AboutPage() {
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const navigate = useNavigate();
-  
+  useEffect(() => {
+    const hasloged = localStorage.getItem("hasloged") === "true";
+    if (!hasloged) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const isArabic = i18n.language === 'ar';
 
