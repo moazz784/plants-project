@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import photos from "./assets/photo33.avif"
 import photok from "./assets/photo44.avif"
+import Footer from './Footer';
 const AgricultureServices = () => {
   // 1. States تبدأ بقيم فارغة
   const [recommendationData, setRecommendationData] = useState({ 
@@ -45,7 +46,7 @@ const AgricultureServices = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans text-gray-800">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans text-gray-800 ">
       <div className="max-w-4xl mx-auto mb-10 text-left">
         <h1 className="text-4xl font-semibold mb-1">Services</h1>
         <p className="text-sm tracking-[0.2em] text-gray-500 font-medium uppercase">What we do?</p>
@@ -97,7 +98,7 @@ const AgricultureServices = () => {
         </div>
 
         {/* Card 2: Calculator */}
-        <div className="bg-[#F9F9F9] border border-gray-200 rounded-lg overflow-hidden shadow-md">
+        <div className="bg-[#F9F9F9] border border-gray-200 rounded-lg mb-10 overflow-hidden shadow-md">
           <div className="h-24 overflow-hidden">
             <img src={photok} className="w-full h-full object-cover" alt="banner" />
           </div>
@@ -142,7 +143,7 @@ const AgricultureServices = () => {
 
             <button 
               onClick={handleGetCalculation}
-              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98]"
+              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 py-2 rounded-md font-bold transition-all active:scale-[0.98]"
             >
               Get Best Result
             </button>
@@ -162,6 +163,7 @@ const AgricultureServices = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
@@ -178,6 +180,7 @@ const InputField = ({ label, value, options, onChange }) => (
       <option value="" disabled>Choose {label}...</option>
       {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
     </select>
+     
   </div>
 );
 
