@@ -22,6 +22,7 @@ export default function AboutPage() {
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const navigate = useNavigate();
+  
 
   const isArabic = i18n.language === 'ar';
 
@@ -93,26 +94,24 @@ export default function AboutPage() {
               </div>
             </div>
 
-            
-            <div className="flex flex-row md:flex-col items-center justify-between gap-2 md:gap-10 mt-8 md:mt-32 w-full md:w-auto px-2">
-              
+            <div className="flex flex-row md:flex-col items-center justify-between gap-2 md:gap-10 mt-8 md:mt-10 w-full md:w-auto px-2">
               <div className="flex flex-row md:flex-col items-center flex-1 md:flex-none">
-                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg shrink-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center cursor-pointer justify-center shadow-lg shrink-0">
                   <img src={scanIcon} className="w-5 h-5 md:w-7 md:h-7 invert" alt="scan" />
                 </div>
                 <div className="flex-1 md:flex-none h-[2px] md:h-24 w-full md:w-px border-t-2 md:border-l-2 border-dotted border-green-700/30 mx-2 md:mx-0"></div>
               </div>
 
               <div className="flex flex-row md:flex-col items-center flex-1 md:flex-none">
-                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center shadow-lg border shrink-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center cursor-pointer shadow-lg border shrink-0">
                   <img src={checkIcon} className="w-6 h-6 md:w-8 md:h-8" alt="check" />
                 </div>
                 <div className="flex-1 md:flex-none h-[2px] md:h-24 w-full md:w-px border-t-2 md:border-l-2 border-dotted border-green-700/30 mx-2 md:mx-0"></div>
               </div>
                 
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center shadow-lg shrink-0">
-                   <img src={uploadIcon} className="w-5 h-5 md:w-6 md:h-6 invert" alt="upload" />
+                <div  className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center  cursor-pointer shadow-lg shrink-0">
+                   <img   src={uploadIcon}  className="w-5 h-5 md:w-6 md:h-6 invert" alt="upload" />
                 </div>
               </div>
             </div>
@@ -120,16 +119,25 @@ export default function AboutPage() {
         </div>
 
         
-        <div className={`absolute bottom-2 z-50 flex flex-col items-center ${isArabic ? '-left-36 md:-left-20' : '-right-36 md:-right-20'}`}>
+        <div className={`absolute bottom-2 z-50 flex flex-col items-center pointer-events-auto ${isArabic ? '-left-36 md:-left-20' : '-right-36 md:-right-20'}`}>
           {showText && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-full shadow-md">
-               <h1>{t("chat_with_me")}</h1>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              className="mb-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-full shadow-md pointer-events-auto"
+            >
+                <h1>{t("chat_with_me")}</h1>
             </motion.div>
           )}
-          <img src={chatbotImg} className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer hover:scale-105 transition-transform" onClick={() => setOpenChat(!openChat)} alt="chatbot" />
+          <img 
+            src={chatbotImg} 
+            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer hover:scale-105 transition-transform pointer-events-auto" 
+            onClick={() => setOpenChat(!openChat)} 
+            alt="chatbot" 
+          />
         </div>
+      
 
-        
        <AnimatePresence>
           {openChat && (
             <motion.div
@@ -157,7 +165,6 @@ export default function AboutPage() {
               </div>
 
               <div className="p-3 bg-white border-t flex items-center gap-2">
-                
                 <button 
                   onClick={recording ? stopRecording : startRecording}
                   className={`p-3 rounded-full transition-all ${recording ? 'bg-red-500 animate-pulse text-white' : 'bg-gray-100 text-green-600 hover:bg-green-100'}`}
@@ -185,7 +192,6 @@ export default function AboutPage() {
         </AnimatePresence>
       </section>
 
-    
       <section className='w-full h-auto bg-white flex justify-center items-center'>
         <div className='flex flex-col-reverse justify-center items-center lg:flex-row gap-10 py-12'>
           <div className="left">
@@ -203,53 +209,46 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
-       <div className="w-full py-16 px-4 bg-white font-sans text-center">
-
-  <div className="mb-12">
-    <h1 className="text-5xl md:text-6xl font-medium text-[#3d8c40] mb-2">
-      {t("services_title")}
-    </h1>
-    <p className="text-[#5cb85c] text-lg md:text-xl">
-      {t("services_subtitle")}
-    </p>
-  </div>
-
-  <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-    
-    
-    <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
+      </section> 
       
-      <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full ">
-        <span className="text-[#000000] font-bold text-lg">
-          {t("service_vital_signs")}
-        </span>
+      <div className="w-full py-16 px-4 bg-white font-sans text-center">
+        <div className="mb-12">
+          <h1 className="text-5xl md:text-6xl font-medium text-[#3d8c40] mb-2">
+            {t("services_title")}
+          </h1>
+          <p className="text-[#5cb85c] text-lg md:text-xl">
+            {t("services_subtitle")}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+          <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
+            <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full ">
+              <span className="text-[#000000] font-bold text-lg">
+                {t("service_vital_signs")}
+              </span>
+            </div>
+            <img 
+              src={plankoo} 
+              alt="Plant vital signs" 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
+
+          <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
+            <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full shadow-sm">
+              <span className="text-[#000000] font-bold text-lg">
+                {t("service_suitable_dust")}
+              </span>
+            </div>
+            <img 
+              src={planko} 
+              alt="Soil health" 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
+        </div>
       </div>
-      
-      <img 
-        src={plankoo} 
-        alt="Plant vital signs" 
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-      />
-    </div>
-
-    <div className="relative group w-full md:w-[450px] h-[280px] overflow-hidden shadow-xl ">
-      
-      <div className="absolute top-5 left-0 z-10 bg-[#D9D9D98C] backdrop-blur-md px-8 py-2 rounded-r-full shadow-sm">
-        <span className="text-[#000000] font-bold text-lg">
-          {t("service_suitable_dust")}
-        </span>
-      </div>
-      
-      <img 
-        src={planko} 
-        alt="Soil health" 
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-      />
-    </div>
-
-  </div>
-</div>
       <Footer/>
     </div>
   );

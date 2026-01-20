@@ -9,6 +9,7 @@ import error from "./assets/error.png";
 import Preloader from "./Preloader";
 import Contact from "./Contact";
 import Momo from "./Momo"
+import Services from "./Services"
 export default function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function App() {
               <Route element={<Header />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/services" element={<h1>mohamed</h1>} />
+                <Route path="/services" element={<Services/>} />
               <Route path="/contact-us" element={<Contact/>} />
               </Route>
 
