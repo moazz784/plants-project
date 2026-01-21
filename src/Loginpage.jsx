@@ -48,7 +48,7 @@ password : yup.string().required().min(5),
           onSubmit={ handleSubmit}
           >
             <Form className="w-full max-w-md px-10 flex flex-col gap-4">
-              <h1 className="text-3xl font-bold text-center">Welcome back!</h1>
+              <h1 className="text-3xl font-Poppins text-center">Welcome back!</h1>
             <p className="text-center">
               Enter your Credentials to access your account
             </p>

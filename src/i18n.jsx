@@ -53,6 +53,68 @@ const resources = {
       footer_privacy: "Privacy Policy",
       footer_terms: "Terms & Conditions",
       footer_copyright: "© Copyright {{year}}, All Rights Reserved @moazz alsadeq developer",
+      // ===== Categories Section =====
+      categories_title: "Our Categories",
+      categories_subtitle: "CHOOSE BEST RELATED TYPE",
+      categories_description: "Explore the world of plants in more detail. By clicking the explore button, you will be taken to a dedicated page where you can discover various plant species, identify the diseases that might affect them, and find expert advice on treatments to keep your plants healthy and thriving.",
+      explore: "EXPLORE",
+      live_demo: "LIVE Demo",
+      trendy_plant: "Trendy House Plant",
+      example_btn: "SAME EXAMPLE",
+      // ===== Contact Page =====
+      contact_info_title: "Contact Information",
+      contact_info_sub: "Say something to start a live chat!",
+      contact_address: "132 Dartmouth Street Abbas Elgaad, Cairo 02156 EGYPT",
+      first_name: "First Name",
+      last_name: "Last Name",
+      email: "Email",
+      phone_number: "Phone Number",
+      message: "Message",
+      message_placeholder: "Write your message...",
+      send_btn: "Send Message",
+      // ===== Agriculture Services =====
+      services_main_title: "Services",
+      services_sub_title: "What we do?",
+      
+      // Card 1: Recommendation
+      card_rec_title: "Select Best Crops",
+      card_rec_sub: "choose soil type and climate to get recommendations",
+      btn_get_rec: "Get Recommendation",
+      res_recommended: "Recommended",
+      res_reason: "Based on {{soil}} soil and {{climate}} climate.",
+      crop_result: "Watermelon & Peanuts",
+
+      // Card 2: Calculator
+      card_calc_title: "Irrigation & Fertilization Calculator",
+      card_calc_sub: "calculate requirements for your specific area",
+      btn_get_calc: "Get Best Result",
+      water_needed: "Water Needed",
+      fertilizer: "Fertilizer",
+      liters_week: "Liters/Week",
+      kg_unit: "Kg (NPK 20-20-20)",
+
+      // Form Fields & Options
+      label_soil: "Soil Type",
+      label_climate: "Climate",
+      label_crop: "Crop",
+      label_land: "Land Area (acres)",
+      placeholder_land: "Enter land area...",
+      choose_prefix: "Choose",
+      
+      // Options Values
+      opt_sandy: "Sandy",
+      opt_clay: "Clay",
+      opt_silt: "Silt",
+      opt_arid: "Arid",
+      opt_humid: "Humid",
+      opt_cold: "Cold",
+      opt_tomato: "Tomato",
+      opt_wheat: "Wheat",
+      opt_corn: "Corn",
+
+      // Alerts
+      alert_missing_rec: "Please select both Soil Type and Climate!",
+      alert_missing_calc: "Please fill all fields and enter land area!",
     },
   },
 
@@ -104,6 +166,68 @@ const resources = {
       footer_privacy: "سياسة الخصوصية",
       footer_terms: "الشروط والأحكام",
       footer_copyright: "© حقوق النشر {{year}}، جميع الحقوق محفوظة @معاذ الصادق",
+      // ===== Categories Section =====
+      categories_title: "تصنيفاتنا",
+      categories_subtitle: "اختر النوع المناسب لنباتك",
+      categories_description: "استكشف عالم النباتات بعمق أكبر؛ من خلال الضغط على زر الاستكشاف، ستنتقل إلى صفحة متكاملة تعرض لك أنواع النباتات المختلفة، وتساعدك في التعرف على الأمراض التي قد تصيبها، مع تقديم نصائح علمية دقيقة وعلاجات فعالة لكل مشكلة لضمان نمو نباتاتك بصحة وازدهار.",
+      explore: "استكشف الآن",
+      live_demo: "عرض مباشر",
+      trendy_plant: "نباتات منزلية رائجة",
+      example_btn: "مثال توضيحي",
+      // ===== Contact Page =====
+      contact_info_title: "معلومات التواصل",
+      contact_info_sub: "أرسل لنا رسالة لبدء الدردشة الحية!",
+      contact_address: "١٣٢ شارع دارتموث، عباس العقاد، القاهرة ٠٢١٥٦، مصر",
+      first_name: "الاسم الأول",
+      last_name: "اسم العائلة",
+      email: "البريد الإلكتروني",
+      phone_number: "رقم الهاتف",
+      message: "الرسالة",
+      message_placeholder: "اكتب رسالتك هنا...",
+      send_btn: "إرسال الرسالة",
+      // ===== Agriculture Services =====
+      services_main_title: "خدماتنا",
+      services_sub_title: "ماذا نقدم؟",
+      
+      // Card 1: Recommendation
+      card_rec_title: "اختيار أفضل المحاصيل",
+      card_rec_sub: "اختر نوع التربة والمناخ للحصول على توصيات دقيقة",
+      btn_get_rec: "الحصول على التوصية",
+      res_recommended: "المحصول الموصى به",
+      res_reason: "بناءً على تربة {{soil}} ومناخ {{climate}}.",
+      crop_result: "البطيخ والفول السوداني",
+
+      // Card 2: Calculator
+      card_calc_title: "حاسبة الري والتسميد",
+      card_calc_sub: "احسب الاحتياجات المائية والسمادية لمساحتك الخاصة",
+      btn_get_calc: "عرض النتائج",
+      water_needed: "الماء المطلوب",
+      fertilizer: "السماد",
+      liters_week: "لتر/أسبوعياً",
+      kg_unit: "كجم (NPK 20-20-20)",
+
+      // Form Fields & Options
+      label_soil: "نوع التربة",
+      label_climate: "المناخ",
+      label_crop: "المحصول",
+      label_land: "مساحة الأرض (فدان)",
+      placeholder_land: "أدخل مساحة الأرض...",
+      choose_prefix: "اختر",
+      
+      // Options Values
+      opt_sandy: "رملية",
+      opt_clay: "طينية",
+      opt_silt: "غرينية",
+      opt_arid: "قاحل",
+      opt_humid: "رطب",
+      opt_cold: "بارد",
+      opt_tomato: "طماطم",
+      opt_wheat: "قمح",
+      opt_corn: "ذرة",
+
+      // Alerts
+      alert_missing_rec: "يرجى اختيار نوع التربة والمناخ معاً!",
+      alert_missing_calc: "يرجى ملء جميع الحقول وإدخال مساحة الأرض!",
     },
   },
 };

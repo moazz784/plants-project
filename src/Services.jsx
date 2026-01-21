@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import photos from "./assets/photo33.avif"
-import photok from "./assets/photo44.avif"
+import { useTranslation } from "react-i18next";
+import photos from "./assets/photo33.avif";
+import photok from "./assets/photo44.avif";
 import Footer from './Footer';
+
 const AgricultureServices = () => {
-  // 1. States تبدأ بقيم فارغة
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+
+
   const [recommendationData, setRecommendationData] = useState({ 
     soilType: '', 
     climate: '' 
@@ -16,45 +21,48 @@ const AgricultureServices = () => {
     landArea: '' 
   });
 
-  // States لعرض النتائج
+
   const [recResult, setRecResult] = useState(null);
   const [calcResult, setCalcResult] = useState(null);
 
-  // 2. دالة التوصية مع التحقق من الاختيارات
+  
   const handleGetRecommendation = () => {
     if (!recommendationData.soilType || !recommendationData.climate) {
-      alert("Please select both Soil Type and Climate!");
+      alert(t("alert_missing_rec"));
       return;
     }
     setRecResult({
-      bestCrop: "Watermelon & Peanuts",
-      reason: `Based on ${recommendationData.soilType} soil and ${recommendationData.climate} climate.`
+      bestCrop: t("crop_result"),
+      reason: t("res_reason", { 
+        soil: t(`opt_${recommendationData.soilType.toLowerCase()}`), 
+        climate: t(`opt_${recommendationData.climate.toLowerCase()}`) 
+      })
     });
   };
 
-  // 3. دالة الحسابات مع التحقق
+  
   const handleGetCalculation = () => {
     const { soilType, climate, crop, landArea } = calculatorData;
     if (!soilType || !climate || !crop || !landArea) {
-      alert("Please fill all fields and enter land area!");
+      alert(t("alert_missing_calc"));
       return;
     }
     setCalcResult({
-      water: (landArea * 500).toLocaleString() + " Liters/Week",
-      fertilizer: (landArea * 15).toLocaleString() + " Kg (NPK 20-20-20)"
+      water: (landArea * 500).toLocaleString() + " " + t("liters_week"),
+      fertilizer: (landArea * 15).toLocaleString() + " " + t("kg_unit")
     });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans text-gray-800 ">
-      <div className="max-w-4xl mx-auto mb-10 text-left">
-        <h1 className="text-4xl font-semibold mb-1">Services</h1>
-        <p className="text-sm tracking-[0.2em] text-gray-500 font-medium uppercase">What we do?</p>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans text-gray-800" dir={isArabic ? "rtl" : "ltr"}>
+      <div className={`max-w-4xl mx-auto mb-10 ${isArabic ? 'text-right' : 'text-left'}`}>
+        <h1 className="text-4xl font-semibold mb-1">{t("services_main_title")}</h1>
+        <p className="text-sm tracking-[0.2em] text-gray-500 font-medium uppercase">{t("services_sub_title")}</p>
       </div>
 
       <div className="max-w-4xl mx-auto space-y-15">
         
-        {/* Card 1: Select Best Crops */}
+        
         <div className="bg-white rounded-lg overflow-hidden shadow-sm">
           <div className="h-24 bg-emerald-100">
             <img src={photos} className="w-full h-full object-cover" alt="banner" />
@@ -62,21 +70,23 @@ const AgricultureServices = () => {
           
           <div className="p-6">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold">Select Best Crops</h2>
-              <p className="text-xs text-gray-400">choose soil type and climate to get recommendations</p>
+              <h2 className="text-xl font-bold">{t("card_rec_title")}</h2>
+              <p className="text-xs text-gray-400">{t("card_rec_sub")}</p>
             </div>
 
             <div className="space-y-4">
               <InputField 
-                label="Soil Type" 
+                label={t("label_soil")} 
                 value={recommendationData.soilType} 
                 options={['Sandy', 'Clay', 'Silt']} 
+                t={t}
                 onChange={(v) => setRecommendationData({...recommendationData, soilType: v})} 
               />
               <InputField 
-                label="Climate" 
+                label={t("label_climate")} 
                 value={recommendationData.climate} 
                 options={['Arid', 'Humid', 'Cold']} 
+                t={t}
                 onChange={(v) => setRecommendationData({...recommendationData, climate: v})} 
               />
             </div>
@@ -85,19 +95,19 @@ const AgricultureServices = () => {
               onClick={handleGetRecommendation}
               className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98]"
             >
-              Get Recommendation
+              {t("btn_get_rec")}
             </button>
 
             {recResult && (
-              <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-                <h3 className="text-[#13633F] font-bold">Recommended: {recResult.bestCrop}</h3>
+              <div className={`mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded ${isArabic ? 'text-right border-l-0 border-r-4' : 'text-left'}`}>
+                <h3 className="text-[#13633F] font-bold">{t("res_recommended")}: {recResult.bestCrop}</h3>
                 <p className="text-sm text-gray-600 italic">{recResult.reason}</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Card 2: Calculator */}
+        
         <div className="bg-[#F9F9F9] border border-gray-200 rounded-lg mb-10 overflow-hidden shadow-md">
           <div className="h-24 overflow-hidden">
             <img src={photok} className="w-full h-full object-cover" alt="banner" />
@@ -105,35 +115,38 @@ const AgricultureServices = () => {
           
           <div className="p-6">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold">Irrigation & Fertilization Calculator</h2>
-              <p className="text-xs text-gray-400">calculate requirements for your specific area</p>
+              <h2 className="text-xl font-bold">{t("card_calc_title")}</h2>
+              <p className="text-xs text-gray-400">{t("card_calc_sub")}</p>
             </div>
 
             <div className="space-y-4">
               <InputField 
-                label="Soil Type" 
+                label={t("label_soil")} 
                 value={calculatorData.soilType} 
                 options={['Sandy', 'Clay']} 
+                t={t}
                 onChange={(v) => setCalculatorData({...calculatorData, soilType: v})} 
               />
               <InputField 
-                label="Climate" 
+                label={t("label_climate")} 
                 value={calculatorData.climate} 
                 options={['Arid', 'Humid']} 
+                t={t}
                 onChange={(v) => setCalculatorData({...calculatorData, climate: v})} 
               />
               <InputField 
-                label="Crop" 
+                label={t("label_crop")} 
                 value={calculatorData.crop} 
                 options={['Tomato', 'Wheat', 'Corn']} 
+                t={t}
                 onChange={(v) => setCalculatorData({...calculatorData, crop: v})} 
               />
               
-              <div className="flex flex-col text-left">
-                <label className="text-[#2D5A43] font-bold text-sm mb-1">Land Area (acres)</label>
+              <div className={`flex flex-col ${isArabic ? 'text-right' : 'text-left'}`}>
+                <label className="text-[#2D5A43] font-bold text-sm mb-1">{t("label_land")}</label>
                 <input 
                   type="number" 
-                  placeholder="Enter land area..."
+                  placeholder={t("placeholder_land")}
                   className="w-full bg-[#97C1A9]/40 p-2 rounded-md outline-none border border-transparent focus:border-[#13633F]" 
                   value={calculatorData.landArea}
                   onChange={(e) => setCalculatorData({...calculatorData, landArea: e.target.value})}
@@ -143,19 +156,19 @@ const AgricultureServices = () => {
 
             <button 
               onClick={handleGetCalculation}
-              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 py-2 rounded-md font-bold transition-all active:scale-[0.98]"
+              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98]"
             >
-              Get Best Result
+              {t("btn_get_calc")}
             </button>
 
             {calcResult && (
               <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="p-3 bg-white shadow-inner rounded-lg border border-emerald-100">
-                  <p className="text-[10px] text-emerald-800 font-black uppercase">Water Needed</p>
+                <div className="p-3 bg-white shadow-inner rounded-lg border border-emerald-100 text-center">
+                  <p className="text-[10px] text-emerald-800 font-black uppercase">{t("water_needed")}</p>
                   <p className="text-sm font-bold text-gray-700">{calcResult.water}</p>
                 </div>
-                <div className="p-3 bg-white shadow-inner rounded-lg border border-emerald-100">
-                  <p className="text-[10px] text-emerald-800 font-black uppercase">Fertilizer</p>
+                <div className="p-3 bg-white shadow-inner rounded-lg border border-emerald-100 text-center">
+                  <p className="text-[10px] text-emerald-800 font-black uppercase">{t("fertilizer")}</p>
                   <p className="text-sm font-bold text-gray-700">{calcResult.fertilizer}</p>
                 </div>
               </div>
@@ -168,19 +181,22 @@ const AgricultureServices = () => {
   );
 };
 
-// Reusable Select Component مع خيار "الافتراضي"
-const InputField = ({ label, value, options, onChange }) => (
-  <div className="flex flex-col text-left">
+ 
+const InputField = ({ label, value, options, onChange, t }) => (
+  <div className={`flex flex-col ${t.language === 'ar' ? 'text-right' : 'text-left'}`}>
     <label className="text-[#2D5A43] font-bold text-sm mb-1">{label}</label>
     <select 
       value={value} 
       onChange={(e) => onChange(e.target.value)}
       className="w-full bg-[#97C1A9]/40 p-2 rounded-md outline-none cursor-pointer hover:bg-[#97C1A9]/60 transition-colors"
     >
-      <option value="" disabled>Choose {label}...</option>
-      {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+      <option value="" disabled>{t("choose_prefix")} {label}...</option>
+      {options.map(opt => (
+        <option key={opt} value={opt}>
+          {t(`opt_${opt.toLowerCase()}`)}
+        </option>
+      ))}
     </select>
-     
   </div>
 );
 

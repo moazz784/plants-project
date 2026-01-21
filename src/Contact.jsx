@@ -1,112 +1,133 @@
 import { Phone, Mail, MapPin } from "lucide-react";
 import plantIo from "./assets/flowem.png";
+import { useTranslation } from "react-i18next";
 
 export default function Contact() {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+
   return (
-    <section className="w-full min-h-screen flex items-center justify-center bg-gray-100 p-6">
+    <section 
+      className="w-full min-h-screen flex items-center justify-center bg-gray-100 p-6" 
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
         
-        {/* Left Side: Contact Information */}
-        <div className="relative bg-green-800 text-white p-8 flex flex-col justify-between">
+        
+        <div className="relative bg-green-800 text-white p-8 flex flex-col justify-between overflow-hidden">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {t("contact_info_title")}
+            </h2>
             <p className="text-sm text-green-100 mb-8">
-              Say something to start a live chat!
+              {t("contact_info_sub")}
             </p>
 
             <div className="space-y-10 text-sm">
               <div className="flex items-center z-20 gap-3">
-                <Phone size={18} />
-                <span className="z-20">+01015486616</span>
+              
+                <Phone size={18} className={isArabic ? "rotate-[270deg]" : ""} />
+                <span className="z-20 font-sans">+01015486616</span>
               </div>
 
               <div className="flex items-center z-20 gap-3">
                 <Mail size={18} />
-                <span className="z-20">Ahmedomarali23@gmail.com</span>
+                <span className="z-20 font-sans">Ahmedomarali23@gmail.com</span>
               </div>
 
               <div className="flex items-start z-20 gap-3">
                 <MapPin size={18} className="mt-1" />
-                <span className="z-20">
-                  132 Dartmouth Street Abbas Elgaad,<br />
-                  Cairo 02156 EGYPT
+                <span className="z-20 leading-relaxed">
+                  {t("contact_address")}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Decorative Elements */}
-          <div className="absolute bottom-0 right-0 w-40 h-40 bg-green-700 rounded-full opacity-40 translate-x-1/3 translate-y-1/3" />
-          <div className="absolute bottom-12 right-12 w-24 h-24 bg-green-600 rounded-full opacity-40" />
+          
+          <div className={`absolute bottom-0 ${isArabic ? 'left-0' : 'right-0'} w-40 h-40 bg-green-700 rounded-full opacity-40 ${isArabic ? '-translate-x-1/3' : 'translate-x-1/3'} translate-y-1/3`} />
+          <div className={`absolute bottom-12 ${isArabic ? 'left-12' : 'right-12'} w-24 h-24 bg-green-600 rounded-full opacity-40`} />
 
-          {/* Plant Image */}
+          
           <img
             src={plantIo}
             alt="Plant"
-            className="
+            className={`
               absolute
               -bottom-7
-              -right-7
+              ${isArabic ? '-left-7' : '-right-7'}
               w-40
               md:w-52
               lg:w-60
               z-1
               lg:z-20
               pointer-events-none
-            "
+              ${isArabic ? 'scale-x-[-1]' : ''} 
+            `}
           />
         </div>
 
-        {/* Right Side: Contact Form */}
-        <div className="p-8">
+        
+        <div className="p-8 bg-white">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-sm font-semibold">First Name</label>
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1 text-gray-700">
+                {t("first_name")}
+              </label>
               <input
                 type="text"
-                className="w-full border-b outline-none py-2 focus:border-green-700 transition"
+                className="w-full border-b border-gray-300 outline-none py-2 focus:border-green-700 transition bg-transparent"
               />
             </div>
 
-            <div>
-              <label className="text-sm font-semibold">Last Name</label>
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1 text-gray-700">
+                {t("last_name")}
+              </label>
               <input
                 type="text"
-                className="w-full border-b outline-none py-2 focus:border-green-700 transition"
+                className="w-full border-b border-gray-300 outline-none py-2 focus:border-green-700 transition bg-transparent"
               />
             </div>
 
-            <div>
-              <label className="text-sm font-semibold">Email</label>
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1 text-gray-700">
+                {t("email")}
+              </label>
               <input
                 type="email"
-                className="w-full border-b outline-none py-2 focus:border-green-700 transition"
+                className="w-full border-b border-gray-300 outline-none py-2 focus:border-green-700 transition bg-transparent"
               />
             </div>
 
-            <div>
-              <label className="text-sm font-semibold">Phone Number</label>
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1 text-gray-700">
+                {t("phone_number")}
+              </label>
               <input
                 type="text"
-                className="w-full border-b outline-none py-2 focus:border-green-700 transition"
+                className="w-full border-b border-gray-300 outline-none py-2 focus:border-green-700 transition bg-transparent"
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label className="text-sm font-semibold">Message</label>
+            <div className="md:col-span-2 flex flex-col">
+              <label className="text-sm font-semibold mb-1 text-gray-700">
+                {t("message")}
+              </label>
               <textarea
                 rows="3"
-                placeholder="Write your message..."
-                className="w-full border-b outline-none py-2 resize-none focus:border-green-700 transition"
+                placeholder={t("message_placeholder")}
+                className="w-full border-b border-gray-300 outline-none py-2 resize-none focus:border-green-700 transition bg-transparent"
               />
             </div>
 
-            <div className="md:col-span-2 flex justify-end mt-6">
+            
+            <div className={`md:col-span-2 flex ${isArabic ? 'justify-start' : 'justify-end'} mt-6`}>
               <button 
                 type="submit"
-                className="bg-green-700 text-white px-8 py-3 rounded-lg shadow-md hover:bg-green-800 transition active:scale-95"
+                className="bg-green-700 text-white px-10 py-3 rounded-lg shadow-md hover:bg-green-800 transition active:scale-95 font-medium"
               >
-                Send Message
+                {t("send_btn")}
               </button>
             </div>
           </form>
