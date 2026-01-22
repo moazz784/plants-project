@@ -1,12 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import photo404 from "./assets/photo404.avif"
 export default function Error404() {
   return (
     <div className="w-full h-screen relative bg-green-50 flex items-center justify-center overflow-hidden">
 
       
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center opacity-30"></div>
+      <div className="absolute inset-0  bg-cover bg-center opacity-30"
+       style={{ backgroundImage: `url(${photo404})` }}
+      >
+       
+      </div>
 
       
       <div className="relative z-10 flex flex-col items-center text-green-900">
