@@ -57,7 +57,7 @@ const handleLogout = () => {
     localStorage.removeItem("hasloged");
 
     // رسالة Toast نجاح
-    toast.success("✅ You have logged out");
+    toast.success(t("logout_success"));
 
     // إعادة التوجيه
     navigate("/login");

@@ -137,7 +137,7 @@ const resources = {
       signup_btn: "Sign Up",
       signup_success: "🎉 Account created successfully",
       signup_signin_link: "Sign In",
-
+      logout_success: "✅ You have logged out successfully",
       
     },
   },
@@ -275,7 +275,8 @@ const resources = {
     signup_have_account: "لديك حساب بالفعل؟",
     signup_signin_link: "تسجيل الدخول",
     signup_success: "🎉 تم إنشاء الحساب بنجاح",
-
+    logout_success: "✅ تم تسجيل الخروج بنجاح",
+  
     },
   },
 };
