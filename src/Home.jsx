@@ -122,6 +122,7 @@ export default function AboutPage() {
               <div className="flex flex-col items-center">
                 <div  className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center  cursor-pointer shadow-lg shrink-0">
                    <img   src={uploadIcon}  className="w-5 h-5 md:w-6 md:h-6 invert" alt="upload" />
+
                 </div>
               </div>
             </div>
@@ -205,7 +206,7 @@ export default function AboutPage() {
       <section className='w-full h-auto bg-white flex justify-center items-center'>
         <div className='flex flex-col-reverse justify-center items-center lg:flex-row gap-10 py-12'>
           <div className="left">
-            <img className='w-[300px] lg:w-[550px] h-[255px] lg:h-[430px] transition-transform duration-500 hover:scale-105 rounded-xl shadow-lg' src={planto} alt="planto"/>
+            <img className='w-[300px] lg:w-[550px] h-[255px] lg:h-[430px] transition-transform duration-500 hover:scale-105  shadow-lg' src={planto} alt="planto"/>
           </div>
           <div className={`right flex flex-col gap-3 px-4 ${isArabic ? 'text-right' : 'text-left'}`}>
             <h1 className='font-kufam text-[38px] lg:text-[83px] text-[#388F4C] uppercase'>{t("about_title")}</h1>

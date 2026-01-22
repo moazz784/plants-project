@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; 
 import imge2 from './assets/img-2.jpg';
+import toast from "react-hot-toast";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -51,13 +52,16 @@ export default function Header() {
       });
     }
   }; 
-
-  
-  const handleLogout = () => {
+const handleLogout = () => {
+    // مسح بيانات تسجيل الدخول
     localStorage.removeItem("hasloged");
-    navigate("/login");
-  };
 
+    // رسالة Toast نجاح
+    toast.success("✅ You have logged out");
+
+    // إعادة التوجيه
+    navigate("/login");
+};
   return (
     <>
       <nav 

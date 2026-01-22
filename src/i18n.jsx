@@ -29,7 +29,7 @@ const resources = {
       about_subtitle: "LeafScan AI Model to detect information of leaves",
       about_description: "Our AI-driven model transforms simple photography into a powerful diagnostic engine. By utilizing advanced image recognition, we detect early-stage pathologies and pest threats that are invisible to the naked eye. We are committed to providing instant, accurate insights to help you protect your plants and ensure they thrive through every season.",
       show_more: "Show More",
-      
+      who_we_are:"who we are !",
 
 
       // ===== Our Numbers Section =====
@@ -144,6 +144,7 @@ const resources = {
       about_subtitle: "نموذج LeafScan للذكاء الاصطناعي للكشف عن بيانات صحة أوراق الشجر",
       about_description: "يقوم نموذجنا المدعوم بالذكاء الاصطناعي بتحويل الصور البسيطة إلى محرك تشخيصي قوي. من خلال استخدام تقنيات التعرف المتقدم على الصور، نكشف عن أمراض النبات وتهديدات الآفات في مراحلها المبكرة التي لا تُرى بالعين المجردة. نحن ملتزمون بتقديم رؤى فورية ودقيقة لمساعدتك في حماية نباتاتك وضمان ازدهارها في كل الفصول.",
       show_more: "عرض المزيد",
+      who_we_are:" من نحن ! ",
 
       // ===== Our Numbers Section =====
       numbers_title: "أرقامنا",

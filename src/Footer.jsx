@@ -3,10 +3,10 @@ import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
 import imge1 from './assets/logo.png'; 
 import { useTranslation } from 'react-i18next';
-
+import { useNavigate } from "react-router-dom";
 export default function Footer() {
   const { t } = useTranslation();
-
+const navigate = useNavigate();
   return (
     <footer className="w-full bg-white pt-10 pb-8 px-4 md:px-16 border-t border-gray-100">
       <div className="max-w-7xl mx-auto">
@@ -19,17 +19,31 @@ export default function Footer() {
           </div>
 
           <nav className="flex flex-wrap justify-center gap-6 md:gap-12">
-        
-            <Link to="/about" className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors">
-              {t('footer_about')}
-            </Link>
-            <Link to="/services" className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors">
-              {t('footer_services')}
-            </Link>
-            <Link to="/contact-us" className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors">
-              {t('footer_contact')}
-            </Link>
-          </nav>
+  <Link
+    to="/about"
+    onClick={() => window.scrollTo(0, 0)}
+    className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors"
+  >
+    {t('footer_about')}
+  </Link>
+
+  <Link
+    to="/services"
+    onClick={() => window.scrollTo(0, 0)}
+    className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors"
+  >
+    {t('footer_services')}
+  </Link>
+
+  <Link
+    to="/contact-us"
+    onClick={() => window.scrollTo(0, 0)}
+    className="text-gray-800 font-medium hover:text-[#3A9B63] transition-colors"
+  >
+    {t('footer_contact')}
+  </Link>
+</nav>
+
 
           <div className="flex gap-6 text-xl text-gray-700">
             <a href="#" className="hover:text-[#3A9B63] transition-all"><FaTwitter /></a>
