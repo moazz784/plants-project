@@ -115,6 +115,30 @@ const resources = {
       // Alerts
       alert_missing_rec: "Please select both Soil Type and Climate!",
       alert_missing_calc: "Please fill all fields and enter land area!",
+      // ===== Auth (Login & Signup) =====
+login_welcome: "Welcome back!",
+login_subtitle: "Enter your Credentials to access your account",
+login_email_label: "Email address",
+login_email_placeholder: "Enter your email",
+login_password_label: "Password",
+login_password_placeholder: "Enter your password",
+login_remember: "Remember for 30 days",
+login_btn: "Login",
+login_no_account: "Don't have an account?",
+login_signup_link: "Sign Up",
+login_success: "🔓 Login Successful",
+login_error: "Wrong email or password",
+
+signup_title: "Create Account",
+signup_name_placeholder: "Name",
+signup_email_placeholder: "Email",
+signup_password_placeholder: "Password",
+signup_btn: "Sign Up",
+signup_have_account: "Already have an account?",
+signup_signin_link: "Sign In",
+signup_success: "🎉 Account created successfully",
+
+      
     },
   },
 
@@ -229,6 +253,29 @@ const resources = {
       // Alerts
       alert_missing_rec: "يرجى اختيار نوع التربة والمناخ معاً!",
       alert_missing_calc: "يرجى ملء جميع الحقول وإدخال مساحة الأرض!",
+      // ===== Auth (Login & Signup) =====
+login_welcome: "مرحبًا بعودتك!",
+login_subtitle: "أدخل بياناتك للوصول إلى حسابك",
+login_email_label: "البريد الإلكتروني",
+login_email_placeholder: "أدخل بريدك الإلكتروني",
+login_password_label: "كلمة المرور",
+login_password_placeholder: "أدخل كلمة المرور",
+login_remember: "تذكرني لمدة 30 يوم",
+login_btn: "تسجيل الدخول",
+login_no_account: "ليس لديك حساب؟",
+login_signup_link: "إنشاء حساب",
+login_success: "🔓 تم تسجيل الدخول بنجاح",
+login_error: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+
+signup_title: "إنشاء حساب",
+signup_name_placeholder: "الاسم",
+signup_email_placeholder: "البريد الإلكتروني",
+signup_password_placeholder: "كلمة المرور",
+signup_btn: "إنشاء حساب",
+signup_have_account: "لديك حساب بالفعل؟",
+signup_signin_link: "تسجيل الدخول",
+signup_success: "🎉 تم إنشاء الحساب بنجاح",
+
     },
   },
 };
