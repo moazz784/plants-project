@@ -91,7 +91,7 @@ export default function AboutPage() {
         <div className='flex flex-col md:flex-row w-full z-20 min-h-[80vh] relative'>
           <div className="flex flex-col items-start gap-4 md:gap-[100px] pt-6 md:pt-0 md:items-center md:flex-row md:justify-between w-full">
             <div className={`flex flex-col items-start gap-10 md:gap-60 max-w-2xl text-black py-2 md:py-5 ${isArabic ? 'text-right' : 'text-left'}`}>
-              <h1 className='text-[30px] md:text-[43px] lg:text-[70px] font-kufam leading-[0.95]'>
+              <h1 className='text-[30px] md:text-[40لpx] font lg:text-[70px]  leading-[0.95]'>
                 {t("hero_title")}
               </h1>
               <div>

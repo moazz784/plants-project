@@ -14,7 +14,7 @@ export default function AboutUs() {
         <div className="flex-1 flex flex-col md:flex-row items-center justify-center px-6 py-12 md:px-16 lg:px-24 gap-10 md:gap-16">
           
           <div className="w-full md:w-[55%] flex flex-col space-y-4 text-left rtl:text-right">
-            <h1 className="text-4xl md:text-6xl lg:text-6xl text-black tracking-tight uppercase">
+            <h1 className="text-4xl md:text-6xl lg:text-6xl font-kufam text-black tracking-tight uppercase">
               {t('about_title')}
             </h1>
             
