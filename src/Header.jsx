@@ -5,7 +5,7 @@ import { Languages, LogOut, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; 
-import imge2 from './assets/img-2.jpg'; 
+import imge2 from './assets/default.webp'; 
 import toast from "react-hot-toast";
 
 export default function Header() {
@@ -118,7 +118,7 @@ export default function Header() {
             {/* الحاوية الخاصة بالصورة والأيقونة */}
             <div className="relative">
               <img 
-                src={userData.image}
+                src={userData.image ||imge2 }
                 alt="Profile"
                 onClick={() => navigate('/login')}
                 className="w-14 h-14 sm:w-12 sm:h-12 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
