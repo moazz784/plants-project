@@ -85,7 +85,7 @@ export default function Login() {
         <div className={`absolute top-0 left-0 h-full w-full md:w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out ${active ? "opacity-100 z-20 md:translate-x-full" : "md:opacity-0 md:pointer-events-none hidden md:flex"}`}>
           <Formik initialValues={{ name: "", email: "", password: "" }} validationSchema={signupSchema} onSubmit={handleSignup}>
             <Form className="w-full max-w-md px-9 flex flex-col gap-4">
-              <h1 className="text-3xl font-bold text-center">{t("signup_title")}</h1>
+              <h1 className="text-3xl font-medium font-poppins text-center">{t("signup_title")}</h1>
               <label className="font-medium font-poppins">{t("signup_name_label")}</label>
               <Field name="name" type="text" placeholder={t("signup_name_placeholder")} className="border rounded-full p-3"  />
               <ErrorMessage name="name" component="p" className="text-red-500 text-sm" />

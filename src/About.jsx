@@ -1,11 +1,18 @@
-
 import React from 'react'; 
 import { useTranslation } from 'react-i18next'; 
 import plantImage from './assets/plant.png'; 
 import Footer from './Footer'; 
 
+import CountUp from "react-countup";
+import { useInView } from "react-intersection-observer";
+
 export default function AboutUs() {
   const { t } = useTranslation();
+
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.3,
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -32,15 +39,15 @@ export default function AboutUs() {
               <img 
                 src={plantImage} 
                 alt="Potted Plants" 
-                className="w-full h-auto object-contain  transition-transform duration-500 hover:scale-105"
+                className="w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
               />
             </div>
           </div>
         </div>
       </section>
 
-      
       <div 
+        ref={ref}
         className="w-full min-h-[70vh] bg-cover bg-center flex items-center justify-center py-16"
         style={{ 
           backgroundImage: `linear-gradient(0deg, #021B10E8, #021B10E8), url('/photo-flowers.png')` 
@@ -50,51 +57,55 @@ export default function AboutUs() {
           
           <div className="text-center flex flex-col gap-2 text-white">
             <h1 className="font-semibold text-[31px] md:text-[45px] tracking-wide uppercase">
-               {t('numbers_title')}
+              {t('numbers_title')}
             </h1>
             <p className="font-extralight text-[20px] md:text-[31px]">
-               {t('numbers_subtitle')}
+              {t('numbers_subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
             
-          
             <div className="flex flex-col items-center gap-2">
-              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">23+</h1>
+              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
+                {inView ? <CountUp end={23} duration={4} /> : 0}+
+              </h1>
               <div className="w-full max-w-[280px] h-[60px] bg-[#D9D9D9] flex justify-center items-center rounded-sm shadow-lg">
                 <h1 className="font-extralight text-black text-sm md:text-base">
-                   {t('exp_years')}
+                  {t('exp_years')}
                 </h1>
               </div>
             </div>
 
-            
             <div className="flex flex-col items-center gap-2">
-              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">35K</h1>
+              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
+                {inView ? <CountUp end={35} duration={4} /> : 0}K
+              </h1>
               <div className="w-full max-w-[280px] h-[60px] bg-[#D9D9D9] flex justify-center items-center rounded-sm shadow-lg">
                 <h1 className="font-extralight text-black text-sm md:text-base">
-                   {t('test_plants')}
+                  {t('test_plants')}
                 </h1>
               </div>
             </div>
 
-            
             <div className="flex flex-col items-center gap-2">
-              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">70+</h1>
+              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
+                {inView ? <CountUp end={70} duration={4} /> : 0}+
+              </h1>
               <div className="w-full max-w-[280px] h-[60px] bg-[#D9D9D9] flex justify-center items-center rounded-sm shadow-lg">
                 <h1 className="font-extralight text-black text-sm md:text-base">
-                   {t('vital_signs')}
+                  {t('vital_signs')}
                 </h1>
               </div>
             </div>
 
-            
             <div className="flex flex-col items-center gap-2">
-              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">33+</h1>
+              <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
+                {inView ? <CountUp end={33} duration={4} /> : 0}+
+              </h1>
               <div className="w-full max-w-[280px] h-[60px] bg-[#D9D9D9] flex justify-center items-center rounded-sm shadow-lg">
                 <h1 className="font-extralight text-black text-sm md:text-base">
-                   {t('suitable_dust')}
+                  {t('suitable_dust')}
                 </h1>
               </div>
             </div>
