@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import plant11 from "./assets/new-plant11.jpg"
+import plant11 from "./assets/plant121.jpg"
 import plant22 from "./assets/plant22.jpg"
 import plant33 from "./assets/plant33.jpg"
 import plant44 from "./assets/plant44.webp"
