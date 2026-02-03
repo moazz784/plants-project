@@ -186,7 +186,7 @@ export default function Plantscategoriy() {
                 <img src={selectedPlant.image} className="w-full h-full object-cover" alt="" />
                 <button 
                   onClick={() => setSelectedPlant(null)}
-                  className={`absolute top-4 ${i18n.language === 'ar' ? 'left-4' : 'right-4'} text-red-500 bg-white/80 w-10 h-10 rounded-full flex items-center justify-center text-sm shadow-md`}
+                  className={`absolute top-4 ${i18n.language === 'ar' ? 'left-4' : 'right-4'} text-red-700 bg-white/80 w-10 h-10 rounded-full flex items-center justify-center text-sm shadow-md`}
                 >✕</button>
                 <div className={`absolute bottom-4 ${i18n.language === 'ar' ? 'right-6' : 'left-6'} text-white drop-shadow-lg`}>
                     <h2 className="text-2xl font-bold">{selectedPlant.fullName}</h2>
