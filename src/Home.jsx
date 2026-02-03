@@ -420,21 +420,23 @@ export default function AboutPage() {
             {t("categories_description")}
             </p>
             <div className="flex items-center justify-center lg:justify-start gap-6">
-              <button className="px-3.5 lg:px-6 py-2 border border-green-600 text-green-700 cursor-pointer rounded-full font-medium hover:bg-green-600 hover:text-white transition">
+              <button onClick={() => { navigate('/plants'); window.scrollTo({ top: 0, behavior: 'smooth' });}} className="px-3.5 lg:px-6 py-2 border border-green-600 text-green-700 cursor-pointer rounded-full font-medium hover:bg-green-600 hover:text-white transition">
                 {t("explore")}
               </button>
               <button 
                 onClick={() => setShowVideo(true)}
                 className="flex items-center gap-2 text-green-700 font-medium cursor-pointer hover:scale-105 transition-transform"
               >
-                <span className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg">
+                <span  className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg">
                   <Play size={18} fill="currentColor" />
                 </span>
                 {t("live_demo")}
               </button>
             </div>
           </div>
-          <div className="relative bg-[#f1f1f1] rounded-3xl p-6 w-[280px] md:w-[320px] shadow-lg">
+          <div  className="relative cursor-pointer bg-[#f1f1f1] rounded-3xl p-6 w-[280px] md:w-[320px] shadow-lg">
+   
+  
             <div className="flex justify-center">
               <img src={tree} alt="Plant" className="w-[230px] h-[230px] object-contain -mt-20" />
             </div>

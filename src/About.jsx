@@ -66,7 +66,7 @@ export default function AboutUs() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
             
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
               <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
                 {inView ? <CountUp end={23} duration={4} /> : 0}+
               </h1>
@@ -77,7 +77,7 @@ export default function AboutUs() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
               <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
                 {inView ? <CountUp end={35} duration={4} /> : 0}K
               </h1>
@@ -88,7 +88,7 @@ export default function AboutUs() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
               <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
                 {inView ? <CountUp end={70} duration={4} /> : 0}+
               </h1>
@@ -99,7 +99,7 @@ export default function AboutUs() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
               <h1 className="font-semibold text-[#388F4C] text-[50px] md:text-[62px] leading-none">
                 {inView ? <CountUp end={33} duration={4} /> : 0}+
               </h1>

@@ -11,6 +11,7 @@ import Contact from "./Contact";
 import Momo from "./Momo"
 import Services from "./Services"
 import { Toaster } from "react-hot-toast";
+import Plantscategoriy from "./Plantscategoriy";
 export default function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services/>} />
               <Route path="/contact-us" element={<Contact/>} />
+              <Route path="/plants" element={<Plantscategoriy/>} />
               </Route>
 
               <Route path="/login" element={<Loginpage />} />
