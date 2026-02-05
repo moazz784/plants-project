@@ -142,6 +142,36 @@ const resources = {
           disease: "It causes brown or black spots to appear on leaves and flowers.",
           cause: "Thrips insects feeding on plant tissue causing scarring.",
           treatment: "Spray with soap and water while manually purifying the larvae, avoiding the soap solution falling on the soil."
+        },
+        {
+          fullName: "Rust",
+          disease: "Small, rusty orange or brownish pustules appear on the undersides of leaves, causing leaf drop.",
+          cause: "A fungal infection favored by high humidity and water sitting on foliage.",
+          treatment: "Remove infected leaves, avoid overhead watering, and apply sulfur-based fungicides."
+        },
+        {
+          fullName: "Grey Mold (Botrytis)",
+          disease: "A fuzzy grey fungal growth covers flowers, fruits, and stems, leading to soft rot and decay.",
+          cause: "The Botrytis cinerea fungus, active in cool, damp, and stagnant air.",
+          treatment: "Increase air circulation, decrease humidity, and remove all decaying organic matter promptly."
+        },
+        {
+          fullName: "Mosaic Virus",
+          disease: "Leaves show mottled yellow and green patterns (mosaic-like) and may become curled or stunted.",
+          cause: "Viral infection often spread by aphids or contaminated pruning tools.",
+          treatment: "No cure exists; infected plants must be removed and destroyed to prevent spreading."
+        },
+        {
+          fullName: "Stem Canker",
+          disease: "Sunken, swollen, or cracked dead areas appear on woody stems, sometimes oozing sap.",
+          cause: "Bacteria or fungi entering the plant through wounds or pruning cuts.",
+          treatment: "Prune away infected branches well below the canker and sterilize tools between cuts."
+        },
+        {
+          fullName: "Nutrient Chlorosis",
+          disease: "Leaves turn pale yellow while the veins remain dark green, leading to weak growth.",
+          cause: "Lack of essential minerals (like iron or magnesium) or improper soil pH levels.",
+          treatment: "Apply a balanced fertilizer with chelated micronutrients and adjust the soil pH."
         }
       ],
 
@@ -358,6 +388,36 @@ const resources = {
           disease: "تؤدي لظهور بقع بنية أو سوداء على الأوراق والأزهار.",
           cause: "تغذية حشرات التريبس على أنسجة النبات مما يترك ندبات.",
           treatment: "الرش بالماء والصابون مع إزالة اليرقات يدوياً، مع الحرص على عدم وصول الصابون للتربة."
+        },
+        {
+          fullName: "صدأ الأوراق",
+          disease: "ظهور بقع بارزة صغيرة بلون برتقالي أو بني صدئ على الأسطح السفلية للأوراق، مما يؤدي لسقوطها.",
+          cause: "عدوى فطرية تزداد مع الرطوبة العالية وبقاء الماء على الأوراق.",
+          treatment: "إزالة الأوراق المصابة، تجنب ري الأوراق من الأعلى، واستخدام مبيدات فطرية كبريتية."
+        },
+        {
+          fullName: "العفن الرمادي (بوتريتيس)",
+          disease: "نمو فطري رمادي وبري يغطي الأزهار والثمار والسيقان، مما يؤدي إلى تعفن الأنسجة.",
+          cause: "فطر البوتريتيس الذي ينشط في الأجواء الباردة والرطبة وركود الهواء.",
+          treatment: "تحسين تهوية المكان، تقليل الرطوبة، وإزالة الأجزاء النباتية الميتة فوراً."
+        },
+        {
+          fullName: "فيروس الموزاييك",
+          disease: "تظهر الأوراق بنقوش متداخلة من الأصفر والأخضر (مثل الفسيفساء) مع تشوه وتقزم النبات.",
+          cause: "عدوى فيروسية تنتقل غالباً عبر حشرة المن أو أدوات التقليم الملوثة.",
+          treatment: "لا يوجد علاج؛ يجب التخلص من النبات المصاب تماماً لمنع انتشار العدوى للبقية."
+        },
+        {
+          fullName: "تقرح الساق",
+          disease: "ظهور مناطق غائرة أو متشققة وميتة على السيقان الخشبية، وأحياناً تفرز مادة صمغية.",
+          cause: "بكتيريا أو فطريات تدخل النبات عبر الجروح أو أماكن التقليم.",
+          treatment: "قص الأغصان المصابة أسفل منطقة التقرح بمسافة كافية وتعقيم الأدوات بعد كل استخدام."
+        },
+        {
+          fullName: "نقص العناصر (الكلوروسيس)",
+          disease: "تحول الأوراق للون الأصفر الباهت مع بقاء العروق خضراء داكنة، مما يضعف نمو النبات.",
+          cause: "نقص المعادن الأساسية (مثل الحديد) أو عدم توازن درجة حموضة التربة.",
+          treatment: "إضافة سماد يحتوي على عناصر صغرى (حديد مخلبي) وضبط حموضة التربة."
         }
       ],
 

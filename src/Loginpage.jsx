@@ -59,7 +59,7 @@ export default function Login() {
     <div className="w-screen h-screen bg-gray-100 flex items-center justify-center overflow-hidden">
       <div className="relative w-full h-full bg-white overflow-hidden">
 
-        {/* ===== Login Section (Sign In) ===== */}
+        
         <div className={`absolute top-0 left-0 h-full w-full md:w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out ${active ? "md:translate-x-full md:opacity-0 md:pointer-events-none hidden md:flex" : "opacity-100 z-20"}`}>
           <Formik initialValues={{ email: "", password: "" }} validationSchema={validationscema} onSubmit={handleSubmit}>
             <Form className="w-full max-w-md px-10 flex flex-col gap-4">
@@ -81,7 +81,7 @@ export default function Login() {
         </div>
        
 
-        {/* ===== Signup Section ===== */}
+        
         <div className={`absolute top-0 left-0 h-full w-full md:w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out ${active ? "opacity-100 z-20 md:translate-x-full" : "md:opacity-0 md:pointer-events-none hidden md:flex"}`}>
           <Formik initialValues={{ name: "", email: "", password: "" }} validationSchema={signupSchema} onSubmit={handleSignup}>
             <Form className="w-full max-w-md px-9 flex flex-col gap-4">

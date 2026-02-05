@@ -12,7 +12,10 @@ import plant88 from "./assets/plant88.jpg"
 import plant99 from "./assets/plant99.jpg"
 import plant100 from "./assets/plant100.webp"
 import plant200 from "./assets/plant200.jpg"
-
+import plant300 from "./assets/plant300.jpg"
+import plant400 from "./assets/plant400.jpg"
+import plant500 from "./assets/plant500.webp"
+import plant600 from "./assets/plant600.gif"
 export default function Plantscategoriy() {
   const { t, i18n } = useTranslation();
   const [selectedPlant, setSelectedPlant] = useState(null);
@@ -126,18 +129,59 @@ export default function Plantscategoriy() {
       cause: t('plants.10.cause'),
       treatment: t('plants.10.treatment'),
       image: plant200
+    },
+    {
+      id: 12,
+      name: t('plants.11.fullName'),
+      fullName: t('plants.11.fullName'),
+      category: t('cat_indoor'),
+      disease: t('plants.11.disease'),
+      cause: t('plants.11.cause'),
+      treatment: t('plants.11.treatment'),
+      image: plant300 
+    },
+    {
+      id: 13,
+      name: t('plants.12.fullName'),
+      fullName: t('plants.12.fullName'),
+      category: t('cat_house'),
+      disease: t('plants.12.disease'),
+      cause: t('plants.12.cause'),
+      treatment: t('plants.12.treatment'),
+      image: plant400 
+    },
+    {
+      id: 14,
+      name: t('plants.13.fullName'),
+      fullName: t('plants.13.fullName'),
+      category: t('cat_indoor'),
+      disease: t('plants.13.disease'),
+      cause: t('plants.13.cause'),
+      treatment: t('plants.13.treatment'),
+      image: plant500 
+    },
+    {
+      id: 15,
+      name: t('plants.14.fullName'),
+      fullName: t('plants.14.fullName'),
+      category: t('cat_hardy'),
+      disease: t('plants.14.disease'),
+      cause: t('plants.14.cause'),
+      treatment: t('plants.14.treatment'),
+      image: plant600 
     }
+    
   ];
 
   return (
     <div className="min-h-screen bg-[#fcfdfc] pt-24 pb-12 px-6 font-sans" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Header */}
+      
       <div className="max-w-4xl mx-auto text-center mb-16">
         <h1 className="text-3xl font-bold text-[#006b38] mb-2 tracking-tight">{t('title')}</h1>
         <p className="text-gray-400 text-sm">{t('subtitle')}</p>
       </div>
 
-      {/* Grid of Minimal Cards */}
+      
       <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
         {plantsData.map((plant) => (
           <motion.div
@@ -164,7 +208,7 @@ export default function Plantscategoriy() {
         ))}
       </div>
 
-      {/* Detail Modal */}
+      
       <AnimatePresence>
         {selectedPlant && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
