@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'; 
 import { useNavigate, Outlet, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Languages, LogOut, Camera } from 'lucide-react'; 
+import { Languages, Settings, LogOut } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion'; 
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; 
@@ -11,22 +11,30 @@ import toast from "react-hot-toast";
 export default function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openProfileMenu, setOpenProfileMenu] = useState(false);
   const { t, i18n } = useTranslation();
   const headerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const dropdownRef = useRef(null);
 
-  // تحديث: جلب البيانات من localStorage مباشرة عند أول تحميل
   const [userData, setUserData] = useState(() => {
     const savedData = localStorage.getItem("user_data");
     return savedData ? JSON.parse(savedData) : { name: "User Name", image: imge2 };
   });
 
-  // تحديث: مراقبة البيانات عند تحميل الصفحة لضمان ظهورها بعد الـ Refresh
   useEffect(() => {
     const savedData = localStorage.getItem("user_data");
-    if (savedData) {
-      setUserData(JSON.parse(savedData));
-    }
+    if (savedData) setUserData(JSON.parse(savedData));
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleImageChange = (e) => {
@@ -37,7 +45,7 @@ export default function Header() {
         const updatedData = { ...userData, image: reader.result };
         setUserData(updatedData);
         localStorage.setItem("user_data", JSON.stringify(updatedData));
-        toast.success(t("تم تحديث الصورة"));
+        toast.success("تم تحديث الصورة");
       };
       reader.readAsDataURL(file);
     }
@@ -53,7 +61,7 @@ export default function Header() {
   const handleLeafRain = () => {
     const header = headerRef.current;
     if (!header) return;
-    const leafIcons = ['🍃'];
+    const leafIcons = [' 🍃'];
     for (let i = 0; i < 17; i++) {
       const leaf = document.createElement('div');
       leaf.innerText = leafIcons[0];
@@ -75,27 +83,24 @@ export default function Header() {
     }
   }; 
 
- const handleLogout = () => {
-  localStorage.removeItem("hasloged"); // نمسح فقط حالة الدخول
-  // لا تمسح "user_data" لكي تظل الصورة والاسم مخزنين في الجهاز
-  toast.success(t("logout_success"));
-  navigate("/login");
-};
+  const handleLogout = () => {
+    localStorage.removeItem("hasloged");
+    toast.success(t("logout_success"));
+    navigate("/login");
+  };
 
   return (
     <>
       <nav ref={headerRef} onMouseEnter={handleLeafRain} className="relative flex items-center justify-between w-full bg-[#f8f9fa] px-8 md:px-10 py-5 font-sans border-b border-gray-100 z-[100]">
         
-        {/* اللوجو - مستجيب للموبايل */}
-        <div className="flex items-center shrink-0 relative z-10 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="flex items-center gap-3">
-            <img src={imge1} alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
-            <h1 className="text-xl sm:text-2xl md:text-[34px] font-semibold text-[#3A9B63]">LeafScan</h1>
-          </div>
+        {/* اللوجو */}
+        <div className="flex items-center shrink-0 cursor-pointer" onClick={() => navigate('/')}>
+          <img src={imge1} alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+          <h1 className="text-xl sm:text-2xl md:text-[34px] font-semibold text-[#3A9B63] ml-2">LeafScan</h1>
         </div>
 
-        {/* روابط التنقل - مقاسات موحدة w-36 */}
-        <div className="hidden lg:flex items-center gap-4 relative z-10">
+        {/* روابط التنقل */}
+        <div className="hidden lg:flex items-center gap-4">
           <NavLink to="/" end className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('home')}</NavLink>
           <NavLink to="/about" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('about')}</NavLink>
           <NavLink to="/services" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('services')}</NavLink>
@@ -103,37 +108,75 @@ export default function Header() {
         </div>
 
         {/* الجزء الأيمن */}
-        <div className="flex items-center gap-2 sm:gap-4 relative z-10">
+        <div className="flex items-center gap-3 sm:gap-4">
+
           <button onClick={toggleLanguage} className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:text-[#3A9B63] transition-all">
             <Languages size={18} />
             <span className="font-bold text-sm uppercase">{i18n.language === 'en' ? 'AR' : 'EN'}</span>
           </button>
 
           <div className="flex items-center gap-3 border-l pl-3 sm:px-4 border-gray-200 rtl:border-l-0 rtl:border-r rtl:pr-3">
+
             <div className="hidden sm:flex flex-col items-end rtl:items-start">
-              <span className="text-sm font-bold text-gray-900 leading-tight">{userData.name}</span>
-              <span onClick={handleLogout} className="text-[13px] text-gray-500 cursor-pointer hover:text-red-500 transition">{t('logout')} →</span>
+              <span className="text-sm font-bold text-gray-900">{userData.name}</span>
+              <span onClick={handleLogout} className="text-[13px] text-gray-500 cursor-pointer hover:text-red-500 hover:text-[14px]  hover:transition">
+                {i18n.language === 'ar' ? <>&larr; {t('logout')}</> : <>{t('logout')} →</>}
+              </span>
             </div>
 
-            {/* الحاوية الخاصة بالصورة والأيقونة */}
-            <div className="relative">
+            {/* صورة البروفايل + Dropdown */}
+            <div ref={dropdownRef} className="relative">
               <img 
-                src={userData.image ||imge2 }
+                src={userData.image || imge2}
                 alt="Profile"
-                onClick={() => navigate('/login')}
-                className="w-14 h-14 sm:w-12 sm:h-12 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
+                className="w-11 h-11 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
               />
-              <button 
-                onClick={(e) => { e.stopPropagation(); fileInputRef.current.click(); }}
-                className="absolute -bottom-1 -right-1 bg-green-700 text-white p-1 rounded-full border border-white hover:bg-green-800 shadow-sm"
+
+              {/* أيقونة صغيرة لتفتح Dropdown */}
+              <button
+                onClick={() => setOpenProfileMenu(!openProfileMenu)}
+                className={`absolute -bottom-1 ${i18n.language === 'ar' ? '-left-1' : '-right-1'} bg-green-700 text-white p-1 rounded-full shadow hover:bg-green-800 transition`}
               >
-                <Camera size={10} />
+                <Settings size={12} />
               </button>
-              <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+
+              {/* Dropdown Animated */}
+              <AnimatePresence>
+                {openProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className={`absolute top-full mt-3 w-56 bg-white shadow-2xl rounded-2xl border border-gray-100 z-50 overflow-hidden ${i18n.language === 'ar' ? 'left-0 rtl:text-center' : 'right-0 text-center'}`}
+                  >
+                    <button
+                      onClick={() => fileInputRef.current.click()}
+                      className="w-full px-4 py-3 hover:bg-gray-100 text-sm font-medium text-center"
+                    >
+                      {t('change_image')}
+                    </button>
+                    <button
+                      onClick={() => { setOpenProfileMenu(false); navigate('/profile'); }}
+                      className="w-full px-4 py-3 hover:bg-gray-100 text-sm font-medium text-center"
+                    >
+                      {t('edit_profile')}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+                accept="image/*"
+              />
             </div>
 
             {/* زر الموبايل */}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-1 text-green-900 transition-transform active:scale-90">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-1 text-green-800 transition-transform active:scale-90">
               <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? <path strokeWidth="2" d="M6 18L18 6M6 6l12 12" /> : <path strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />}
               </svg>
@@ -161,7 +204,9 @@ export default function Header() {
                 </button>
                 <div className="text-center">
                   <p className="font-bold text-gray-900">{userData.name}</p>
-                  <button onClick={handleLogout} className="text-red-500 mt-2 flex items-center gap-2 justify-center"><LogOut size={18}/> {t('logout')}</button>
+                  <button onClick={handleLogout} className={`mt-2 flex items-center gap-2 justify-center ${i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'} text-red-500`}>
+                    <LogOut size={18}/> {t('logout')}
+                  </button>
                 </div>
               </div>
             </motion.div>

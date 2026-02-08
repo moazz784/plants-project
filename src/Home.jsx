@@ -307,13 +307,14 @@ export default function AboutPage() {
             >
               <div className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold p-4 flex items-center justify-between">
                 <h1 className="flex items-center gap-2">💬 {t("customer_chat")}</h1>
-                <button onClick={() => setOpenChat(false)} className="text-white text-2xl font-bold hover:rotate-90 transition-transform">×</button>
+                <button onClick={() => setOpenChat(false)} className="text-white text-3xl font-bold cursor-pointer hover:rotate-90 transition-transform">×</button>
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto bg-green-50 space-y-3 text-black">
                 {messages.length === 0 && <p className="text-center text-gray-400 mt-10 text-sm">ابدأ المحادثة الآن...</p>}
                 {messages.map((msg, idx) => (
-                  <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[80%] ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
+                  <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[90%]  ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
+                    {/* break-words overflow-hidden whitespace-pre-wrap whitespace-pre-wrap */}
                     {msg.type === 'text' ? (
                       <p className="text-sm">{msg.content}</p>
                     ) : (
@@ -343,7 +344,7 @@ export default function AboutPage() {
                   onClick={sendMessage} 
                   className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors shadow-md"
                 >
-                  <Send size={20} className={isArabic ? "rotate-180" : ""} />
+                  <Send  size={20} className={  isArabic ? "rotate-180" : ""} />
                 </button>
               </div>
             </motion.div>

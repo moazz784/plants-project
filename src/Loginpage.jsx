@@ -74,7 +74,7 @@ export default function Login() {
               <Field name="password" type="password" className="border rounded-full p-3" placeholder={t("login_password_placeholder")} />
               <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
               
-              <button type="submit" className="mt-4 bg-green-700 text-white py-3 rounded-full hover:bg-green-800 transition">{t("login_btn")}</button>
+              <button type="submit" className="mt-4 bg-green-700 text-white py-3 rounded-full hover:bg-green-800  transition">{t("login_btn")}</button>
               <p className="text-center">{t("login_no_account")} <span onClick={() => setActive(true)} className="text-green-700 font-semibold cursor-pointer underline">{t("login_signup_link")}</span></p>
             </Form>
           </Formik>
@@ -95,7 +95,7 @@ export default function Login() {
               <label className="font-medium font-poppins">{t("signup_password_label")}</label>
               <Field name="password" type="password" placeholder={t("signup_password_placeholder")} className="border rounded-full p-3" />
               <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
-              <button type="submit" className="mt-4 bg-green-700 text-white py-3 rounded-full hover:bg-green-800 transition">{t("signup_btn")}</button>
+              <button type="submit" className="mt-4 bg-green-700 text-white py-3 rounded-full hover:bg-green-800  transition">{t("signup_btn")}</button>
               <p className="text-center">{t("signup_have_account")} <span onClick={() => setActive(false)} className="text-green-700 font-semibold cursor-pointer underline">{t("signup_signin_link")}</span></p>
             </Form>
           </Formik>
