@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'; 
 import { useNavigate, Outlet, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Languages, Settings, LogOut } from 'lucide-react'; 
+import { Languages, Settings, LogOut,Camera, User, ChevronRight,  } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion'; 
 import gsap from 'gsap'; 
 import imge1 from './assets/logo.png'; 
@@ -141,31 +141,63 @@ export default function Header() {
               </button>
 
               {/* Dropdown Animated */}
-              <AnimatePresence>
-                {openProfileMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    transition={{ duration: 0.15 }}
-                    className={`absolute top-full mt-3 w-56 bg-white shadow-2xl rounded-2xl border border-gray-100 z-50 overflow-hidden ${i18n.language === 'ar' ? 'left-0 rtl:text-center' : 'right-0 text-center'}`}
-                  >
-                    <button
-                      onClick={() => fileInputRef.current.click()}
-                      className="w-full px-4 py-3 hover:bg-gray-100 text-sm font-medium text-center"
-                    >
-                      {t('change_image')}
-                    </button>
-                    <button
-                      onClick={() => { setOpenProfileMenu(false); navigate('/profile'); }}
-                      className="w-full px-4 py-3 hover:bg-gray-100 text-sm font-medium text-center"
-                    >
-                      {t('edit_profile')}
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+   <AnimatePresence>
+  {openProfileMenu && (
+   <motion.div
+  // 1. في الموبايل بنلغي السنترة (-50%) ونخليها (0%) عشان نتحكم يدوياً
+  initial={{ opacity: 0, scale: 0.95, y: -10, x: "0%" }}
+  animate={{ opacity: 1, scale: 1, y: 0, x: "0%" }}
+  exit={{ opacity: 0, scale: 0.95, y: -10, x: "0%" }}
+  transition={{ duration: 0.15 }}
+  
+  className={`absolute top-full mt-3 w-60 bg-white shadow-xl rounded-[10px] border border-gray-100 z-50 overflow-hidden 
+    ${i18n.language === 'ar' 
+      ? '-left-7 right-auto sm:left-0'  // في العربي: بعيد عن الطرف الشمال بـ 16px (left-4)
+      : '-right-7 left-auto sm:right-0' // في الإنجليزي: بعيد عن الطرف اليمين بـ 16px (right-4)
+    }`}
+>
+      {/* الخيار الأول */}
+      <button
+        onClick={() => {
+          fileInputRef.current.click();
+          setOpenProfileMenu(false);
+        }}
+        // 2. المسافات الداخلية: قللنا الـ padding من py-4 لـ py-3 ومن px-5 لـ px-4
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-50"
+      >
+        <div className="flex items-center gap-3"> {/* صغرنا المسافة بين الأيقونة والنص gap-3 */}
+          {/* 3. حجم مربع الأيقونة: صغرنا من w-10 لـ w-8 */}
+          <div className="relative flex items-center justify-center w-8 h-8 bg-gray-50 rounded-lg group">
+             <Camera size={18} className="text-gray-500" /> {/* صغرنا الأيقونة لـ 18 */}
+          </div>
+          <span className="text-gray-700 font-medium text-[14px]"> {/* صغرنا الخط لـ 14px */}
+            {t('change_image')}
+          </span>
+        </div>
+        <ChevronRight size={16} className="text-gray-300" />
+      </button>
 
+      {/* الخيار الثاني */}
+      <button
+        onClick={() => {
+          setOpenProfileMenu(false);
+          navigate('/profile');
+        }}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors bg-gray-50/30"
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative flex items-center justify-center w-8 h-8 bg-gray-100 rounded-lg">
+             <User size={18} className="text-gray-600" />
+          </div>
+          <span className="text-gray-800 font-semibold text-[14px]">
+            {t('edit_profile')}
+          </span>
+        </div>
+        <ChevronRight size={16} className="text-gray-300" />
+      </button>
+    </motion.div>
+  )}
+</AnimatePresence>
               <input
                 type="file"
                 ref={fileInputRef}

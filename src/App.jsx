@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+// import { Toaster } from 'sonner';
 import gsap from "gsap";
 import Header from "./Header";
 import Home from "./Home";
@@ -28,7 +29,7 @@ export default function App() {
 
   return (
     <>
-      <Toaster/>
+      <Toaster position="top-center" richColors />
       {loading && <Preloader onComplete={() => setLoading(false)} />}
       {!loading && (
         <div className="page">

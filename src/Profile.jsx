@@ -15,7 +15,7 @@ export default function Profile() {
 
   const profileSchema = yup.object({
     name: yup.string().min(3, t('name_min')).required(t('name_required')),
-    password: yup.string().min(6, t('password_min')).required(t('password_required')),
+    password: yup.string().min(6, t('password_min')).notRequired(),
   });
 
   const handleSubmit = (values) => {
@@ -31,8 +31,8 @@ export default function Profile() {
         <h1 className="text-2xl font-semibold mb-6 text-center">{t('edit_profile')}</h1>
         <Formik
           initialValues={{
-            name: savedData.name || '',
-            password: savedData.password || '',
+            name:  '',
+            password:  '',
           }}
           validationSchema={profileSchema}
           onSubmit={handleSubmit}
