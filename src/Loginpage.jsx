@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { FaGoogle, FaGithub } from "react-icons/fa";
+// import { FaGoogle, RiFacebookBoxFill } from "react-icons/fa";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -78,7 +80,7 @@ export default function Login() {
               <Field
                 name="email"
                 type="email"
-                className="border rounded-[15px] p-3"
+                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
                 placeholder={t("login_email_placeholder")}
               />
               <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
@@ -97,7 +99,7 @@ export default function Login() {
               <Field
                 name="password"
                 type="password"
-                className="border rounded-[15px] p-3"
+                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
                 placeholder={t("login_password_placeholder")}
               />
               <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
@@ -120,7 +122,7 @@ export default function Login() {
               <div className="flex gap-4 w-full">
                 <button
                   type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  className="flex-1 flex items-center cursor-pointer justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
                 >
                   <FaGoogle className="text-red-500 text-base" />
                   Google
@@ -128,10 +130,10 @@ export default function Login() {
 
                 <button
                   type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  className="flex-1 flex items-center justify-center cursor-pointer gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
                 >
-                  <FaGithub className="text-black text-base" />
-                  GitHub
+                  <FaFacebook className="text-black text-base" />
+                  Facebook
                 </button>
               </div>
 
@@ -170,7 +172,7 @@ export default function Login() {
               <Field
                 name="name"
                 type="text"
-                className="border rounded-[15px] p-3"
+                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
                 placeholder={t("signup_name_placeholder")}
               />
               <ErrorMessage name="name" component="p" className="text-red-500 text-sm" />
@@ -179,7 +181,7 @@ export default function Login() {
               <Field
                 name="email"
                 type="email"
-                className="border rounded-[15px] p-3"
+                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
                 placeholder={t("signup_email_placeholder")}
               />
               <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
@@ -188,7 +190,7 @@ export default function Login() {
               <Field
                 name="password"
                 type="password"
-                className="border rounded-[15px] p-3"
+                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
                 placeholder={t("signup_password_placeholder")}
               />
               <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
@@ -211,7 +213,7 @@ export default function Login() {
               <div className="flex gap-4 w-full">
                 <button
                   type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  className="flex-1 flex items-center justify-center gap-2 border cursor-pointer border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
                 >
                   <FaGoogle className="text-red-500 text-base" />
                   Google
@@ -219,10 +221,10 @@ export default function Login() {
 
                 <button
                   type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  className="flex-1 flex items-center justify-center gap-2 border cursor-pointer border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
                 >
-                  <FaGithub className="text-black text-base" />
-                  GitHub
+                  <FaFacebook className="text-black text-base" />
+                  Facebook
                 </button>
               </div>
 

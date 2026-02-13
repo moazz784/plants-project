@@ -420,7 +420,7 @@ export default function AboutPage() {
             {t("categories_description")}
             </p>
             <div className="flex items-center justify-center lg:justify-start gap-6">
-              <button onClick={() => { navigate('/plants'); window.scrollTo({ top: 0, behavior: 'smooth' });}} className="px-3.5 lg:px-6 py-2 border border-green-600 text-green-700 cursor-pointer rounded-full font-medium hover:bg-green-600 hover:text-white transition">
+              <button onClick={() => { navigate('/dashboard'); window.scrollTo({ top: 0, behavior: 'smooth' });}} className="px-3.5 lg:px-6 py-2 border border-green-600 text-green-700 cursor-pointer rounded-full font-medium hover:bg-green-600 hover:text-white transition">
                 {t("explore")}
               </button>
               <button 
