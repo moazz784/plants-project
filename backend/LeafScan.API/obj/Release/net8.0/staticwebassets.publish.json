@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "18UItqebriGVZ8c03QR+bDZ5Be/cxR4dDPknL3QERTk=",
+  "Source": "LeafScan.API",
+  "BasePath": "_content/LeafScan.API",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
