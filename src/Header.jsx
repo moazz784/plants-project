@@ -93,21 +93,22 @@ export default function Header() {
     <>
       <nav ref={headerRef} onMouseEnter={handleLeafRain} className="relative flex items-center justify-between w-full bg-[#f8f9fa] px-8 md:px-10 py-5 font-sans border-b border-gray-100 z-[100]">
         
-        {/* اللوجو */}
+        
         <div className="flex items-center shrink-0 cursor-pointer" onClick={() => navigate('/')}>
           <img src={imge1} alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
           <h1 className="text-xl sm:text-2xl md:text-[34px] font-semibold text-[#3A9B63] ml-2">LeafScan</h1>
         </div>
 
-        {/* روابط التنقل */}
+    
         <div className="hidden lg:flex items-center gap-4">
           <NavLink to="/" end className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('home')}</NavLink>
           <NavLink to="/about" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('about')}</NavLink>
           <NavLink to="/services" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('services')}</NavLink>
           <NavLink to="/contact-us" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>{t('contact_us')}</NavLink>
+          {/* <NavLink to="/dashboard" className={({ isActive }) => `w-36 py-2.5 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`}>Dashboard</NavLink> */}
         </div>
 
-        {/* الجزء الأيمن */}
+        
         <div className="flex items-center gap-3 sm:gap-4">
 
           <button onClick={toggleLanguage} className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:text-[#3A9B63] transition-all">
@@ -124,7 +125,7 @@ export default function Header() {
               </span>
             </div>
 
-            {/* صورة البروفايل + Dropdown */}
+            
             <div ref={dropdownRef} className="relative">
               <img 
                 src={userData.image || imge2}
@@ -132,7 +133,7 @@ export default function Header() {
                 className="w-11 h-11 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
               />
 
-              {/* أيقونة صغيرة لتفتح Dropdown */}
+              
               <button
                 onClick={() => setOpenProfileMenu(!openProfileMenu)}
                 className={`absolute -bottom-1 ${i18n.language === 'ar' ? '-left-1' : '-right-1'} bg-green-700 text-white p-1 rounded-full shadow hover:bg-green-800 transition`}
@@ -140,11 +141,11 @@ export default function Header() {
                 <Settings size={12} />
               </button>
 
-              {/* Dropdown Animated */}
+              
    <AnimatePresence>
   {openProfileMenu && (
    <motion.div
-  // 1. في الموبايل بنلغي السنترة (-50%) ونخليها (0%) عشان نتحكم يدوياً
+  
   initial={{ opacity: 0, scale: 0.95, y: -10, x: "0%" }}
   animate={{ opacity: 1, scale: 1, y: 0, x: "0%" }}
   exit={{ opacity: 0, scale: 0.95, y: -10, x: "0%" }}
@@ -152,32 +153,32 @@ export default function Header() {
   
   className={`absolute top-full mt-3 w-60 bg-white shadow-xl rounded-[10px] border border-gray-100 z-50 overflow-hidden 
     ${i18n.language === 'ar' 
-      ? '-left-7 right-auto sm:left-0'  // في العربي: بعيد عن الطرف الشمال بـ 16px (left-4)
-      : '-right-7 left-auto sm:right-0' // في الإنجليزي: بعيد عن الطرف اليمين بـ 16px (right-4)
+      ? '-left-7 right-auto sm:left-0'  
+      : '-right-7 left-auto sm:right-0' 
     }`}
 >
-      {/* الخيار الأول */}
+      
       <button
         onClick={() => {
           fileInputRef.current.click();
           setOpenProfileMenu(false);
         }}
-        // 2. المسافات الداخلية: قللنا الـ padding من py-4 لـ py-3 ومن px-5 لـ px-4
+      
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-50"
       >
-        <div className="flex items-center gap-3"> {/* صغرنا المسافة بين الأيقونة والنص gap-3 */}
-          {/* 3. حجم مربع الأيقونة: صغرنا من w-10 لـ w-8 */}
+        <div className="flex items-center gap-3"> 
+        
           <div className="relative flex items-center justify-center w-8 h-8 bg-gray-50 rounded-lg group">
-             <Camera size={18} className="text-gray-500" /> {/* صغرنا الأيقونة لـ 18 */}
+             <Camera size={18} className="text-gray-500" /> 
           </div>
-          <span className="text-gray-700 font-medium text-[14px]"> {/* صغرنا الخط لـ 14px */}
+          <span className="text-gray-700 font-medium text-[14px]">
             {t('change_image')}
           </span>
         </div>
         <ChevronRight size={16} className="text-gray-300" />
       </button>
 
-      {/* الخيار الثاني */}
+      
       <button
         onClick={() => {
           setOpenProfileMenu(false);
@@ -207,7 +208,7 @@ export default function Header() {
               />
             </div>
 
-            {/* زر الموبايل */}
+            
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-1 text-green-800 transition-transform active:scale-90">
               <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? <path strokeWidth="2" d="M6 18L18 6M6 6l12 12" /> : <path strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />}
@@ -216,7 +217,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* قائمة الموبايل */}
+        
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
@@ -229,6 +230,7 @@ export default function Header() {
               <NavLink onClick={() => setIsMenuOpen(false)} to="/about" className="text-green-800 font-medium text-lg hover:text-[#1a5d3a]">{t('about')}</NavLink>
               <NavLink onClick={() => setIsMenuOpen(false)} to="/services" className="text-green-800 font-medium text-lg hover:text-[#1a5d3a]">{t('services')}</NavLink>
               <NavLink onClick={() => setIsMenuOpen(false)} to="/contact-us" className="text-green-800 font-medium text-lg hover:text-[#1a5d3a]">{t('contact_us')}</NavLink>
+              {/* <NavLink onClick={() => setIsMenuOpen(false)} to="/dashboard" className="text-green-800 font-medium text-lg hover:text-[#1a5d3a]">Dashboard</NavLink> */}
               
               <div className="w-3/4 border-t border-gray-100 pt-4 flex flex-col items-center gap-4">
                 <button onClick={() => { toggleLanguage(); setIsMenuOpen(false); }} className="flex items-center gap-2 font-bold text-gray-800">

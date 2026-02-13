@@ -26,9 +26,9 @@ export default function AboutPage() {
   const [recording, setRecording] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   
-  // --- مخازن الموديل الجديد ---
-  const [selectedFiles, setSelectedFiles] = useState([]); // لتخزين الصور المختارة
-  const fileInputRef = useRef(null); // مرجع لزر اختيار الملفات
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileInputRef = useRef(null); 
   const mediaRecorderRef = useRef(null);
   const navigate = useNavigate();
 
@@ -49,7 +49,7 @@ export default function AboutPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- دوال الموديل الجديد ---
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     processFiles(files);
@@ -123,11 +123,11 @@ export default function AboutPage() {
       
       <section className='w-full min-h-screen bg-[url(/background.jpg)] relative bg-cover bg-center overflow-hidden px-5 md:px-10'>
         
-        {/* --- بداية كود الموديل المحدث --- */}
+  
        <AnimatePresence>
   {showUploadModal && (
     <div className="absolute inset-0 z-[100] flex items-center justify-center p-4">
-      {/* الخلفية المعتمة */}
+      
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -135,17 +135,16 @@ export default function AboutPage() {
         onClick={() => setShowUploadModal(false)}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
       />
-      
-      {/* نافذة الرفع */}
+    
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        // إضافة اتجاه النص هنا بناءً على اللغة
+        
         dir={isArabic ? "rtl" : "ltr"}
         className="relative z-[110] bg-white shadow-2xl w-full max-w-[480px] text-black border border-gray-100 rounded-3xl overflow-hidden flex flex-col"
       >
-        {/* الرأس (Title) */}
+        
         <div className="p-6 pb-0 flex items-center justify-between">
           <h2 className="font-bold text-gray-800 text-lg">
             {isArabic ? "تحميل الملفات" : "Upload files"}
@@ -159,7 +158,7 @@ export default function AboutPage() {
         </div>
 
         <div className='p-6 flex flex-col gap-5 overflow-y-auto max-h-[70vh]'>
-          {/* منطقة السحب والإفلات */}
+          
           <div 
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -203,7 +202,7 @@ export default function AboutPage() {
             />
           </div>
 
-          {/* قائمة الملفات المرفوعة */}
+          
           <div className="flex flex-col gap-3">
             {selectedFiles.map((file) => (
               <motion.div 
@@ -230,7 +229,7 @@ export default function AboutPage() {
     </div>
   )}
 </AnimatePresence>
-        {/* --- نهاية كود الموديل --- */}
+        
 
         <img
           src={image201}
@@ -313,8 +312,8 @@ export default function AboutPage() {
               <div className="flex-1 p-4 overflow-y-auto bg-green-50 space-y-3 text-black">
                 {messages.length === 0 && <p className="text-center text-gray-400 mt-10 text-sm">ابدأ المحادثة الآن...</p>}
                 {messages.map((msg, idx) => (
-                  <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[90%]  ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
-                    {/* break-words overflow-hidden whitespace-pre-wrap whitespace-pre-wrap */}
+                  <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[90%]   ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
+                    {/* break-words overflow-hidden whitespace-pre-wrap  */}
                     {msg.type === 'text' ? (
                       <p className="text-sm">{msg.content}</p>
                     ) : (

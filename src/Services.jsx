@@ -56,7 +56,7 @@ const AgricultureServices = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans text-gray-800" dir={isArabic ? "rtl" : "ltr"}>
       <div className={`max-w-4xl mx-auto mb-10 ${isArabic ? 'text-right' : 'text-left'}`}>
-        <h1 className="text-4xl font-semibold mb-1">{t("services_main_title")}</h1>
+        <h1 className="text-4xl font-semibold font-kufam mb-1">{t("services_main_title")}</h1>
         <p className="text-sm tracking-[0.2em] text-gray-500 font-medium uppercase">{t("services_sub_title")}</p>
       </div>
 

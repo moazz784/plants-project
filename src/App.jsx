@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import { Toaster } from 'sonner';
 import gsap from "gsap";
 import Header from "./Header";
 import Home from "./Home";
@@ -14,6 +13,7 @@ import Services from "./Services"
 import { Toaster } from "react-hot-toast";
 import Plantscategoriy from "./Plantscategoriy";
 import Profile from "./Profile";
+import Dashboard from "./Dashboard";
 export default function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function App() {
 
   return (
     <>
-      <Toaster position="top-center" richColors />
+      <Toaster position="top-center" richColors /> 
       {loading && <Preloader onComplete={() => setLoading(false)} />}
       {!loading && (
         <div className="page">
@@ -43,6 +43,7 @@ export default function App() {
               <Route path="/plants" element={<Plantscategoriy/>} />
               </Route>
                <Route path="/profile" element={<Profile />} />
+                 <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Loginpage />} />
               <Route path="*" element={<Momo />} />
             </Routes>

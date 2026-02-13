@@ -262,8 +262,8 @@ const resources = {
       logout_success: "🔒You have logged out successfully",
       signup_email_label: "Email address",
       signup_password_label: "Password",
-      signup_name_label: "Name"
-      
+      signup_name_label: "Name",
+      signup_forget:"Forgot Password?"
     }
     
   },
@@ -525,7 +525,8 @@ const resources = {
       logout_success: "✅ تم تسجيل الخروج بنجاح",
       signup_email_label: "الايميل",
       signup_password_label: "الباسورد",
-      signup_name_label: "الاسم"
+      signup_name_label: "الاسم",
+      signup_forget:"نسيان الباسورد ؟"
     }
   }
 };

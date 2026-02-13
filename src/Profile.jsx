@@ -22,7 +22,7 @@ export default function Profile() {
     const updatedData = { ...savedData, name: values.name, password: values.password };
     localStorage.setItem('user_data', JSON.stringify(updatedData));
     toast.success(t('save_success'));
-    navigate('/'); // العودة لصفحة Home
+    navigate('/'); 
   };
 
   return (
@@ -38,7 +38,7 @@ export default function Profile() {
           onSubmit={handleSubmit}
         >
           <Form className="flex flex-col gap-4">
-            {/* خانة الاسم */}
+          
             <div>
               <label className="block mb-1 font-medium">{t('name')}</label>
               <Field
@@ -50,7 +50,7 @@ export default function Profile() {
               <ErrorMessage name="name" component="p" className="text-red-500 text-sm mt-1" />
             </div>
 
-            {/* خانة الباسورد مع أيقونة العين */}
+            
             <div className="relative flex items-center">
               <Field
                 name="password"
@@ -67,7 +67,7 @@ export default function Profile() {
               <ErrorMessage name="password" component="p" className="text-red-500 text-sm mt-1 absolute bottom-[-1.25rem]" />
             </div>
 
-            {/* زر الحفظ */}
+          
             <button
               type="submit"
               className="mt-4 bg-green-700 text-white py-3 rounded-xl hover:bg-green-800 transition font-medium"

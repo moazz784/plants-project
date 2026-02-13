@@ -56,7 +56,7 @@ export default function AboutUs() {
         <div className="container mx-auto px-4 flex flex-col items-center gap-12">
           
           <div className="text-center flex flex-col gap-2 text-white">
-            <h1 className="font-semibold text-[31px] md:text-[45px] tracking-wide uppercase">
+            <h1 className="font-semibold font-kufam text-[31px] md:text-[45px] tracking-wide uppercase">
               {t('numbers_title')}
             </h1>
             <p className="font-extralight text-[20px] md:text-[31px]">
