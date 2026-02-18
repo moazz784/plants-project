@@ -4,6 +4,42 @@ The LeafScan backend (ASP.NET Core API) is deployed separately. To connect your 
 
 ---
 
+## 0. Current State: Routes and Backend Connection
+
+### Routes (`App.jsx`)
+
+| Route | Component | Protected | Backend Connection |
+|-------|------------|-----------|--------------------|
+| `/` | Home | Yes (checks `hasloged`) | Not connected — uses localStorage |
+| `/about` | About | No | Not connected — static |
+| `/services` | Services | No | Not connected — static |
+| `/contact-us` | Contact | No | Not connected — form has no `onSubmit`, no `name` attributes |
+| `/plants` | Plantscategoriy | No | Not connected — uses static i18n |
+| `/profile` | Profile | No (should require login when wired) | Not connected — uses `localStorage` |
+| `/dashboard` | Dashboard | No (should require Admin when wired) | Not connected — all data hardcoded |
+| `/login` | Loginpage | No | Not connected — uses `localStorage` |
+| `/forgot-password` | — | — | No route — link in Loginpage leads to 404 (Momo) |
+| `*` | Momo | No | 404 page — no backend |
+
+### Component-by-Component Status
+
+| Component | Current Data Source | Backend Ready | Action Needed |
+|-----------|---------------------|---------------|---------------|
+| **Loginpage.jsx** | `localStorage` (`hasloged`, `user_data`) | Yes | Wire to `api.auth.login` / `api.auth.register` |
+| **Profile.jsx** | `localStorage` (`user_data`) | Yes | Wire to `api.auth.me`, `api.users.updateMe` |
+| **Header.jsx** | `localStorage` (`user_data`) | Yes | Wire to `useAuth()`, `api.users.updateMe` for image |
+| **Contact.jsx** | None (form not wired) | Yes | Add `onSubmit`, `name` attrs, call `api.messages.create` |
+| **Dashboard.jsx** | Hardcoded arrays | Yes | Wire to `api.admin.getMessages`, `api.admin.getDashboardStats` |
+| **Home.jsx** | `localStorage` (`hasloged`) | Yes | Replace with `useAuth()` |
+
+### Files That Do Not Exist Yet
+
+- `src/api.js` — API client
+- `src/AuthContext.jsx` — Auth state provider
+- `src/AdminGuard.jsx` — Admin-only route guard
+
+---
+
 ## 1. Environment Variable (Vercel)
 
 Add this in your Vercel project **Settings → Environment Variables**:
@@ -72,7 +108,8 @@ export const api = {
   },
   admin: {
     getMessages: () => api.get('/admin/messages'),
-    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),  // status: "Read" | "Archived"  // status: "Read" | "Archived"
+    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),  // status: "Read" | "Archived"
+    getDashboardStats: () => api.get('/admin/dashboard-stats'),  // { totalImages, diseaseDistribution, dailyAnalysis, mostCommonDiseases }
   },
 };
 ```
@@ -191,6 +228,7 @@ import AdminGuard from './AdminGuard';
 - Response shape: `{ token, user }` — call `login(token, user)` from `useAuth()` (stores token in localStorage)
 - Remove `hasloged` and `user_data`; use auth context instead
 - Use `getErrorMessage(err)` for error toasts
+- **Forgot password:** Link points to `/forgot-password` but no route exists — leads to 404. Backend has no forgot-password endpoint. Either add a route + page (with backend support) or remove/hide the link for now.
 
 ### `Home.jsx`
 - Replace `hasloged` check with `access_token` or `user` from `useAuth()`
@@ -214,8 +252,11 @@ import AdminGuard from './AdminGuard';
 - Use `authUser` for initial form values
 
 ### `Dashboard.jsx`
-- Replace hardcoded data with `api.admin.getMessages()`
-- Add UI to mark messages as read/archived via `api.admin.patchMessage(id, status)`
+- **Stats:** Replace hardcoded `weeklyData`, `analysisData`, `pieData` with `api.admin.getDashboardStats()`:
+  - `totalImages` → Total images card
+  - `diseaseDistribution` / `mostCommonDiseases` → Pie chart, disease breakdown
+  - `dailyAnalysis` → Line chart (map `{ date, count }` to `{ name, v }` for recharts)
+- **Messages:** Add a Messages panel that calls `api.admin.getMessages()`; add UI to mark read/archived via `api.admin.patchMessage(id, status)`
 - Route must be protected so only Admin can access (via AdminGuard)
 
 ---
@@ -224,8 +265,9 @@ import AdminGuard from './AdminGuard';
 
 - **Login/Register:** `{ token: string, user: { id, name, email, role, profileImageBase64 } }`
 - **auth/me:** `{ id, name, email, role, profileImageBase64 }`
-- **messages create:** `{ id, ... }` or similar
+- **messages create:** `{ id, senderFirstName, senderLastName, senderEmail, senderPhone, body, status, createdAtUtc }`
 - **admin/messages:** `[{ id, senderFirstName, senderLastName, senderEmail, senderPhone, body, status, createdAtUtc }]`
+- **admin/dashboard-stats:** `{ totalImages, diseaseDistribution: [{ diseaseName, count, percentage }], dailyAnalysis: [{ date, count }], mostCommonDiseases: [{ diseaseName, count, percentage }] }`
 - **Error responses:** `{ code: string, message: string, details?: any }`
 
 ---
