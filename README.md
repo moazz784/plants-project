@@ -1,6 +1,19 @@
-# React + Vite
+# LeafScan — Plants Project
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+## Frontend developers
+
+**Before making changes**, read [FRONTEND_INTEGRATION_INSTRUCTIONS.md](FRONTEND_INTEGRATION_INSTRUCTIONS.md). It contains:
+
+- Which routes and components are connected (or not) to the backend API
+- What you need to implement (api.js, AuthContext, AdminGuard)
+- Step-by-step integration for Login, Profile, Contact, Dashboard, and Admin
+- API response shapes and error handling
+
+The frontend currently uses `localStorage` for auth — it must be wired to the backend API before deployment.
+
+---
 
 Currently, two official plugins are available:
 
