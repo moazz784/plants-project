@@ -1,7 +1,9 @@
 # Frontend Integration Instructions
 
 The LeafScan backend (ASP.NET Core API) is deployed separately. To connect your Vercel frontend to it, follow these steps.
-
+Credentials 
+admin : admin@LeafScans.com
+pass : admin123
 ---
 
 ## 1. Environment Variable (Vercel)
