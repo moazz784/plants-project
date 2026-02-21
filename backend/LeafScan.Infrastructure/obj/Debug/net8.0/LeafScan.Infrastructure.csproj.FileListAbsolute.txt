@@ -1,0 +1,6 @@
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.AssemblyInfo.cs
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\leafscan.infrastructure\obj\Debug\net8.0\LeafScan.Infrastructure.sourcelink.json
