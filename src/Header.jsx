@@ -78,18 +78,33 @@ export default function Header() {
   };
 
 
-  const navLinkStyle = ({ isActive }) => `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-[#1a5d3a] text-white shadow-md" : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"}`;
-  const dashboardStyle = ({ isActive }) => `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-yellow-600 text-white shadow-md" : "bg-white text-yellow-700 border border-yellow-100 hover:bg-yellow-600 hover:text-white"}`;
-  const messagesStyle = ({ isActive }) => `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${isActive ? "bg-blue-600 text-white shadow-md" : "bg-white text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white"}`;
+  const navLinkStyle = ({ isActive }) => 
+    `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${
+      isActive 
+        ? "bg-[#1a5d3a] text-white shadow-md" 
+        : "bg-white text-green-800 border border-gray-100 hover:bg-[#1a5d3a] hover:text-white"
+    }`;
 
-  
+  const dashboardStyle = ({ isActive }) => 
+    `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${
+      isActive 
+        ? "bg-yellow-600 text-white shadow-md" 
+        : "bg-white text-yellow-700 border border-yellow-100 hover:bg-yellow-600 hover:text-white hover:border-yellow-600"
+    }`;
+
+  const messagesStyle = ({ isActive }) => 
+    `w-32 py-2 flex items-center justify-center rounded-full font-medium transition ${
+      isActive 
+        ? "bg-blue-600 text-white shadow-md" 
+        : "bg-white text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white hover:border-blue-600"
+    }`;
   const mobileLinkStyle = "text-green-800 font-medium text-lg hover:text-[#1a5d3a] transition-colors";
 
   return (
     <>
       <nav ref={headerRef} className="relative flex items-center justify-between w-full bg-[#f8f9fa] px-8 md:px-10 py-5 font-sans border-b border-gray-100 z-[100]">
         <div className="flex items-center shrink-0 cursor-pointer" onClick={() => navigate('/')}>
-          <img src={imge1} alt="Logo" className="w-10 h-10 sm:w-12 object-contain" />
+          <img src={imge1} alt="Logo" className="w-10 h-10 sm:w-22 object-contain" />
           <h1 className="text-xl sm:text-2xl md:text-[34px] font-semibold text-[#3A9B63] ml-2">LeafScan</h1>
         </div>
 
@@ -123,7 +138,7 @@ export default function Header() {
                   </span>
                 </div>
                 <div ref={dropdownRef} className="relative">
-                  <img src={user.profileImageBase64 ? `data:image/png;base64,${user.profileImageBase64}` : imge2} alt="Profile" className="w-11 h-11 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer" onClick={() => setOpenProfileMenu(!openProfileMenu)} />
+                  <img src={user.profileImageBase64 ? `data:image/png;base64,${user.profileImageBase64}` : imge2} alt="Profile" className="w-12 h-12 rounded-full shadow-lg object-cover border-2 border-white cursor-pointer" onClick={() => setOpenProfileMenu(!openProfileMenu)} />
                   <button onClick={() => setOpenProfileMenu(!openProfileMenu)} className={`absolute -bottom-1 ${i18n.language === 'ar' ? '-left-1' : '-right-1'} bg-green-700 text-white p-1 rounded-full shadow hover:bg-green-800`}><Settings size={12} /></button>
                   <AnimatePresence>
                     {openProfileMenu && (
