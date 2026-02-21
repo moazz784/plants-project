@@ -19,6 +19,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<Diagnosis> Diagnoses => Set<Diagnosis>();
     public DbSet<UserPlantImage> UserPlantImages => Set<UserPlantImage>();
     public DbSet<Report> Reports => Set<Report>();
+    public DbSet<SoilType> SoilTypes => Set<SoilType>();
+    public DbSet<Climate> Climates => Set<Climate>();
+    public DbSet<Crop> Crops => Set<Crop>();
+    public DbSet<CropSoilClimate> CropSoilClimates => Set<CropSoilClimate>();
+    public DbSet<CropRequirement> CropRequirements => Set<CropRequirement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -114,6 +119,40 @@ public class ApplicationDbContext : DbContext
             e.HasOne(x => x.Chatbot).WithMany(c => c.Reports).HasForeignKey(x => x.ChatbotId);
             e.HasOne(x => x.Manager).WithMany(u => u.ReportsAsManager).HasForeignKey(x => x.ManagerId);
             e.Property(x => x.ReportType).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<SoilType>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Climate>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Crop>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<CropSoilClimate>(e =>
+        {
+            e.HasKey(x => new { x.CropId, x.SoilTypeId, x.ClimateId });
+            e.HasOne(x => x.Crop).WithMany().HasForeignKey(x => x.CropId);
+            e.HasOne(x => x.SoilType).WithMany().HasForeignKey(x => x.SoilTypeId);
+            e.HasOne(x => x.Climate).WithMany().HasForeignKey(x => x.ClimateId);
+        });
+
+        modelBuilder.Entity<CropRequirement>(e =>
+        {
+            e.HasKey(x => x.CropId);
+            e.HasOne(x => x.Crop).WithMany().HasForeignKey(x => x.CropId);
+            e.Property(x => x.WaterLitersPerAcrePerWeek).HasPrecision(18, 2);
+            e.Property(x => x.FertilizerKgPerAcre).HasPrecision(18, 2);
         });
     }
 }

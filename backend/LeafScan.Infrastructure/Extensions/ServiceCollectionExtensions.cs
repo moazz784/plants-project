@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddSingleton<IJwtService, JwtService>();
+        services.AddScoped<ICropRecommendationService, CropRecommendationService>();
+        services.AddScoped<IIrrigationCalculatorService, IrrigationCalculatorService>();
 
         return services;
     }

@@ -350,6 +350,98 @@ namespace LeafScan.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("LeafScan.Domain.Entities.Climate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Climates");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.Crop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Crops");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.CropRequirement", b =>
+                {
+                    b.Property<int>("CropId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("FertilizerKgPerAcre")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WaterLitersPerAcrePerWeek")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("CropId");
+
+                    b.ToTable("CropRequirements");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.CropSoilClimate", b =>
+                {
+                    b.Property<int>("CropId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SoilTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClimateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CropId", "SoilTypeId", "ClimateId");
+
+                    b.HasIndex("ClimateId");
+
+                    b.HasIndex("SoilTypeId");
+
+                    b.ToTable("CropSoilClimates");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.SoilType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SoilTypes");
+                });
+
             modelBuilder.Entity("LeafScan.Domain.Entities.UserChat", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -478,6 +570,44 @@ namespace LeafScan.Infrastructure.Migrations
                     b.Navigation("Diagnosis");
 
                     b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.CropRequirement", b =>
+                {
+                    b.HasOne("LeafScan.Domain.Entities.Crop", "Crop")
+                        .WithMany()
+                        .HasForeignKey("CropId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crop");
+                });
+
+            modelBuilder.Entity("LeafScan.Domain.Entities.CropSoilClimate", b =>
+                {
+                    b.HasOne("LeafScan.Domain.Entities.Climate", "Climate")
+                        .WithMany()
+                        .HasForeignKey("ClimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LeafScan.Domain.Entities.Crop", "Crop")
+                        .WithMany()
+                        .HasForeignKey("CropId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LeafScan.Domain.Entities.SoilType", "SoilType")
+                        .WithMany()
+                        .HasForeignKey("SoilTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Climate");
+
+                    b.Navigation("Crop");
+
+                    b.Navigation("SoilType");
                 });
 
             modelBuilder.Entity("LeafScan.Domain.Entities.SoilData", b =>

@@ -222,15 +222,100 @@ BEGIN
 END
 GO
 
--- Record both migrations so EF skips them
+-- Record migrations so EF skips them
 IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'20260213180817_InitialCreate')
     INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260213180817_InitialCreate', N'8.0.11');
 IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'20260213190000_AddErDiagramTables')
     INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260213190000_AddErDiagramTables', N'8.0.11');
+IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'20260221120000_AddCropServices')
+    INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260221120000_AddCropServices', N'8.0.11');
 GO
 
 -- =====================================================
--- NOTE: Admin user seeded on first API run.
--- Login: admin@leafscan.com / Admin@123
+-- 14. Crop Services tables (SoilTypes, Climates, Crops, CropSoilClimates, CropRequirements)
+-- Used by Irrigation Calculator and Crop Recommendation APIs
+-- =====================================================
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SoilTypes')
+BEGIN
+    CREATE TABLE [dbo].[SoilTypes] (
+        [Id] INT IDENTITY(1,1) NOT NULL,
+        [Name] NVARCHAR(50) NOT NULL,
+        CONSTRAINT [PK_SoilTypes] PRIMARY KEY ([Id])
+    );
+
+    CREATE TABLE [dbo].[Climates] (
+        [Id] INT IDENTITY(1,1) NOT NULL,
+        [Name] NVARCHAR(50) NOT NULL,
+        CONSTRAINT [PK_Climates] PRIMARY KEY ([Id])
+    );
+
+    CREATE TABLE [dbo].[Crops] (
+        [Id] INT IDENTITY(1,1) NOT NULL,
+        [Name] NVARCHAR(100) NOT NULL,
+        CONSTRAINT [PK_Crops] PRIMARY KEY ([Id])
+    );
+
+    CREATE TABLE [dbo].[CropSoilClimates] (
+        [CropId] INT NOT NULL,
+        [SoilTypeId] INT NOT NULL,
+        [ClimateId] INT NOT NULL,
+        CONSTRAINT [PK_CropSoilClimates] PRIMARY KEY ([CropId], [SoilTypeId], [ClimateId]),
+        CONSTRAINT [FK_CropSoilClimates_Crops_CropId] FOREIGN KEY ([CropId]) REFERENCES [dbo].[Crops] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_CropSoilClimates_SoilTypes_SoilTypeId] FOREIGN KEY ([SoilTypeId]) REFERENCES [dbo].[SoilTypes] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_CropSoilClimates_Climates_ClimateId] FOREIGN KEY ([ClimateId]) REFERENCES [dbo].[Climates] ([Id]) ON DELETE CASCADE
+    );
+    CREATE INDEX [IX_CropSoilClimates_ClimateId] ON [dbo].[CropSoilClimates] ([ClimateId]);
+    CREATE INDEX [IX_CropSoilClimates_SoilTypeId] ON [dbo].[CropSoilClimates] ([SoilTypeId]);
+
+    CREATE TABLE [dbo].[CropRequirements] (
+        [CropId] INT NOT NULL,
+        [WaterLitersPerAcrePerWeek] DECIMAL(18,2) NOT NULL,
+        [FertilizerKgPerAcre] DECIMAL(18,2) NOT NULL,
+        CONSTRAINT [PK_CropRequirements] PRIMARY KEY ([CropId]),
+        CONSTRAINT [FK_CropRequirements_Crops_CropId] FOREIGN KEY ([CropId]) REFERENCES [dbo].[Crops] ([Id]) ON DELETE CASCADE
+    );
+-- Seed SoilTypes (4), Climates (5), Crops (16), CropSoilClimates, CropRequirements (16 - all crops)
+-- Only seed when empty (for manual SQL deployments; EF migrations + Program.cs handle API deployments)
+IF NOT EXISTS (SELECT 1 FROM [dbo].[SoilTypes])
+BEGIN
+    SET IDENTITY_INSERT [dbo].[SoilTypes] ON;
+    INSERT INTO [dbo].[SoilTypes] ([Id], [Name]) VALUES (1,'Sandy'),(2,'Clay'),(3,'Silt'),(4,'Loam');
+    SET IDENTITY_INSERT [dbo].[SoilTypes] OFF;
+
+    SET IDENTITY_INSERT [dbo].[Climates] ON;
+    INSERT INTO [dbo].[Climates] ([Id], [Name]) VALUES (1,'Arid'),(2,'Humid'),(3,'Cold'),(4,'Temperate'),(5,'Tropical');
+    SET IDENTITY_INSERT [dbo].[Climates] OFF;
+
+    SET IDENTITY_INSERT [dbo].[Crops] ON;
+    INSERT INTO [dbo].[Crops] ([Id], [Name]) VALUES
+    (1,'Watermelon'),(2,'Peanuts'),(3,'Sorghum'),(4,'Millet'),(5,'Rice'),(6,'Lettuce'),(7,'Spinach'),(8,'Potato'),
+    (9,'Barley'),(10,'Oats'),(11,'Tomato'),(12,'Wheat'),(13,'Corn'),(14,'Soybean'),(15,'Cucumber'),(16,'Carrot');
+    SET IDENTITY_INSERT [dbo].[Crops] OFF;
+
+    INSERT INTO [dbo].[CropSoilClimates] ([CropId],[SoilTypeId],[ClimateId]) VALUES
+    (1,1,1),(2,1,1),(3,1,1),(4,1,1),(5,2,2),(5,2,5),(6,3,2),(7,3,3),(8,1,3),(8,1,2),(8,3,3),(8,3,2),
+    (9,2,3),(10,2,3),(10,2,2),(10,3,3),(10,3,2),(11,1,1),(11,1,2),(11,3,1),(11,3,2),(11,4,4),(11,4,5),
+    (12,2,1),(12,2,3),(12,3,1),(12,3,3),(13,3,2),(13,2,2),(14,4,4),(14,2,2),(15,4,4),(15,1,2),(16,1,4),(16,4,3);
+
+    INSERT INTO [dbo].[CropRequirements] ([CropId],[WaterLitersPerAcrePerWeek],[FertilizerKgPerAcre]) VALUES
+    (1,550,18),(2,400,12),(3,350,10),(4,300,8),(5,700,25),(6,400,12),(7,450,14),(8,500,22),(9,400,12),(10,420,11),
+    (11,550,18),(12,450,12),(13,600,25),(14,450,15),(15,500,16),(16,450,14);
+END
+GO
+
+-- Patch: Add CropRequirements for Peanuts, Sorghum, Millet, Spinach, Barley, Oats (if missing)
+-- Run this if your database was seeded before these 6 crops had irrigation data
+INSERT INTO [dbo].[CropRequirements] ([CropId],[WaterLitersPerAcrePerWeek],[FertilizerKgPerAcre])
+SELECT v.CropId, v.Water, v.Fertilizer
+FROM (VALUES 
+    (2, 400.00, 12.00), (3, 350.00, 10.00), (4, 300.00, 8.00),
+    (7, 450.00, 14.00), (9, 400.00, 12.00), (10, 420.00, 11.00)
+) AS v(CropId, Water, Fertilizer)
+WHERE EXISTS (SELECT 1 FROM [dbo].[Crops] c WHERE c.Id = v.CropId)
+AND NOT EXISTS (SELECT 1 FROM [dbo].[CropRequirements] cr WHERE cr.CropId = v.CropId);
+GO
+
+-- =====================================================
+-- NOTE: All data is managed in the database. No seed data in application code.
 -- Manager/Admin = Users with Role='Admin' (report.ManagerId references Users)
 -- =====================================================

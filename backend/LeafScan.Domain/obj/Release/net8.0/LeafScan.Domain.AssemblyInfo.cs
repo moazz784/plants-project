@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LeafScan.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83d7df2b37de92feb89aa7f42d40714b7761d82f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+80bd669b5da36f9cbedca0840a1eb7d81f0242be")]
 [assembly: System.Reflection.AssemblyProductAttribute("LeafScan.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LeafScan.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

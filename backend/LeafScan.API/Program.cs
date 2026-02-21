@@ -73,11 +73,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         await db.Database.MigrateAsync();
-        await SeedAsync(db);
     }
     catch (Exception ex)
     {
-        logger.LogCritical(ex, "Database migration or seed failed. Check connection string and that SQL Server is accessible from the host.");
+        logger.LogCritical(ex, "Database migration failed. Check connection string and that SQL Server is accessible from the host.");
         Console.Error.WriteLine($"Startup failed: {ex.Message}");
         throw;
     }
@@ -113,6 +112,14 @@ app.MapGet("/", () => Results.Json(new
         {
             listMessages = "GET /api/admin/messages",
             updateMessage = "PATCH /api/admin/messages/{id}"
+        },
+        services = new
+        {
+            soilTypes = "GET /api/services/soil-types",
+            climates = "GET /api/services/climates",
+            crops = "GET /api/services/crops",
+            recommendations = "GET /api/services/recommendations?soilType=&climate=",
+            calculate = "GET /api/services/calculate?soilType=&climate=&crop=&landArea="
         }
     },
     frontend = "https://plants-project-lszl.vercel.app",
@@ -126,21 +133,3 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
-
-static async Task SeedAsync(ApplicationDbContext db)
-{
-    if (await db.Users.AnyAsync(u => u.Role == "Admin")) return;
-
-    var admin = new LeafScan.Domain.Entities.User
-    {
-        Id = Guid.NewGuid(),
-        Name = "Admin",
-        Email = "admin@leafscan.com",
-        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-        Role = "Admin",
-        CreatedAtUtc = DateTime.UtcNow,
-        UpdatedAtUtc = DateTime.UtcNow
-    };
-    db.Users.Add(admin);
-    await db.SaveChangesAsync();
-}

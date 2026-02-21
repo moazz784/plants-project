@@ -21,6 +21,8 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.EntityF
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.EntityFrameworkCore.SqlServer.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Caching.Memory.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Configuration.Json.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Logging.dll

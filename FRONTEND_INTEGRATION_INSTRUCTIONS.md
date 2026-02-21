@@ -12,6 +12,9 @@ Add this in your Vercel project **Settings → Environment Variables**:
 |------|-------|
 | `VITE_API_URL` | Your backend API base URL, e.g. `https://plantgraduationproject.runasp.net/api` |
 
+- **Local:** Defaults to `http://localhost:5128/api` when not set
+- **Production:** Must be set for the frontend (including Services calculators) to reach the backend
+
 ---
 
 ## 2. API Client (`src/api.js`)
@@ -69,6 +72,15 @@ export const api = {
   },
   messages: {
     create: (body) => api.post('/messages', body),
+  },
+  services: {
+    getRecommendations: (soilType, climate) =>
+      api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}`),
+    calculate: (soilType, climate, crop, landArea) =>
+      api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}`),
+    getSoilTypes: () => api.get('/services/soil-types'),
+    getClimates: () => api.get('/services/climates'),
+    getCrops: () => api.get('/services/crops'),
   },
   admin: {
     getMessages: () => api.get('/admin/messages'),
@@ -218,6 +230,24 @@ import AdminGuard from './AdminGuard';
 - Add UI to mark messages as read/archived via `api.admin.patchMessage(id, status)`
 - Route must be protected so only Admin can access (via AdminGuard)
 
+### `Services.jsx` – Select Best Crops
+- Call `api.services.getRecommendations(soilType, climate)` when the user clicks "Get Recommendation"
+- On success: display `response.crops` — join with `" & "` for display, e.g. `crops.join(" & ")`
+- Response shape: `{ crops: string[], soilType: string, climate: string }` — e.g. `{ crops: ["Watermelon","Peanuts","Sorghum"], soilType: "Sandy", climate: "Arid" }`
+- If no matches, `crops` is an empty array `[]`
+- Add loading state and use `getErrorMessage(err)` for errors
+
+### `Services.jsx` – Irrigation & Fertilization Calculator
+- Call `api.services.calculate(soilType, climate, crop, parseFloat(landArea))` when the user clicks "Get Best Result"
+- On success: display `waterLitersPerWeek` with `t("liters_week")` and `fertilizerKg` with `t("kg_unit")`
+- On error (404): show `getErrorMessage(err)` — crop not found or has no irrigation data
+- Add loading state during the request (e.g. disable button, show spinner)
+
+### `Services.jsx` – Dropdown options (both calculators)
+- Option A: Keep hardcoded lists, expand to match DB — `['Sandy','Clay','Silt','Loam']`, `['Arid','Humid','Cold','Temperate','Tropical']`, and all 16 crops
+- Option B: Load from API on mount — `useEffect` to call `api.services.getSoilTypes()`, `getClimates()`, `getCrops()` and populate dropdowns
+- No auth required; all services endpoints are public
+
 ---
 
 ## 6. API Response Shapes
@@ -226,13 +256,14 @@ import AdminGuard from './AdminGuard';
 - **auth/me:** `{ id, name, email, role, profileImageBase64 }`
 - **messages create:** `{ id, ... }` or similar
 - **admin/messages:** `[{ id, senderFirstName, senderLastName, senderEmail, senderPhone, body, status, createdAtUtc }]`
+- **services/recommendations (200):** `{ crops: string[], soilType: string, climate: string }` — e.g. `{ crops: ["Watermelon","Peanuts","Sorghum"], soilType: "Sandy", climate: "Arid" }`
+- **services/calculate (200):** `{ waterLitersPerWeek: number, fertilizerKg: number }` — e.g. `{ waterLitersPerWeek: 6600, fertilizerKg: 216 }` for Tomato, 12 acres
+- **services/calculate (404):** `{ code: "CROP_NOT_FOUND", message: "Crop not found or has no irrigation data" }`
+- **services/soil-types, climates, crops:** `string[]` — e.g. `["Sandy","Clay","Silt","Loam"]`, `["Arid","Humid","Cold","Temperate","Tropical"]`, all 16 crops
 - **Error responses:** `{ code: string, message: string, details?: any }`
 
 ---
 
 ## 7. Admin Account
 
-- **Email:** `admin@leafscan.com`
-- **Password:** `Admin@123`
-
-This account is created automatically when the API runs for the first time.
+Admin users must exist in the database (Users table with Role='Admin'). Create them via your database or a separate admin tool.
