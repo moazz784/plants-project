@@ -4,54 +4,6 @@ The LeafScan backend (ASP.NET Core API) is deployed separately. To connect your 
 
 ---
 
-## Important: Approach
-
-**No frontend changes have been made.** This project uses a backend-only development approach:
-
-- ✅ **Backend:** All API endpoints, auth, crop services, etc. are implemented and ready.
-- ❌ **Frontend:** The frontend was **not modified**. It still uses `localStorage` for auth, hardcoded data for Services and Dashboard, and has no API client.
-
-**The frontend developer must implement all changes described in this document** to connect the React/Vercel frontend to the backend. Follow the sections below in order.
-
----
-
-## 0. Current State: Routes and Backend Connection
-
-### Routes (`App.jsx`)
-
-| Route | Component | Protected | Backend Connection |
-|-------|------------|-----------|--------------------|
-| `/` | Home | Yes (checks `hasloged`) | Not connected — uses localStorage |
-| `/about` | About | No | Not connected — static |
-| `/services` | Services | No | Backend ready — wire to `api.services.*` |
-| `/contact-us` | Contact | No | Not connected — form has no `onSubmit`, no `name` attributes |
-| `/plants` | Plantscategoriy | No | Not connected — uses static i18n |
-| `/profile` | Profile | No (should require login when wired) | Not connected — uses `localStorage` |
-| `/dashboard` | Dashboard | No (should require Admin when wired) | Not connected — all data hardcoded |
-| `/login` | Loginpage | No | Not connected — uses `localStorage` |
-| `/forgot-password` | — | — | No route — link in Loginpage leads to 404 (Momo) |
-| `*` | Momo | No | 404 page — no backend |
-
-### Component-by-Component Status
-
-| Component | Current Data Source | Backend Ready | Action Needed |
-|-----------|---------------------|---------------|---------------|
-| **Loginpage.jsx** | `localStorage` (`hasloged`, `user_data`) | Yes | Wire to `api.auth.login` / `api.auth.register` |
-| **Profile.jsx** | `localStorage` (`user_data`) | Yes | Wire to `api.auth.me`, `api.users.updateMe` |
-| **Header.jsx** | `localStorage` (`user_data`) | Yes | Wire to `useAuth()`, `api.users.updateMe` for image |
-| **Contact.jsx** | None (form not wired) | Yes | Add `onSubmit`, `name` attrs, call `api.messages.create` |
-| **Dashboard.jsx** | Hardcoded arrays | Yes | Wire to `api.admin.getMessages`, `api.admin.getDashboardStats` |
-| **Services.jsx** | Hardcoded options & logic | Yes | Wire to `api.services.getSoilTypes`, `api.services.getClimates`, `api.services.getCrops`, `api.services.getRecommendations`, `api.services.calculate` |
-| **Home.jsx** | `localStorage` (`hasloged`) | Yes | Replace with `useAuth()` |
-
-### Files That Do Not Exist Yet
-
-- `src/api.js` — API client
-- `src/AuthContext.jsx` — Auth state provider
-- `src/AdminGuard.jsx` — Admin-only route guard
-
----
-
 ## 1. Environment Variable (Vercel)
 
 Add this in your Vercel project **Settings → Environment Variables**:
@@ -120,15 +72,7 @@ export const api = {
   },
   admin: {
     getMessages: () => api.get('/admin/messages'),
-    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),  // status: "Read" | "Archived"
-    getDashboardStats: () => api.get('/admin/dashboard-stats'),  // { totalImages, diseaseDistribution, dailyAnalysis, mostCommonDiseases }
-  },
-  services: {
-    getSoilTypes: () => api.get('/services/soil-types'),
-    getClimates: () => api.get('/services/climates'),
-    getCrops: () => api.get('/services/crops'),
-    getRecommendations: (soilType, climate) => api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}`),
-    calculate: (soilType, climate, crop, landArea) => api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}`),
+    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),  // status: "Read" | "Archived"  // status: "Read" | "Archived"
   },
 };
 ```
@@ -247,7 +191,6 @@ import AdminGuard from './AdminGuard';
 - Response shape: `{ token, user }` — call `login(token, user)` from `useAuth()` (stores token in localStorage)
 - Remove `hasloged` and `user_data`; use auth context instead
 - Use `getErrorMessage(err)` for error toasts
-- **Forgot password:** Link points to `/forgot-password` but no route exists — leads to 404. Backend has no forgot-password endpoint. Either add a route + page (with backend support) or remove/hide the link for now.
 
 ### `Home.jsx`
 - Replace `hasloged` check with `access_token` or `user` from `useAuth()`
@@ -270,51 +213,19 @@ import AdminGuard from './AdminGuard';
 - Form submit: call `api.users.updateMe({ name, newPassword })`, then `refreshUser()`
 - Use `authUser` for initial form values
 
-### `Services.jsx`
-- **Select Best Crops (recommendation card):**
-  - Load soil types and climates from `api.services.getSoilTypes()` and `api.services.getClimates()` for dropdowns (or keep hardcoded `['Sandy','Clay','Silt']` and `['Arid','Humid','Cold']` — they match the backend).
-  - On "Get Recommendation" click: call `api.services.getRecommendations(soilType, climate)`.
-  - Response: `{ crops: string[], soilType: string, climate: string }` — display `crops.join(' & ')` as the recommended plants, and use `res_reason` i18n with soilType/climate for the subtitle.
-
-- **Irrigation & Fertilization Calculator** (dedicated instructions):
-  1. **Inputs:** Soil Type, Climate, Crop, Land Area (acres) — all required before "Get Best Result".
-  2. **API call:** `api.services.calculate(soilType, climate, crop, landArea)` — pass the selected values; `landArea` must be a number.
-  3. **Response:** `{ waterLitersPerWeek: number, fertilizerKg: number }`.
-  4. **Display:**
-     - Water: `waterLitersPerWeek.toLocaleString() + ' ' + t('liters_week')` (e.g. `"6,600 Liters/Week"`).
-     - Fertilizer: `fertilizerKg.toLocaleString() + ' ' + t('kg_unit')` (e.g. `"216 Kg (NPK 20-20-20)"`).
-  5. **Error handling:** Some crops (e.g. Apple, Peach, Grape) have no calculator data — API returns 404. Use `getErrorMessage(err)` for user-facing toasts; suggest choosing a crop from the recommendation list or the main calculator crops (Tomato, Wheat, Corn, Rice, etc.).
-  6. **Dropdown sources:**
-     - Soil Types: `api.services.getSoilTypes()` → `[{ id, name }]`
-     - Climates: `api.services.getClimates()` → `[{ id, name }]`
-     - Crops: `api.services.getCrops()` → `[{ id, name }]` — many crops have calculator data; a few return 404 on calculate.
-  7. **Replace hardcoded logic:** Remove `(landArea * 500)` and `(landArea * 15)`; call the API instead. Example: Sandy, Arid, Tomato, 12 acres → backend returns `{ waterLitersPerWeek: 6600, fertilizerKg: 216 }` (real crop-specific rates, not 6000/180).
-
 ### `Dashboard.jsx`
-- **Stats:** Replace hardcoded `weeklyData`, `analysisData`, `pieData` with `api.admin.getDashboardStats()`:
-  - `totalImages` → Total images card
-  - `diseaseDistribution` / `mostCommonDiseases` → Pie chart, disease breakdown
-  - `dailyAnalysis` → Line chart (map `{ date, count }` to `{ name, v }` for recharts)
-- **Messages:** Add a Messages panel that calls `api.admin.getMessages()`; add UI to mark read/archived via `api.admin.patchMessage(id, status)`
+- Replace hardcoded data with `api.admin.getMessages()`
+- Add UI to mark messages as read/archived via `api.admin.patchMessage(id, status)`
 - Route must be protected so only Admin can access (via AdminGuard)
 
 ---
 
 ## 6. API Response Shapes
 
-### Auth & Users
 - **Login/Register:** `{ token: string, user: { id, name, email, role, profileImageBase64 } }`
 - **auth/me:** `{ id, name, email, role, profileImageBase64 }`
-- **messages create:** `{ id, senderFirstName, senderLastName, senderEmail, senderPhone, body, status, createdAtUtc }`
+- **messages create:** `{ id, ... }` or similar
 - **admin/messages:** `[{ id, senderFirstName, senderLastName, senderEmail, senderPhone, body, status, createdAtUtc }]`
-- **admin/dashboard-stats:** `{ totalImages, diseaseDistribution: [{ diseaseName, count, percentage }], dailyAnalysis: [{ date, count }], mostCommonDiseases: [{ diseaseName, count, percentage }] }`
-
-### Services (Crop Recommendation & Calculator)
-- **services/soil-types:** `[{ id: number, name: string }]` — e.g. Sandy, Clay, Silt
-- **services/climates:** `[{ id: number, name: string }]` — e.g. Arid, Humid, Cold
-- **services/crops:** `[{ id: number, name: string }]` — crops available for calculator (Tomato, Wheat, Corn, etc.)
-- **services/recommendations?soilType=&climate=:** `{ crops: string[], soilType: string, climate: string }` — crop names recommended for the given soil and climate
-- **services/calculate?soilType=&climate=&crop=&landArea=:** `{ waterLitersPerWeek: number, fertilizerKg: number }` — water (L/week) and fertilizer (kg) for the given land area; 404 if crop has no requirements
 - **Error responses:** `{ code: string, message: string, details?: any }`
 
 ---
@@ -325,24 +236,3 @@ import AdminGuard from './AdminGuard';
 - **Password:** `Admin@123`
 
 This account is created automatically when the API runs for the first time.
-
----
-
-## 8. Frontend Developer Checklist
-
-Use this checklist to track integration progress:
-
-| # | Task | Status |
-|---|------|--------|
-| 1 | Add `VITE_API_URL` to Vercel environment variables | ☐ |
-| 2 | Create `src/api.js` (API client with auth headers) | ☐ |
-| 3 | Create `src/AuthContext.jsx` (auth state provider) | ☐ |
-| 4 | Create `src/AdminGuard.jsx` (Admin route guard) | ☐ |
-| 5 | Update `App.jsx`: wrap with `AuthProvider`, protect `/dashboard` with `AdminGuard` | ☐ |
-| 6 | Update `Loginpage.jsx`: wire to `api.auth.login` / `api.auth.register` | ☐ |
-| 7 | Update `Home.jsx`: use `useAuth()`, redirect if not authenticated | ☐ |
-| 8 | Update `Contact.jsx`: add `onSubmit`, call `api.messages.create` | ☐ |
-| 9 | Update `Header.jsx`: use `useAuth()`, Admin link for Admin role | ☐ |
-| 10 | Update `Profile.jsx`: use `useAuth()`, wire to `api.users.updateMe` | ☐ |
-| 11 | Update `Services.jsx`: wire to `api.services.*`; replace Irrigation Calculator hardcoded `(landArea * 500)` / `(landArea * 15)` with `api.services.calculate(...)` and display `waterLitersPerWeek`, `fertilizerKg` | ☐ |
-| 12 | Update `Dashboard.jsx`: wire to `api.admin.getMessages`, `api.admin.getDashboardStats` | ☐ |

@@ -290,7 +290,7 @@ export default function AboutPage() {
           )}
           <img 
             src={chatbotImg} 
-            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer hover:scale-105 transition-transform pointer-events-auto" 
+            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer  hover:scale-105 transition-transform pointer-events-auto" 
             onClick={() => setOpenChat(!openChat)} 
             alt="chatbot" 
           />
@@ -428,7 +428,7 @@ export default function AboutPage() {
                 className="flex items-center gap-2 text-green-700 font-medium cursor-pointer hover:scale-105 transition-transform"
               >
                 <span  className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white shadow-lg">
-                  <Play size={18} fill="currentColor" />
+                  <Play size={18} fill="currentColor" className="rtl:rotate-180" />
                 </span>
                 {t("live_demo")}
               </button>

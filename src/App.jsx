@@ -8,14 +8,21 @@ import Loginpage from "./Loginpage";
 import error from "./assets/error.png";
 import Preloader from "./Preloader";
 import Contact from "./Contact";
-import Momo from "./Momo"
-import Services from "./Services"
+import Momo from "./Momo";
+import Services from "./Services";
 import { Toaster } from "react-hot-toast";
 import Plantscategoriy from "./Plantscategoriy";
 import Profile from "./Profile";
 import Dashboard from "./Dashboard";
+
+
+import { AuthProvider } from './AuthContext';
+import AdminGuard from './AdminGuard';
+import Messages from "./Messages";
+
 export default function App() {
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (!loading) {
       gsap.from(".page", {
@@ -28,29 +35,38 @@ export default function App() {
   }, [loading]);
 
   return (
-    <>
-      <Toaster position="top-center" richColors /> 
+    <AuthProvider> 
+      <Toaster position="top-center" richColors />
       {loading && <Preloader onComplete={() => setLoading(false)} />}
       {!loading && (
         <div className="page">
           <BrowserRouter>
             <Routes>
+              
               <Route element={<Header />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/services" element={<Services/>} />
-              <Route path="/contact-us" element={<Contact/>} />
-              <Route path="/plants" element={<Plantscategoriy/>} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/contact-us" element={<Contact />} />
+                <Route path="/plants" element={<Plantscategoriy />} />
               </Route>
-               <Route path="/profile" element={<Profile />} />
-                 <Route path="/dashboard" element={<Dashboard />} />
+
+            
+              <Route path="/profile" element={<Profile />} />
+
+              
+                
+<Route element={<AdminGuard />}>
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/messages" element={<Messages />} />
+</Route>
+              
               <Route path="/login" element={<Loginpage />} />
               <Route path="*" element={<Momo />} />
             </Routes>
           </BrowserRouter>
         </div>
       )}
-    </>
+    </AuthProvider>
   );
 }
-

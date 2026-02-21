@@ -5,41 +5,47 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-// import { FaGoogle, RiFacebookBoxFill } from "react-icons/fa";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
-
+import { api, getErrorMessage } from "./api";
+import { useAuth } from "./AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [active, setActive] = useState(false);
+  const { login: authLogin } = useAuth(); 
 
-  const handleSubmit = (values) => {
-    localStorage.setItem("hasloged", "true");
-    const savedData = localStorage.getItem("user_data");
 
-    if (savedData) {
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await api.auth.login(values.email, values.password);
+  
+      
+      authLogin(response.token, response.user);
+      
       toast.success(t("login_success"));
-    } else {
-      const defaultData = { name: "User", image: null };
-      localStorage.setItem("user_data", JSON.stringify(defaultData));
-      toast.success(t("login_success"));
+      navigate("/");
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setSubmitting(false);
     }
-
-    navigate("/");
   };
 
-  const handleSignup = (values) => {
-    const userData = {
-      name: values.name,
-      image: null,
-    };
-
-    localStorage.setItem("user_data", JSON.stringify(userData));
-    localStorage.setItem("hasloged", "true");
-
-    toast.success(t("signup_success"));
-    navigate("/");
+  
+  const handleSignup = async (values, { setSubmitting }) => {
+    try {
+      const response = await api.auth.register(values.name, values.email, values.password);
+      
+      authLogin(response.token, response.user);
+      
+      toast.success(t("signup_success"));
+      navigate("/");
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const validationscema = yup.object({
@@ -56,8 +62,8 @@ export default function Login() {
   return (
     <div className="w-screen h-screen bg-gray-100 flex items-center justify-center overflow-hidden">
       <div className="relative w-full h-full bg-white overflow-hidden">
-
         
+        {/* Login Form */}
         <div
           className={`absolute top-0 left-0 h-full w-full md:w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out ${
             active
@@ -70,87 +76,74 @@ export default function Login() {
             validationSchema={validationscema}
             onSubmit={handleSubmit}
           >
-            <Form className="w-full max-w-md px-10 flex flex-col gap-4">
-              <h1 className="text-3xl text-center">
-                {t("login_welcome")}
-              </h1>
-              <p className="text-center">{t("login_subtitle")}</p>
+            {({ isSubmitting }) => (
+              <Form className="w-full max-w-md px-10 flex flex-col gap-4">
+                <h1 className="text-3xl text-center">{t("login_welcome")}</h1>
+                <p className="text-center">{t("login_subtitle")}</p>
 
-              <label>{t("login_email_label")}</label>
-              <Field
-                name="email"
-                type="email"
-                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
-                placeholder={t("login_email_placeholder")}
-              />
-              <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
+                <label>{t("login_email_label")}</label>
+                <Field
+                  name="email"
+                  type="email"
+                  className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
+                  placeholder={t("login_email_placeholder")}
+                />
+                <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
 
-            
-              <div className="flex justify-between items-center">
-                <label>{t("login_password_label")}</label>
-                <span
-                  onClick={() => navigate("/forgot-password")}
-                  className="text-sm text-green-700 cursor-pointer hover:underline"
-                >
-                  {t("signup_forget")}
-                </span>
-              </div>
+                <div className="flex justify-between items-center">
+                  <label>{t("login_password_label")}</label>
+                  <span
+                    onClick={() => navigate("/forgot-password")}
+                    className="text-sm text-green-700 cursor-pointer hover:underline"
+                  >
+                    {t("signup_forget")}
+                  </span>
+                </div>
 
-              <Field
-                name="password"
-                type="password"
-                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
-                placeholder={t("login_password_placeholder")}
-              />
-              <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
-
-              <button
-                type="submit"
-                className="mt-4 bg-green-700 text-white py-3 rounded-[15px] hover:bg-green-800 transition"
-              >
-                {t("login_btn")}
-              </button>
-
-              
-              <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <span className="text-sm text-gray-500">Or</span>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
-
-              
-              <div className="flex gap-4 w-full">
-                <button
-                  type="button"
-                  className="flex-1 flex items-center cursor-pointer justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
-                >
-                  <FaGoogle className="text-red-500 text-base" />
-                  Google
-                </button>
+                <Field
+                  name="password"
+                  type="password"
+                  className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
+                  placeholder={t("login_password_placeholder")}
+                />
+                <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
 
                 <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center cursor-pointer gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-4 bg-green-700 text-white py-3 rounded-[15px] hover:bg-green-800 transition disabled:bg-gray-400"
                 >
-                  <FaFacebook className="text-black text-base" />
-                  Facebook
+                  {isSubmitting ? "Wait..." : t("login_btn")}
                 </button>
-              </div>
 
-              <p className="text-center mt-3">
-                {t("login_no_account")}{" "}
-                <span
-                  onClick={() => setActive(true)}
-                  className="text-green-700 font-semibold cursor-pointer underline"
-                >
-                  {t("login_signup_link")}
-                </span>
-              </p>
-            </Form>
+                
+                <div className="flex items-center gap-3 my-4">
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                  <span className="text-sm text-gray-500">Or</span>
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                </div>
+
+                <div className="flex gap-4 w-full">
+                  <button type="button" className="flex-1 flex items-center cursor-pointer justify-center gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition">
+                    <FaGoogle className="text-red-500 text-base" /> Google
+                  </button>
+                  <button type="button" className="flex-1 flex items-center justify-center cursor-pointer gap-2 border border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition">
+                    <FaFacebook className="text-blue-600 text-base" /> Facebook
+                  </button>
+                </div>
+
+                <p className="text-center mt-3">
+                  {t("login_no_account")}{" "}
+                  <span onClick={() => setActive(true)} className="text-green-700 font-semibold cursor-pointer underline">
+                    {t("login_signup_link")}
+                  </span>
+                </p>
+              </Form>
+            )}
           </Formik>
         </div>
 
-        
+        {/* Signup Form */}
         <div
           className={`absolute top-0 left-0 h-full w-full md:w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out ${
             active
@@ -163,81 +156,53 @@ export default function Login() {
             validationSchema={signupSchema}
             onSubmit={handleSignup}
           >
-            <Form className="w-full max-w-md px-9 flex flex-col gap-4">
-              <h1 className="text-3xl text-center">
-                {t("signup_title")}
-              </h1>
+            {({ isSubmitting }) => (
+              <Form className="w-full max-w-md px-9 flex flex-col gap-4">
+                <h1 className="text-3xl text-center">{t("signup_title")}</h1>
 
-              <label>{t("signup_name_label")}</label>
-              <Field
-                name="name"
-                type="text"
-                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
-                placeholder={t("signup_name_placeholder")}
-              />
-              <ErrorMessage name="name" component="p" className="text-red-500 text-sm" />
+                <label>{t("signup_name_label")}</label>
+                <Field
+                  name="name"
+                  type="text"
+                  className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
+                  placeholder={t("signup_name_placeholder")}
+                />
+                <ErrorMessage name="name" component="p" className="text-red-500 text-sm" />
 
-              <label>{t("signup_email_label")}</label>
-              <Field
-                name="email"
-                type="email"
-                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
-                placeholder={t("signup_email_placeholder")}
-              />
-              <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
+                <label>{t("signup_email_label")}</label>
+                <Field
+                  name="email"
+                  type="email"
+                  className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
+                  placeholder={t("signup_email_placeholder")}
+                />
+                <ErrorMessage name="email" component="p" className="text-red-500 text-sm" />
 
-              <label>{t("signup_password_label")}</label>
-              <Field
-                name="password"
-                type="password"
-                className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
-                placeholder={t("signup_password_placeholder")}
-              />
-              <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
-
-              <button
-                type="submit"
-                className="mt-4 bg-green-700 text-white py-3 rounded-[15px] hover:bg-green-800 transition"
-              >
-                {t("signup_btn")}
-              </button>
-
-              
-              <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <span className="text-sm text-gray-500">Or</span>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
-
-              
-              <div className="flex gap-4 w-full">
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border cursor-pointer border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
-                >
-                  <FaGoogle className="text-red-500 text-base" />
-                  Google
-                </button>
+                <label>{t("signup_password_label")}</label>
+                <Field
+                  name="password"
+                  type="password"
+                  className="border-2 border-green-400 focus:border-green-700 focus:ring-2 focus:ring-green-600 outline-none rounded-[15px] p-3 transition"
+                  placeholder={t("signup_password_placeholder")}
+                />
+                <ErrorMessage name="password" component="p" className="text-red-500 text-sm" />
 
                 <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-2 border cursor-pointer border-gray-300 rounded-[12px] py-2 text-sm hover:bg-gray-50 transition"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-4 bg-green-700 text-white py-3 rounded-[15px] hover:bg-green-800 transition disabled:bg-gray-400"
                 >
-                  <FaFacebook className="text-black text-base" />
-                  Facebook
+                  {isSubmitting ? "Creating..." : t("signup_btn")}
                 </button>
-              </div>
 
-              <p className="text-center">
-                {t("signup_have_account")}{" "}
-                <span
-                  onClick={() => setActive(false)}
-                  className="text-green-700 font-semibold cursor-pointer underline"
-                >
-                  {t("signup_signin_link")}
-                </span>
-              </p>
-            </Form>
+                <p className="text-center">
+                  {t("signup_have_account")}{" "}
+                  <span onClick={() => setActive(false)} className="text-green-700 font-semibold cursor-pointer underline">
+                    {t("signup_signin_link")}
+                  </span>
+                </p>
+              </Form>
+            )}
           </Formik>
         </div>
 

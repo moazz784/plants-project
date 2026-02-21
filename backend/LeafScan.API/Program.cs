@@ -3,7 +3,6 @@ using FluentValidation;
 using LeafScan.Application.DTOs;
 using LeafScan.Application.Services;
 using LeafScan.Application.Validators;
-using LeafScan.Domain.Entities;
 using LeafScan.Infrastructure.Data;
 using LeafScan.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -89,7 +88,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Health / info endpoint at root ÔÇö visible in the browser
+// Health / info endpoint at root — visible in the browser
 app.MapGet("/", () => Results.Json(new
 {
     message = "LeafScan API",
@@ -114,14 +113,6 @@ app.MapGet("/", () => Results.Json(new
         {
             listMessages = "GET /api/admin/messages",
             updateMessage = "PATCH /api/admin/messages/{id}"
-        },
-        services = new
-        {
-            soilTypes = "GET /api/services/soil-types",
-            climates = "GET /api/services/climates",
-            crops = "GET /api/services/crops",
-            recommendations = "GET /api/services/recommendations?soilType=&climate=",
-            calculate = "GET /api/services/calculate?soilType=&climate=&crop=&landArea="
         }
     },
     frontend = "https://plants-project-lszl.vercel.app",
@@ -138,88 +129,18 @@ app.Run();
 
 static async Task SeedAsync(ApplicationDbContext db)
 {
-    if (!await db.Users.AnyAsync(u => u.Role == "Admin"))
-    {
-        var admin = new User
-        {
-            Id = Guid.NewGuid(),
-            Name = "Admin",
-            Email = "admin@leafscan.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-            Role = "Admin",
-            CreatedAtUtc = DateTime.UtcNow,
-            UpdatedAtUtc = DateTime.UtcNow
-        };
-        db.Users.Add(admin);
-        await db.SaveChangesAsync();
-    }
+    if (await db.Users.AnyAsync(u => u.Role == "Admin")) return;
 
-    await SeedCropDataAsync(db);
-}
-
-static async Task SeedCropDataAsync(ApplicationDbContext db)
-{
-    if (!await db.SoilTypes.AnyAsync())
+    var admin = new LeafScan.Domain.Entities.User
     {
-        foreach (var name in new[] { "Sandy", "Clay", "Silt", "Loam" })
-            db.SoilTypes.Add(new SoilType { Name = name });
-        await db.SaveChangesAsync();
-    }
-    if (!await db.Climates.AnyAsync())
-    {
-        foreach (var name in new[] { "Arid", "Humid", "Cold", "Temperate", "Tropical" })
-            db.Climates.Add(new Climate { Name = name });
-        await db.SaveChangesAsync();
-    }
-    if (!await db.Crops.AnyAsync())
-    {
-        var cropNames = new[] { "Watermelon", "Peanuts", "Sorghum", "Millet", "Rice", "Lettuce", "Potato", "Barley", "Oats", "Tomato", "Wheat", "Corn", "Cantaloupe", "Cucumber", "Carrot", "Soybean", "Banana", "Sugarcane", "Pepper", "Onion", "Cabbage", "Beans", "Cotton", "Sunflower", "Peas", "Lentils", "Spinach", "Broccoli", "Celery", "Garlic", "Pumpkin", "Squash", "Eggplant", "Okra", "Radish", "Turnip", "Parsley", "Mint", "Basil", "Apple", "Peach", "Grape", "Blueberry", "Raspberry", "Cassava", "Asparagus" };
-        foreach (var name in cropNames)
-            db.Crops.Add(new Crop { Name = name });
-        await db.SaveChangesAsync();
-    }
-
-    var reqs = new Dictionary<string, (decimal Water, decimal Fertilizer)>(StringComparer.OrdinalIgnoreCase)
-    {
-        ["Rice"] = (720, 28), ["Lettuce"] = (450, 15), ["Potato"] = (380, 22), ["Barley"] = (400, 14), ["Oats"] = (420, 12),
-        ["Tomato"] = (550, 18), ["Wheat"] = (450, 12), ["Corn"] = (600, 25), ["Watermelon"] = (580, 16), ["Cucumber"] = (500, 18),
-        ["Carrot"] = (450, 16), ["Soybean"] = (480, 20), ["Banana"] = (650, 30), ["Sugarcane"] = (900, 35), ["Pepper"] = (520, 20),
-        ["Onion"] = (420, 18), ["Cabbage"] = (480, 22), ["Beans"] = (400, 16), ["Cotton"] = (600, 28), ["Sunflower"] = (450, 18),
-        ["Peas"] = (380, 14), ["Lentils"] = (350, 12), ["Spinach"] = (420, 16), ["Broccoli"] = (480, 22), ["Celery"] = (550, 20),
-        ["Garlic"] = (400, 16), ["Pumpkin"] = (500, 18), ["Squash"] = (480, 18), ["Eggplant"] = (520, 20), ["Okra"] = (500, 20),
-        ["Radish"] = (400, 14), ["Turnip"] = (420, 16), ["Parsley"] = (450, 14), ["Mint"] = (500, 16), ["Basil"] = (480, 16),
-        ["Cantaloupe"] = (560, 18), ["Sorghum"] = (450, 18), ["Millet"] = (400, 14), ["Peanuts"] = (450, 20), ["Cassava"] = (500, 22), ["Asparagus"] = (450, 24)
+        Id = Guid.NewGuid(),
+        Name = "Admin",
+        Email = "admin@leafscan.com",
+        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+        Role = "Admin",
+        CreatedAtUtc = DateTime.UtcNow,
+        UpdatedAtUtc = DateTime.UtcNow
     };
-
-    var soils = await db.SoilTypes.ToDictionaryAsync(s => s.Name, StringComparer.OrdinalIgnoreCase);
-    var climates = await db.Climates.ToDictionaryAsync(c => c.Name, StringComparer.OrdinalIgnoreCase);
-    var crops = await db.Crops.ToDictionaryAsync(c => c.Name, StringComparer.OrdinalIgnoreCase);
-
-    foreach (var (cropName, (water, fert)) in reqs)
-    {
-        if (!crops.TryGetValue(cropName, out var crop)) continue;
-        if (await db.CropRequirements.AnyAsync(cr => cr.CropId == crop.Id)) continue;
-        db.CropRequirements.Add(new CropRequirement { CropId = crop.Id, WaterLitersPerAcrePerWeek = water, FertilizerKgPerAcre = fert });
-    }
-    await db.SaveChangesAsync();
-
-    var suitability = new[] {
-        ("Tomato", "Sandy", "Arid"), ("Tomato", "Sandy", "Humid"), ("Tomato", "Silt", "Arid"), ("Tomato", "Silt", "Humid"), ("Tomato", "Clay", "Temperate"), ("Tomato", "Loam", "Temperate"), ("Tomato", "Loam", "Humid"),
-        ("Wheat", "Loam", "Arid"), ("Wheat", "Sandy", "Arid"), ("Wheat", "Clay", "Temperate"),
-        ("Corn", "Loam", "Temperate"), ("Corn", "Clay", "Humid"), ("Corn", "Silt", "Tropical"),
-        ("Rice", "Clay", "Humid"), ("Rice", "Clay", "Tropical"), ("Rice", "Silt", "Humid"),
-        ("Potato", "Sandy", "Cold"), ("Potato", "Loam", "Temperate"), ("Potato", "Silt", "Humid"),
-        ("Watermelon", "Sandy", "Arid"), ("Watermelon", "Sandy", "Humid"), ("Watermelon", "Loam", "Tropical"),
-        ("Lettuce", "Loam", "Cold"), ("Lettuce", "Silt", "Temperate"), ("Lettuce", "Clay", "Humid"),
-        ("Cucumber", "Loam", "Temperate"), ("Cucumber", "Sandy", "Humid"), ("Carrot", "Sandy", "Cold"), ("Carrot", "Loam", "Temperate"),
-        ("Soybean", "Loam", "Temperate"), ("Soybean", "Clay", "Humid"), ("Peanuts", "Sandy", "Arid"), ("Peanuts", "Sandy", "Humid")
-    };
-
-    foreach (var (cropName, soilName, climateName) in suitability)
-    {
-        if (!crops.TryGetValue(cropName, out var crop) || !soils.TryGetValue(soilName, out var soil) || !climates.TryGetValue(climateName, out var climate)) continue;
-        if (await db.CropSoilClimates.AnyAsync(csc => csc.CropId == crop.Id && csc.SoilTypeId == soil.Id && csc.ClimateId == climate.Id)) continue;
-        db.CropSoilClimates.Add(new CropSoilClimate { CropId = crop.Id, SoilTypeId = soil.Id, ClimateId = climate.Id });
-    }
+    db.Users.Add(admin);
     await db.SaveChangesAsync();
 }

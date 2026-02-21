@@ -17,7 +17,6 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(conn));
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IMessageService, MessageService>();
-        services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddSingleton<IJwtService, JwtService>();
 
         return services;
