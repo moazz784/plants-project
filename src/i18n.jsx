@@ -12,9 +12,20 @@ const resources = {
       services: "Services",
       contact_us: "Contact Us",
       logout: "Log out",
-      // ===== Profile Dropdown =====
+      
+      // ===== Profile Dropdown & Settings =====
       change_image: "Change Image",
       edit_profile: "Edit Profile",
+      name: "Name",
+      enter_name: "Enter your name",
+      password: "Password",
+      enter_password: "Enter your password",
+      save_changes: "Save Changes",
+      save_success: "Data saved successfully!",
+      name_required: "Name is required",
+      name_min: "Name must be at least 3 characters",
+      password_required: "Password is required",
+      password_min: "Password must be at least 6 characters",
 
       // ===== Hero Section =====
       hero_title: "Experience ever-evolving Technology",
@@ -224,20 +235,6 @@ const resources = {
       alert_missing_rec: "Please select both Soil Type and Climate!",
       alert_missing_calc: "Please fill all fields and enter land area!",
       
-      // ===== Profile Dropdown =====
-      change_image: "Change Image",
-      edit_profile: "Edit Profile",
-      name: "Name",
-      enter_name: "Enter your name",
-      password: "Password",
-      enter_password: "Enter your password",
-      save_changes: "Save Changes",
-      save_success: "Data saved successfully!",
-      name_required: "Name is required",
-      name_min: "Name must be at least 3 characters",
-      password_required: "Password is required",
-      password_min: "Password must be at least 6 characters",
-
       // ===== Auth =====
       login_subtitle: "Enter your Credentials to access your account",
       login_welcome: "Welcome back!",
@@ -265,7 +262,6 @@ const resources = {
       signup_name_label: "Name",
       signup_forget:"Forgot Password?"
     }
-    
   },
 
   ar: {
@@ -278,13 +274,25 @@ const resources = {
       contact_us: "تواصل معنا",
       logout: "تسجيل الخروج",
 
+      // ===== Profile Dropdown & Settings =====
+      change_image: "تغيير الصورة",
+      edit_profile: "تعديل الاسم والباسورد",
+      name: "الاسم",
+      enter_name: "أدخل الاسم",
+      password: "الباسورد",
+      enter_password: "أدخل الباسورد",
+      save_changes: "حفظ التغييرات",
+      save_success: "تم حفظ البيانات بنجاح!",
+      name_required: "الاسم مطلوب",
+      name_min: "الاسم يجب أن يكون 3 أحرف على الأقل",
+      password_required: "الباسورد مطلوب",
+      password_min: "الباسورد يجب أن يكون 6 أحرف على الأقل",
+
       // ===== Hero Section =====
       hero_title: "اختبر التكنولوجيا دائمـة التطـور",
       hero_model_name: "نموذج الذكاء الاصطناعي الذكي",
       hero_description: "تشخيصات بصرية متطورة لحماية شاملة لنباتاتك. يقوم نظام الذكاء الاصطناعي لدينا بتحليل بيانات الصور للكشف عن مسببات الأمراض وتهديدات الآفات في مراحلها المبكرة وبدقة متناهية. ما عليك سوى رفع صورة للحصول على رؤى فورية حول حالة النبتة الصحية، ومنع المخاطر المحتملة قبل أن تتفاقم.",
-      // ===== Profile Dropdown =====
-      change_image: "تغيير الصورة",
-      edit_profile: "تعديل الاسم والباسورد",
+      
       // ===== Chatbot Section =====
       chat_with_me: "تحدث معي",
       customer_chat: "دردشة العملاء",
@@ -342,19 +350,6 @@ const resources = {
       cat_indoor: "داخلي",
       cat_climbing: "متسلق",
       cat_succulent: "عصاري",
-      // ===== Profile Dropdown =====
-      change_image: "تغيير الصورة",
-      edit_profile: "تعديل الاسم والباسورد",
-      name: "الاسم",
-      enter_name: "أدخل الاسم",
-      password: "الباسورد",
-      enter_password: "أدخل الباسورد",
-      save_changes: "حفظ التغييرات",
-      save_success: "تم حفظ البيانات بنجاح!",
-      name_required: "الاسم مطلوب",
-      name_min: "الاسم يجب أن يكون 3 أحرف على الأقل",
-      password_required: "الباسورد مطلوب",
-      password_min: "الباسورد يجب أن يكون 6 أحرف على الأقل",
 
       plants: [
         {

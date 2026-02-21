@@ -290,7 +290,7 @@ export default function AboutPage() {
           )}
           <img 
             src={chatbotImg} 
-            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer hover:scale-105 transition-transform pointer-events-auto" 
+            className="w-[450px] md:w-[470px] lg:w-[600px] cursor-pointer  hover:scale-105 transition-transform pointer-events-auto" 
             onClick={() => setOpenChat(!openChat)} 
             alt="chatbot" 
           />
