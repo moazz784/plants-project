@@ -6,249 +6,108 @@ admin : admin@LeafScans.com
 pass : 123456789
 ---
 
-## 1. Environment Variable (Vercel)
+### `Services.jsx` – Full integration (Option B: load dropdowns from API)
 
-Add this in your Vercel project **Settings → Environment Variables**:
+**Prerequisite:** Add `services` to `api.js` (see section 2) if not already present.
 
-| Name | Value |
-|------|-------|
-| `VITE_API_URL` | Your backend API base URL, e.g. `https://plantgraduationproject.runasp.net/api` |
+#### 1. Add imports
+```jsx
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
+import { api, getErrorMessage } from './api';
+```
 
-- **Local:** Defaults to `http://localhost:5128/api` when not set
-- **Production:** Must be set for the frontend (including Services calculators) to reach the backend
+#### 2. Add state for dropdown options and loading
+After the existing state (around line 24), add:
+```jsx
+const [soilOptions, setSoilOptions] = useState([]);
+const [climateOptions, setClimateOptions] = useState([]);
+const [cropOptions, setCropOptions] = useState([]);
+const [recLoading, setRecLoading] = useState(false);
+const [calcLoading, setCalcLoading] = useState(false);
+```
 
----
+#### 3. Load dropdown options on mount
+```jsx
+useEffect(() => {
+  api.services.getSoilTypes().then(setSoilOptions).catch(() => setSoilOptions([]));
+  api.services.getClimates().then(setClimateOptions).catch(() => setClimateOptions([]));
+  api.services.getCrops().then(setCropOptions).catch(() => setCropOptions([]));
+}, []);
+```
 
-## 2. API Client (`src/api.js`)
-
-Create a file `src/api.js` that calls the backend:
-
-```javascript
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5128/api';  // Backend runs on port 5128 locally
-
-function getToken() {
-  return localStorage.getItem('access_token');
-}
-
-function getAuthHeaders() {
-  const token = getToken();
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  return headers;
-}
-
-/** Extract user-facing message from API error response */
-export function getErrorMessage(err, fallback = 'Something went wrong') {
-  if (!err) return fallback;
-  if (typeof err === 'string') return err;
-  return err.message || err.code || fallback;
-}
-
-export const api = {
-  async request(method, path, body) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: getAuthHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
+#### 4. Replace `handleGetRecommendation` (lines 28–40)
+Make it async, call API, handle loading and errors:
+```jsx
+const handleGetRecommendation = async () => {
+  if (!recommendationData.soilType || !recommendationData.climate) {
+    alert(t("alert_missing_rec"));
+    return;
+  }
+  setRecLoading(true);
+  setRecResult(null);
+  try {
+    const data = await api.services.getRecommendations(recommendationData.soilType, recommendationData.climate);
+    const cropDisplay = data.crops?.length > 0 ? data.crops.join(" & ") : t("no_crops_found") || "No crops found for this combination";
+    setRecResult({
+      bestCrop: cropDisplay,
+      reason: t("res_reason", {
+        soil: t(`opt_${recommendationData.soilType.toLowerCase()}`) || recommendationData.soilType,
+        climate: t(`opt_${recommendationData.climate.toLowerCase()}`) || recommendationData.climate
+      })
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw { status: res.status, ...data };
-    return data;
-  },
-  get: (path) => api.request('GET', path),
-  post: (path, body) => api.request('POST', path, body),
-  put: (path, body) => api.request('PUT', path, body),
-  patch: (path, body) => api.request('PATCH', path, body),
-
-  auth: {
-    login: (email, password) => api.post('/auth/login', { email, password }),
-    register: (name, email, password) => api.post('/auth/register', { name, email, password }),
-    me: () => api.get('/auth/me'),
-  },
-  users: {
-    updateMe: (body) => api.put('/users/me', {
-      name: body.name,
-      newPassword: body.newPassword,
-      profileImageBase64: body.profileImageBase64,
-    }),
-  },
-  messages: {
-    create: (body) => api.post('/messages', body),
-  },
-  services: {
-    getRecommendations: (soilType, climate) =>
-      api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}`),
-    calculate: (soilType, climate, crop, landArea) =>
-      api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}`),
-    getSoilTypes: () => api.get('/services/soil-types'),
-    getClimates: () => api.get('/services/climates'),
-    getCrops: () => api.get('/services/crops'),
-  },
-  admin: {
-    getMessages: () => api.get('/admin/messages'),
-    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),  // status: "Read" | "Archived"  // status: "Read" | "Archived"
-  },
+  } catch (err) {
+    toast.error(getErrorMessage(err));
+  } finally {
+    setRecLoading(false);
+  }
 };
 ```
 
----
-
-## 3. Auth Context (`src/AuthContext.jsx`)
-
-Create `src/AuthContext.jsx` to hold auth state and token:
-
+#### 5. Replace `handleGetCalculation` (lines 43–53)
+Make it async, call API, use real water/fertilizer values:
 ```jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from './api';
-
-const AuthContext = createContext(null);
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const login = (token, userData) => {
-    localStorage.setItem('access_token', token);
-    setUser(userData);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setUser(null);
-  };
-
-  const refreshUser = async () => {
-    try {
-      const data = await api.auth.me();
-      setUser(data);
-    } catch {
-      logout();
-    }
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    api.auth.me()
-      .then(setUser)
-      .catch(logout)
-      .finally(() => setLoading(false));
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout, refreshUser, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export const useAuth = () => useContext(AuthContext);
+const handleGetCalculation = async () => {
+  const { soilType, climate, crop, landArea } = calculatorData;
+  if (!soilType || !climate || !crop || !landArea) {
+    alert(t("alert_missing_calc"));
+    return;
+  }
+  setCalcLoading(true);
+  setCalcResult(null);
+  try {
+    const data = await api.services.calculate(soilType, climate, crop, parseFloat(landArea));
+    setCalcResult({
+      water: data.waterLitersPerWeek.toLocaleString() + " " + t("liters_week"),
+      fertilizer: data.fertilizerKg.toLocaleString() + " " + t("kg_unit")
+    });
+  } catch (err) {
+    toast.error(getErrorMessage(err));
+  } finally {
+    setCalcLoading(false);
+  }
+};
 ```
+
+#### 6. Pass API-loaded options to InputField components
+Replace hardcoded `options` with state:
+- **Select Best Crops** (lines 76–90): `options={soilOptions}` and `options={climateOptions}`
+- **Irrigation Calculator** (lines 120–140): `options={soilOptions}`, `options={climateOptions}`, `options={cropOptions}`
+
+#### 7. Disable buttons during loading
+Add `disabled={recLoading}` to the "Get Recommendation" button and `disabled={calcLoading}` to the "Get Best Result" button. Optionally show loading text: `{recLoading ? t("loading") || "Loading..." : t("btn_get_rec")}`.
+
+#### 8. Update InputField for i18n fallback
+In the `InputField` component (line 197), change the option label from:
+`{t(\`opt_${opt.toLowerCase()}\`)}`
+to:
+`{t(\`opt_${opt.toLowerCase()}\`) || opt}`
+so options from the API without i18n keys display the raw name.
 
 ---
 
-## 4. Admin Guard (`src/AdminGuard.jsx`)
-
-Create `src/AdminGuard.jsx` to protect Dashboard (Admin only):
-
-```jsx
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-
-export default function AdminGuard() {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (!user || user.role !== 'Admin') return <Navigate to="/" replace />;
-  return <Outlet />;
-}
-```
-
----
-
-## 5. Required Code Changes
-
-### `App.jsx`
-- Wrap the entire app with `<AuthProvider>` (from AuthContext)
-- Protect the Dashboard: use `AdminGuard` as the route element so only Admin users can access it
-
-```jsx
-// Add imports
-import { AuthProvider } from './AuthContext';
-import AdminGuard from './AdminGuard';
-
-// Wrap app with AuthProvider. AdminGuard uses <Outlet />, so nest Dashboard inside it.
-<AuthProvider>
-  <Toaster position="top-center" richColors />
-  <BrowserRouter>
-    <Routes>
-      <Route element={<Header />}>
-        <Route path="/" element={<Home />} />
-        {/* ... other routes ... */}
-      </Route>
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/dashboard" element={<AdminGuard />}>
-        <Route index element={<Dashboard />} />
-      </Route>
-      <Route path="/login" element={<Loginpage />} />
-      <Route path="*" element={<Momo />} />
-    </Routes>
-  </BrowserRouter>
-</AuthProvider>
-```
-
-### `Loginpage.jsx`
-- Replace localStorage-based login with `api.auth.login(email, password)` and `api.auth.register(name, email, password)`
-- Response shape: `{ token, user }` — call `login(token, user)` from `useAuth()` (stores token in localStorage)
-- Remove `hasloged` and `user_data`; use auth context instead
-- Use `getErrorMessage(err)` for error toasts
-
-### `Home.jsx`
-- Replace `hasloged` check with `access_token` or `user` from `useAuth()`
-- Redirect to `/login` if not authenticated
-
-### `Contact.jsx`
-- Add form state and `onSubmit` handler
-- Call `api.messages.create({ senderFirstName, senderLastName, senderEmail, senderPhone, body })` — field names must match (camelCase)
-- Require user to be logged in (check `access_token` or `useAuth()`); show toast if not
-- Use `getErrorMessage(err)` from api.js for error toasts
-
-### `Header.jsx`
-- Use `useAuth()` for `user` and `logout`
-- On logout, remove `access_token` and call `logout()` from context
-- Show Admin Dashboard link only when `user?.role === 'Admin'`
-- Profile image update: call `api.users.updateMe({ profileImageBase64 })`
-
-### `Profile.jsx`
-- Use `useAuth()` for user data and `refreshUser`
-- Form submit: call `api.users.updateMe({ name, newPassword })`, then `refreshUser()`
-- Use `authUser` for initial form values
-
-### `Dashboard.jsx`
-- Replace hardcoded data with `api.admin.getMessages()`
-- Add UI to mark messages as read/archived via `api.admin.patchMessage(id, status)`
-- Route must be protected so only Admin can access (via AdminGuard)
-
-### `Services.jsx` – Select Best Crops
-- Call `api.services.getRecommendations(soilType, climate)` when the user clicks "Get Recommendation"
-- On success: display `response.crops` — join with `" & "` for display, e.g. `crops.join(" & ")`
-- Response shape: `{ crops: string[], soilType: string, climate: string }` — e.g. `{ crops: ["Watermelon","Peanuts","Sorghum"], soilType: "Sandy", climate: "Arid" }`
-- If no matches, `crops` is an empty array `[]`
-- Add loading state and use `getErrorMessage(err)` for errors
-
-### `Services.jsx` – Irrigation & Fertilization Calculator
-- Call `api.services.calculate(soilType, climate, crop, parseFloat(landArea))` when the user clicks "Get Best Result"
-- On success: display `waterLitersPerWeek` with `t("liters_week")` and `fertilizerKg` with `t("kg_unit")`
-- On error (404): show `getErrorMessage(err)` — crop not found or has no irrigation data
-- Add loading state during the request (e.g. disable button, show spinner)
-
-### `Services.jsx` – Dropdown options (both calculators)
-- Option A: Keep hardcoded lists, expand to match DB — `['Sandy','Clay','Silt','Loam']`, `['Arid','Humid','Cold','Temperate','Tropical']`, and all 16 crops
-- Option B: Load from API on mount — `useEffect` to call `api.services.getSoilTypes()`, `getClimates()`, `getCrops()` and populate dropdowns
-- No auth required; all services endpoints are public
+**Optional i18n keys** (if missing, the code uses fallbacks): `no_crops_found`, `loading`
 
 ---
 
