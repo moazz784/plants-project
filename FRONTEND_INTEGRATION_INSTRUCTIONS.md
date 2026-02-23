@@ -7,7 +7,6 @@ pass : 123456789
 ---
 
 ### `Services.jsx` – Full integration (Option B: load dropdowns from API)
-
 **Prerequisite:** Add `services` to `api.js` (see section 2) if not already present.
 
 #### 1. Add imports

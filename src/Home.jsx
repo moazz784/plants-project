@@ -4,20 +4,26 @@ import uploadIcon from "./assets/Vector.png";
 import checkIcon from "./assets/Group.png";
 import scanIcon from "./assets/Vector (1).png";
 import chatbotImg from "./assets/chatbot.png";
-import planko from "./assets/plank2.png"
-import plankoo from "./assets/plank3.png"
-import planto from "./assets/planto.jpg"
+import planko from "./assets/plank2.png";
+import plankoo from "./assets/plank3.png";
+import planto from "./assets/planto.jpg";
 import plantsVideo from "./assets/plantvideo.mp4";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mic, StopCircle, Send, Play, ChevronRight, X, Upload as UploadIcon } from "lucide-react"; 
-import tree from "./assets/tree.png" 
-import { useTranslation } from "react-i18next";
+import tree from "./assets/tree.png";
+import tree22 from "./assets/tree22.png";
+import tree33 from "./assets/tree33.png";
+
 import Footer from './Footer';
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mic, StopCircle, Send, Play, ChevronRight, X } from "lucide-react"; 
+import { useTranslation } from "react-i18next";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
+  const navigate = useNavigate();
+  const isArabic = i18n.language === 'ar';
+
   const [showText, setShowText] = useState(false);
   const [openChat, setOpenChat] = useState(false);
   const [showVideo, setShowVideo] = useState(false); 
@@ -25,21 +31,24 @@ export default function AboutPage() {
   const [inputValue, setInputValue] = useState('');
   const [recording, setRecording] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  
-
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [[current, direction], setCurrent] = useState([0, 0]);
+
   const fileInputRef = useRef(null); 
   const mediaRecorderRef = useRef(null);
-  const navigate = useNavigate();
+
+  const plants = [
+    { id: 1, name: "Calathea Plant", image: tree},
+    { id: 2, name: "Snake Plant", image: tree22 },
+    { id: 3, name: "Aloe Vera", image: tree33 },
+  ];
+
 
   useEffect(() => {
     const hasloged = localStorage.getItem("hasloged") === "true";
-    if (!hasloged) {
-      navigate("/login");
-    }
+    if (!hasloged) navigate("/login");
   }, [navigate]);
 
-  const isArabic = i18n.language === 'ar';
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -49,7 +58,24 @@ export default function AboutPage() {
     return () => clearInterval(interval);
   }, []);
 
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(([prev]) => [(prev + 1) % plants.length, 1]);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
 
+  const nextSlide = () => setCurrent(([prev]) => [(prev + 1) % plants.length, 1]);
+  const prevSlide = () => setCurrent(([prev]) => [(prev - 1 + plants.length) % plants.length, -1]);
+
+  const variants = {
+    enter: (direction) => ({ x: direction > 0 ? 300 : -300, opacity: 0, position: "absolute" }),
+    center: { x: 0, opacity: 1, position: "relative" },
+    exit: (direction) => ({ x: direction > 0 ? -300 : 300, opacity: 0, position: "absolute" }),
+  };
+
+  
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     processFiles(files);
@@ -61,29 +87,16 @@ export default function AboutPage() {
       name: file.name,
       size: (file.size / 1024).toFixed(1) + " KB",
       type: file.type.split('/')[1]?.toUpperCase() || "IMG",
-      preview: URL.createObjectURL(file) 
+      preview: URL.createObjectURL(file)
     }));
     setSelectedFiles(prev => [...prev, ...newFiles]);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDrop = (e) => { e.preventDefault(); e.stopPropagation(); processFiles(Array.from(e.dataTransfer.files)); };
+  const removeFile = (id) => setSelectedFiles(prev => prev.filter(file => file.id !== id));
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      processFiles(files);
-    }
-  };
-
-  const removeFile = (id) => {
-    setSelectedFiles(prev => prev.filter(file => file.id !== id));
-  };
-
+  
   const startRecording = async () => {
     if (!navigator.mediaDevices) return alert("Your browser does not support audio recording");
     try {
@@ -103,20 +116,12 @@ export default function AboutPage() {
       console.error("Error accessing microphone:", err);
     }
   };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
-    }
-  };
+  const stopRecording = () => { if (mediaRecorderRef.current) { mediaRecorderRef.current.stop(); setRecording(false); } };
 
   const sendMessage = () => {
-    if (inputValue.trim() !== '') {
-      setMessages(prev => [...prev, { type: 'text', content: inputValue }]);
-      setInputValue('');
-    }
+    if (inputValue.trim() !== '') { setMessages(prev => [...prev, { type: 'text', content: inputValue }]); setInputValue(''); }
   };
+
 
   return (
     <div className="relative" dir={isArabic ? "rtl" : "ltr"}>
@@ -434,26 +439,66 @@ export default function AboutPage() {
               </button>
             </div>
           </div>
-          <div  className="relative cursor-pointer bg-[#f1f1f1] rounded-3xl p-6 w-[280px] md:w-[320px] shadow-lg">
-   
+         <div className="relative w-[300px] md:w-[350px] pt-24 pb-8 px-8 bg-[#F2F2F2] rounded-[40px] shadow-2xl flex flex-col items-center">
   
-            <div className="flex justify-center">
-              <img src={tree} alt="Plant" className="w-[230px] h-[230px] object-contain -mt-20" />
-            </div>
-            <div className="text-center mt-4">
-              <p className="text-sm text-green-600 mb-1">{t("trendy_plant")}</p>
-              <h2 className="text-xl font-semibold text-green-800 mb-4">Calathea Plant</h2>
-              <button className="px-4 py-1 text-xs bg-green-600 text-white rounded-full mb-4">{t("example_btn")}</button>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-green-700"></span>
-                <span className="w-2 h-2 rounded-full bg-green-400"></span>
-                <span className="w-2 h-2 rounded-full bg-green-400"></span>
-              </div>
-              <ChevronRight className={`text-green-700 cursor-pointer ${isArabic ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
+  {/* الصورة -  slider الا في الاخر*/}
+  <div className="absolute -top-18 md:-top-25  w-full flex justify-center pointer-events-none">
+    <AnimatePresence mode="wait" custom={direction}>
+      <motion.img
+        key={plants[current].id}
+        src={plants[current].image}
+        alt={plants[current].name}
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: -20 }}
+        transition={{ duration: 0.4 }}
+        className="w-[180px] h-[220px] md:w-[220px] md:h-[260px] object-contain drop-shadow-2xl"
+      />
+    </AnimatePresence>
+  </div>
+
+  
+  <div className="text-center mt-12 mb-6">
+    <p className="text-[#3CB371] text-lg font-medium">Trendy House Plant</p>
+    <motion.h2 
+      key={plants[current].name}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-3xl md:text-4xl font-bold text-[#064E3B] mt-2"
+    >
+      {plants[current].name}
+    </motion.h2>
+  </div>
+
+  
+  <button className="bg-[#00A859] hover:bg-[#008f4c] text-white px-8 py-3 rounded-full font-bold text-sm tracking-wide transition-all shadow-md active:scale-95">
+    SAME EXAMPLE
+  </button>
+
+  
+  <div className="flex items-center justify-between w-full mt-10">
+    <div className="flex gap-2">
+      {plants.map((_, index) => (
+        <span
+          key={index}
+          className={`h-2.5 rounded-full transition-all duration-300 ${
+            index === current ? "w-6 bg-[#064E3B]" : "w-2.5 bg-[#4ADE80]"
+          }`}
+        />
+      ))}
+    </div>
+    
+    <button 
+      onClick={isArabic ? prevSlide : nextSlide}
+      className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+    >
+      <ChevronRight
+        className={`text-[#064E3B] ${isArabic ? "rotate-180" : ""}`}
+        size={32}
+      />
+    </button>
+  </div>
+</div>
         </div>
         <AnimatePresence>
           {showVideo && (

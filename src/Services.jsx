@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
+import { api, getErrorMessage } from './api';
 import photos from "./assets/photo33.avif";
 import photok from "./assets/photo44.avif";
 import Footer from './Footer';
@@ -8,49 +10,86 @@ const AgricultureServices = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
 
-
-  const [recommendationData, setRecommendationData] = useState({ 
-    soilType: '', 
-    climate: '' 
-  });
-
-  const [calculatorData, setCalculatorData] = useState({ 
-    soilType: '', 
-    climate: '', 
-    crop: '', 
-    landArea: '' 
-  });
-
+  // 1. حالات الحالة (State) للقوائم والبيانات
+  const [soilOptions, setSoilOptions] = useState([]);
+  const [climateOptions, setClimateOptions] = useState([]);
+  const [cropOptions, setCropOptions] = useState([]);
+  
+  const [recommendationData, setRecommendationData] = useState({ soilType: '', climate: '' });
+  const [calculatorData, setCalculatorData] = useState({ soilType: '', climate: '', crop: '', landArea: '' });
 
   const [recResult, setRecResult] = useState(null);
   const [calcResult, setCalcResult] = useState(null);
 
-  
-  const handleGetRecommendation = () => {
+  // 2. حالات التحميل (Loading)
+  const [recLoading, setRecLoading] = useState(false);
+  const [calcLoading, setCalcLoading] = useState(false);
+
+  // 3. جلب خيارات القوائم عند فتح الصفحة
+  useEffect(() => {
+    api.services.getSoilTypes().then(setSoilOptions).catch(() => setSoilOptions([]));
+    api.services.getClimates().then(setClimateOptions).catch(() => setClimateOptions([]));
+    api.services.getCrops().then(setCropOptions).catch(() => setCropOptions([]));
+  }, []);
+
+  // 4. دالة جلب التوصيات (المعدلة للترجمة)
+  const handleGetRecommendation = async () => {
     if (!recommendationData.soilType || !recommendationData.climate) {
-      alert(t("alert_missing_rec"));
+      toast.error(t("alert_missing_rec"));
       return;
     }
-    setRecResult({
-      bestCrop: t("crop_result"),
-      reason: t("res_reason", { 
-        soil: t(`opt_${recommendationData.soilType.toLowerCase()}`), 
-        climate: t(`opt_${recommendationData.climate.toLowerCase()}`) 
-      })
-    });
+    setRecLoading(true);
+    setRecResult(null);
+    try {
+      const data = await api.services.getRecommendations(recommendationData.soilType, recommendationData.climate);
+      
+      // تحويل أسماء المحاصيل القادمة من السيرفر لمفاتيح ترجمة (مثلاً Tomato تصبح opt_tomato)
+      const translatedCrops = data.crops?.map(crop => {
+        const key = `opt_${crop.toLowerCase().trim().replace(/\s+/g, '_')}`;
+        return t(key) !== key ? t(key) : crop; // إذا لم يجد ترجمة يعرض الاسم الأصلي
+      });
+
+      const separator = isArabic ? " و " : " & ";
+      const cropDisplay = translatedCrops?.length > 0 ? translatedCrops.join(separator) : t("no_crops_found");
+      
+      setRecResult({
+        bestCrop: cropDisplay,
+        reason: t("res_reason", {
+          soil: t(`opt_${recommendationData.soilType.toLowerCase()}`) || recommendationData.soilType,
+          climate: t(`opt_${recommendationData.climate.toLowerCase()}`) || recommendationData.climate
+        })
+      });
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setRecLoading(false);
+    }
   };
 
-  
-  const handleGetCalculation = () => {
+  // 5. دالة جلب الحسابات (المعدلة للوحدات والأرقام)
+  const handleGetCalculation = async () => {
     const { soilType, climate, crop, landArea } = calculatorData;
     if (!soilType || !climate || !crop || !landArea) {
-      alert(t("alert_missing_calc"));
+      toast.error(t("alert_missing_calc"));
       return;
     }
-    setCalcResult({
-      water: (landArea * 500).toLocaleString() + " " + t("liters_week"),
-      fertilizer: (landArea * 15).toLocaleString() + " " + t("kg_unit")
-    });
+    setCalcLoading(true);
+    setCalcResult(null);
+    try {
+      const data = await api.services.calculate(soilType, climate, crop, parseFloat(landArea));
+      
+      // تحديد التنسيق المحلي للأرقام (بالعربي تظهر ١٢٣ وبالإنجليزي 123)
+      const locale = isArabic ? 'ar-EG' : 'en-US';
+
+      setCalcResult({
+        water: data.waterLitersPerWeek.toLocaleString(locale) + " " + t("liters_week"),
+        fertilizer: data.fertilizerKg.toLocaleString(locale) + " " + t("kg_unit")
+      });
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setCalcLoading(false);
+    }
   };
 
   return (
@@ -60,46 +99,44 @@ const AgricultureServices = () => {
         <p className="text-sm tracking-[0.2em] text-gray-500 font-medium uppercase">{t("services_sub_title")}</p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-15">
+      <div className="max-w-4xl mx-auto space-y-12">
         
-        
-        <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+        {/* بطاقة التوصيات */}
+        <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
           <div className="h-24 bg-emerald-100">
             <img src={photos} className="w-full h-full object-cover" alt="banner" />
           </div>
-          
           <div className="p-6">
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold">{t("card_rec_title")}</h2>
               <p className="text-xs text-gray-400">{t("card_rec_sub")}</p>
             </div>
-
             <div className="space-y-4">
               <InputField 
                 label={t("label_soil")} 
                 value={recommendationData.soilType} 
-                options={['Sandy', 'Clay', 'Silt']} 
+                options={soilOptions} 
                 t={t}
                 onChange={(v) => setRecommendationData({...recommendationData, soilType: v})} 
               />
               <InputField 
                 label={t("label_climate")} 
                 value={recommendationData.climate} 
-                options={['Arid', 'Humid', 'Cold']} 
+                options={climateOptions} 
                 t={t}
                 onChange={(v) => setRecommendationData({...recommendationData, climate: v})} 
               />
             </div>
-
             <button 
               onClick={handleGetRecommendation}
-              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98]"
+              disabled={recLoading}
+              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {t("btn_get_rec")}
+              {recLoading ? t("loading") : t("btn_get_rec")}
             </button>
 
             {recResult && (
-              <div className={`mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded ${isArabic ? 'text-right border-l-0 border-r-4' : 'text-left'}`}>
+              <div className={`mt-6 p-4 bg-emerald-50 border-emerald-400 rounded ${isArabic ? 'text-right border-r-4' : 'text-left border-l-4'}`}>
                 <h3 className="text-[#13633F] font-bold">{t("res_recommended")}: {recResult.bestCrop}</h3>
                 <p className="text-sm text-gray-600 italic">{recResult.reason}</p>
               </div>
@@ -107,41 +144,23 @@ const AgricultureServices = () => {
           </div>
         </div>
 
-        
+        {/* بطاقة الحاسبة */}
         <div className="bg-[#F9F9F9] border border-gray-200 rounded-lg mb-10 overflow-hidden shadow-md">
           <div className="h-24 overflow-hidden">
             <img src={photok} className="w-full h-full object-cover" alt="banner" />
           </div>
-          
           <div className="p-6">
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold">{t("card_calc_title")}</h2>
               <p className="text-xs text-gray-400">{t("card_calc_sub")}</p>
             </div>
-
             <div className="space-y-4">
-              <InputField 
-                label={t("label_soil")} 
-                value={calculatorData.soilType} 
-                options={['Sandy', 'Clay']} 
-                t={t}
-                onChange={(v) => setCalculatorData({...calculatorData, soilType: v})} 
-              />
-              <InputField 
-                label={t("label_climate")} 
-                value={calculatorData.climate} 
-                options={['Arid', 'Humid']} 
-                t={t}
-                onChange={(v) => setCalculatorData({...calculatorData, climate: v})} 
-              />
-              <InputField 
-                label={t("label_crop")} 
-                value={calculatorData.crop} 
-                options={['Tomato', 'Wheat', 'Corn']} 
-                t={t}
-                onChange={(v) => setCalculatorData({...calculatorData, crop: v})} 
-              />
-              
+              <InputField label={t("label_soil")} value={calculatorData.soilType} options={soilOptions} t={t}
+                onChange={(v) => setCalculatorData({...calculatorData, soilType: v})} />
+              <InputField label={t("label_climate")} value={calculatorData.climate} options={climateOptions} t={t}
+                onChange={(v) => setCalculatorData({...calculatorData, climate: v})} />
+              <InputField label={t("label_crop")} value={calculatorData.crop} options={cropOptions} t={t}
+                onChange={(v) => setCalculatorData({...calculatorData, crop: v})} />
               <div className={`flex flex-col ${isArabic ? 'text-right' : 'text-left'}`}>
                 <label className="text-[#2D5A43] font-bold text-sm mb-1">{t("label_land")}</label>
                 <input 
@@ -153,12 +172,12 @@ const AgricultureServices = () => {
                 />
               </div>
             </div>
-
             <button 
               onClick={handleGetCalculation}
-              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98]"
+              disabled={calcLoading}
+              className="w-full mt-8 bg-[#13633F] hover:bg-[#0e4d31] text-white py-3 rounded-md font-bold transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {t("btn_get_calc")}
+              {calcLoading ? t("loading") : t("btn_get_calc")}
             </button>
 
             {calcResult && (
@@ -181,7 +200,6 @@ const AgricultureServices = () => {
   );
 };
 
- 
 const InputField = ({ label, value, options, onChange, t }) => (
   <div className={`flex flex-col ${t.language === 'ar' ? 'text-right' : 'text-left'}`}>
     <label className="text-[#2D5A43] font-bold text-sm mb-1">{label}</label>
@@ -193,7 +211,8 @@ const InputField = ({ label, value, options, onChange, t }) => (
       <option value="" disabled>{t("choose_prefix")} {label}...</option>
       {options.map(opt => (
         <option key={opt} value={opt}>
-          {t(`opt_${opt.toLowerCase()}`)}
+          
+          {t(`opt_${opt.toLowerCase().trim().replace(/\s+/g, '_')}`) || opt}
         </option>
       ))}
     </select>

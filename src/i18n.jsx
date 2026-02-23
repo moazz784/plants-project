@@ -232,6 +232,9 @@ const resources = {
       opt_tomato: "Tomato",
       opt_wheat: "Wheat",
       opt_corn: "Corn",
+      liters_week: "Liters/Week",
+kg_unit: "Kg (NPK 20-20-20)",
+no_crops_found: "No crops found",
       alert_missing_rec: "Please select both Soil Type and Climate!",
       alert_missing_calc: "Please fill all fields and enter land area!",
       
@@ -260,6 +263,7 @@ const resources = {
       signup_email_label: "Email address",
       signup_password_label: "Password",
       signup_name_label: "Name",
+      login:"login",
       signup_forget:"Forgot Password?"
     }
   },
@@ -477,7 +481,8 @@ const resources = {
       water_needed: "الماء المطلوب",
       fertilizer: "السماد",
       liters_week: "لتر/أسبوعياً",
-      kg_unit: "كجم (NPK 20-20-20)",
+kg_unit: "كجم (NPK 20-20-20)",
+no_crops_found: "لم يتم العثور على محاصيل",
       label_soil: "نوع التربة",
       label_climate: "المناخ",
       label_crop: "المحصول",
@@ -510,6 +515,7 @@ const resources = {
       login_success: "🔓 تم تسجيل الدخول بنجاح",
       login_error: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
       signup_title: "إنشاء حساب",
+      login:"تسجيل الدخول",
       signup_name_placeholder: "ادخل الاسم",
       signup_email_placeholder: "ادخل البريد الالكتروني ",
       signup_password_placeholder: "كلمة المرور",

@@ -1,3 +1,4 @@
+// src/api.js
 const API_BASE = import.meta.env.VITE_API_URL || 'https://plantgraduationproject.runasp.net/api'; 
 
 function getToken() {
@@ -10,7 +11,6 @@ function getAuthHeaders() {
   if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 }
-
 
 export function getErrorMessage(err, fallback = 'Something went wrong') {
   if (!err) return fallback;
@@ -29,6 +29,7 @@ export const api = {
     if (!res.ok) throw { status: res.status, ...data };
     return data;
   },
+
   get: (path) => api.request('GET', path),
   post: (path, body) => api.request('POST', path, body),
   put: (path, body) => api.request('PUT', path, body),
@@ -39,6 +40,7 @@ export const api = {
     register: (name, email, password) => api.post('/auth/register', { name, email, password }),
     me: () => api.get('/auth/me'),
   },
+
   users: {
     updateMe: (body) => api.put('/users/me', {
       name: body.name,
@@ -46,14 +48,25 @@ export const api = {
       profileImageBase64: body.profileImageBase64,
     }),
   },
+
   messages: {
     create: (body) => api.post('/messages', body),
   },
+
+  // الجزء اللي كان ناقص وكان بيسبب الخطأ في صفحة الخدمات
+  services: {
+    getRecommendations: (soilType, climate) =>
+      api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}`),
+    calculate: (soilType, climate, crop, landArea) =>
+      api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}`),
+    getSoilTypes: () => api.get('/services/soil-types'),
+    getClimates: () => api.get('/services/climates'),
+    getCrops: () => api.get('/services/crops'),
+  },
+
   admin: {
     getMessages: () => api.get('/admin/messages'),
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }), 
-    // deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
-    // deleteMessage: (id) => api.request('DELETE', `/admin/messages?id=${id}`),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
   },
 };
