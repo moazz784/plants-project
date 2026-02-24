@@ -43,14 +43,16 @@ const AgricultureServices = () => {
     setRecResult(null);
     try {
       const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
-      const data = await api.services.getRecommendations(recommendationData.soilType, recommendationData.climate, lang);
+      const soilType = normalizeForApi(recommendationData.soilType);
+      const climate = normalizeForApi(recommendationData.climate);
+      const data = await api.services.getRecommendations(soilType, climate, lang);
       const separator = isArabic ? " و " : " & ";
       const cropDisplay = data.crops?.length > 0 ? data.crops.join(separator) : t("no_crops_found");
       setRecResult({
         bestCrop: cropDisplay,
         reason: t("res_reason", {
-          soil: recommendationData.soilType,
-          climate: recommendationData.climate
+          soil: formatOptionDisplay(recommendationData.soilType),
+          climate: formatOptionDisplay(recommendationData.climate)
         })
       });
     } catch (err) {
@@ -71,7 +73,10 @@ const AgricultureServices = () => {
     setCalcResult(null);
     try {
       const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
-      const data = await api.services.calculate(soilType, climate, crop, parseFloat(landArea), lang);
+      const cropToSend = normalizeForApi(crop);
+      const soilToSend = normalizeForApi(soilType);
+      const climateToSend = normalizeForApi(climate);
+      const data = await api.services.calculate(soilToSend, climateToSend, cropToSend, parseFloat(landArea), lang);
       
       // تحديد التنسيق المحلي للأرقام (بالعربي تظهر ١٢٣ وبالإنجليزي 123)
       const locale = isArabic ? 'ar-EG' : 'en-US';
@@ -195,6 +200,17 @@ const AgricultureServices = () => {
   );
 };
 
+const formatOptionDisplay = (opt) => {
+  if (typeof opt !== 'string') return String(opt);
+  if (opt.startsWith('opt_')) {
+    const name = opt.replace(/^opt_/, '').replace(/_/g, ' ');
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+  return opt;
+};
+
+const normalizeForApi = (val) => (typeof val === 'string' && val.startsWith('opt_') ? formatOptionDisplay(val) : val);
+
 const InputField = ({ label, value, options, onChange, t }) => (
   <div className={`flex flex-col ${t.language === 'ar' ? 'text-right' : 'text-left'}`}>
     <label className="text-[#2D5A43] font-bold text-sm mb-1">{label}</label>
@@ -205,7 +221,7 @@ const InputField = ({ label, value, options, onChange, t }) => (
     >
       <option value="" disabled>{t("choose_prefix")} {label}...</option>
       {options.map(opt => (
-        <option key={opt} value={opt}>{opt}</option>
+        <option key={opt} value={opt}>{formatOptionDisplay(opt)}</option>
       ))}
     </select>
   </div>
