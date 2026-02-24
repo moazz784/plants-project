@@ -14,12 +14,15 @@ public class IrrigationCalculatorService : IIrrigationCalculatorService
         _db = db;
     }
 
-    public async Task<IrrigationCalculatorResponse?> CalculateAsync(string soilType, string climate, string crop, decimal landArea, CancellationToken ct = default)
+    public async Task<IrrigationCalculatorResponse?> CalculateAsync(string soilType, string climate, string crop, decimal landArea, string lang, CancellationToken ct = default)
     {
+        var cropId = await ResolveCropIdAsync(crop, lang, ct);
+        if (cropId == null)
+            return null;
+
         var requirement = await _db.CropRequirements
             .AsNoTracking()
-            .Include(cr => cr.Crop)
-            .Where(cr => cr.Crop.Name.ToLower() == crop.ToLower())
+            .Where(cr => cr.CropId == cropId)
             .FirstOrDefaultAsync(ct);
 
         if (requirement == null)
@@ -29,5 +32,20 @@ public class IrrigationCalculatorService : IIrrigationCalculatorService
         var fertilizerKg = landArea * requirement.FertilizerKgPerAcre;
 
         return new IrrigationCalculatorResponse(waterLitersPerWeek, fertilizerKg);
+    }
+
+    private async Task<int?> ResolveCropIdAsync(string name, string lang, CancellationToken ct)
+    {
+        var id = await _db.CropTranslations
+            .AsNoTracking()
+            .Where(t => t.LanguageCode == lang && t.Name.ToLower() == name.Trim().ToLower())
+            .Select(t => (int?)t.CropId)
+            .FirstOrDefaultAsync(ct);
+        if (id != null) return id;
+        return await _db.Crops
+            .AsNoTracking()
+            .Where(c => c.Name.ToLower() == name.Trim().ToLower())
+            .Select(c => (int?)c.Id)
+            .FirstOrDefaultAsync(ct);
     }
 }

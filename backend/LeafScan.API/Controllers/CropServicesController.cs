@@ -1,3 +1,4 @@
+using LeafScan.API.Extensions;
 using LeafScan.Application.Services;
 using LeafScan.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -26,21 +27,45 @@ public class CropServicesController : ControllerBase
     [HttpGet("soil-types")]
     public async Task<IActionResult> GetSoilTypes(CancellationToken ct)
     {
-        var items = await _db.SoilTypes.AsNoTracking().OrderBy(s => s.Name).Select(s => s.Name).ToArrayAsync(ct);
+        var lang = HttpContext.GetRequestLanguage();
+        var items = await _db.SoilTypeTranslations
+            .AsNoTracking()
+            .Where(t => t.LanguageCode == lang)
+            .OrderBy(t => t.Name)
+            .Select(t => t.Name)
+            .ToArrayAsync(ct);
+        if (items.Length == 0)
+            items = await _db.SoilTypes.AsNoTracking().OrderBy(s => s.Name).Select(s => s.Name).ToArrayAsync(ct);
         return Ok(items);
     }
 
     [HttpGet("climates")]
     public async Task<IActionResult> GetClimates(CancellationToken ct)
     {
-        var items = await _db.Climates.AsNoTracking().OrderBy(c => c.Name).Select(c => c.Name).ToArrayAsync(ct);
+        var lang = HttpContext.GetRequestLanguage();
+        var items = await _db.ClimateTranslations
+            .AsNoTracking()
+            .Where(t => t.LanguageCode == lang)
+            .OrderBy(t => t.Name)
+            .Select(t => t.Name)
+            .ToArrayAsync(ct);
+        if (items.Length == 0)
+            items = await _db.Climates.AsNoTracking().OrderBy(c => c.Name).Select(c => c.Name).ToArrayAsync(ct);
         return Ok(items);
     }
 
     [HttpGet("crops")]
     public async Task<IActionResult> GetCrops(CancellationToken ct)
     {
-        var items = await _db.Crops.AsNoTracking().OrderBy(c => c.Name).Select(c => c.Name).ToArrayAsync(ct);
+        var lang = HttpContext.GetRequestLanguage();
+        var items = await _db.CropTranslations
+            .AsNoTracking()
+            .Where(t => t.LanguageCode == lang)
+            .OrderBy(t => t.Name)
+            .Select(t => t.Name)
+            .ToArrayAsync(ct);
+        if (items.Length == 0)
+            items = await _db.Crops.AsNoTracking().OrderBy(c => c.Name).Select(c => c.Name).ToArrayAsync(ct);
         return Ok(items);
     }
 
@@ -50,7 +75,8 @@ public class CropServicesController : ControllerBase
         [FromQuery] string climate,
         CancellationToken ct)
     {
-        var response = await _recommendationService.GetRecommendationsAsync(soilType, climate, ct);
+        var lang = HttpContext.GetRequestLanguage();
+        var response = await _recommendationService.GetRecommendationsAsync(soilType, climate, lang, ct);
         return Ok(response);
     }
 
@@ -62,7 +88,8 @@ public class CropServicesController : ControllerBase
         [FromQuery] decimal landArea,
         CancellationToken ct)
     {
-        var response = await _calculatorService.CalculateAsync(soilType, climate, crop, landArea, ct);
+        var lang = HttpContext.GetRequestLanguage();
+        var response = await _calculatorService.CalculateAsync(soilType, climate, crop, landArea, lang, ct);
         if (response == null)
             return NotFound(new { code = "CROP_NOT_FOUND", message = "Crop not found or has no irrigation data" });
         return Ok(response);
