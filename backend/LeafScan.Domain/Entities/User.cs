@@ -18,4 +18,5 @@ public class User
     public ICollection<UserChat> UserChats { get; set; } = new List<UserChat>();
     public ICollection<UserPlantImage> UserPlantImages { get; set; } = new List<UserPlantImage>();
     public ICollection<Report> ReportsAsManager { get; set; } = new List<Report>();
+    public ICollection<KimiChatMessage> KimiChatMessages { get; set; } = new List<KimiChatMessage>();
 }

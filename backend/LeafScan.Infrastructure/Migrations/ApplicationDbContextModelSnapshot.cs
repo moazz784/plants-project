@@ -243,6 +243,41 @@ namespace LeafScan.Infrastructure.Migrations
                     b.ToTable("Diseases");
                 });
 
+            modelBuilder.Entity("LeafScan.Domain.Entities.KimiChatMessage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("UserId", "SessionId");
+
+                    b.ToTable("KimiChatMessages");
+                });
+
             modelBuilder.Entity("LeafScan.Domain.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -632,6 +667,17 @@ namespace LeafScan.Infrastructure.Migrations
                     b.Navigation("PlantImage");
                 });
 
+            modelBuilder.Entity("LeafScan.Domain.Entities.KimiChatMessage", b =>
+                {
+                    b.HasOne("LeafScan.Domain.Entities.User", "User")
+                        .WithMany("KimiChatMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LeafScan.Domain.Entities.Message", b =>
                 {
                     b.HasOne("LeafScan.Domain.Entities.User", "Sender")
@@ -793,6 +839,8 @@ namespace LeafScan.Infrastructure.Migrations
             modelBuilder.Entity("LeafScan.Domain.Entities.User", b =>
                 {
                     b.Navigation("ChatSessions");
+
+                    b.Navigation("KimiChatMessages");
 
                     b.Navigation("Messages");
 
