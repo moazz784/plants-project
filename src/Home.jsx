@@ -45,12 +45,6 @@ export default function AboutPage() {
 
 
   useEffect(() => {
-    const isLoggedIn = !!localStorage.getItem("access_token");
-    if (!isLoggedIn) navigate("/login");
-  }, [navigate]);
-
-
-  useEffect(() => {
     const interval = setInterval(() => {
       setShowText(true);
       setTimeout(() => setShowText(false), 3000);
