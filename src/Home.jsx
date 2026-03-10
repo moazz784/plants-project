@@ -45,8 +45,8 @@ export default function AboutPage() {
 
 
   useEffect(() => {
-    const hasloged = localStorage.getItem("hasloged") === "true";
-    if (!hasloged) navigate("/login");
+    const isLoggedIn = !!localStorage.getItem("access_token");
+    if (!isLoggedIn) navigate("/login");
   }, [navigate]);
 
 
