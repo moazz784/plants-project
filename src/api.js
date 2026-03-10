@@ -53,6 +53,11 @@ export const api = {
     create: (body) => api.post('/messages', body),
   },
 
+  chat: {
+    send: (sessionId, messages, language) =>
+      api.post('/chat', { sessionId, messages, language }),
+  },
+
   services: {
     getSoilTypes: (lang) => api.get(`/services/soil-types${lang ? `?lang=${lang}` : ''}`),
     getClimates: (lang) => api.get(`/services/climates${lang ? `?lang=${lang}` : ''}`),

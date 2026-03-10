@@ -18,10 +18,14 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, StopCircle, Send, Play, ChevronRight, X } from "lucide-react"; 
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
+import { api, getErrorMessage } from "./api";
+import { useAuth } from "./AuthContext";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isArabic = i18n.language === 'ar';
 
   const [showText, setShowText] = useState(false);
@@ -33,6 +37,8 @@ export default function AboutPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [[current, direction], setCurrent] = useState([0, 0]);
+  const [chatSessionId, setChatSessionId] = useState(null);
+  const [chatLoading, setChatLoading] = useState(false);
 
   const fileInputRef = useRef(null); 
   const mediaRecorderRef = useRef(null);
@@ -112,8 +118,31 @@ export default function AboutPage() {
   };
   const stopRecording = () => { if (mediaRecorderRef.current) { mediaRecorderRef.current.stop(); setRecording(false); } };
 
-  const sendMessage = () => {
-    if (inputValue.trim() !== '') { setMessages(prev => [...prev, { type: 'text', content: inputValue }]); setInputValue(''); }
+  const sendMessage = async () => {
+    const trimmed = inputValue.trim();
+    if (!trimmed) return;
+    if (!user) {
+      toast.error(t('login_to_chat') || 'Please log in to chat');
+      return;
+    }
+    setMessages(prev => [...prev, { type: 'text', content: trimmed, role: 'user' }]);
+    setInputValue('');
+    setChatLoading(true);
+    try {
+      const textMessages = messages.filter(m => m.type === 'text');
+      const apiMessages = [...textMessages, { role: 'user', content: trimmed }].map(m => ({
+        role: m.role || 'user',
+        content: m.content,
+      }));
+      const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+      const res = await api.chat.send(chatSessionId, apiMessages, lang);
+      setMessages(prev => [...prev, { type: 'text', content: res.content, role: 'assistant' }]);
+      setChatSessionId(res.sessionId);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setChatLoading(false);
+    }
   };
 
 
@@ -309,7 +338,8 @@ export default function AboutPage() {
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto bg-green-50 space-y-3 text-black">
-                {messages.length === 0 && <p className="text-center text-gray-400 mt-10 text-sm">ابدأ المحادثة الآن...</p>}
+                {!user && <p className="text-center text-gray-400 mt-10 text-sm">{t('login_to_chat') || 'Please log in to chat'}</p>}
+                {user && messages.length === 0 && <p className="text-center text-gray-400 mt-10 text-sm">{t('chat_start') || 'ابدأ المحادثة الآن...'}</p>}
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[90%]   ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
                     {/* break-words overflow-hidden whitespace-pre-wrap  */}
@@ -334,15 +364,17 @@ export default function AboutPage() {
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="flex-1 p-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 text-sm text-black outline-none"
+                  disabled={!user || chatLoading}
+                  className="flex-1 p-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 text-sm text-black outline-none disabled:opacity-60"
                   placeholder={t("type_message")}
                 />
                 
                 <button 
                   onClick={sendMessage} 
-                  className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors shadow-md"
+                  disabled={!user || chatLoading}
+                  className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Send  size={20} className={  isArabic ? "rotate-180" : ""} />
+                  {chatLoading ? <span className="text-sm">{t('chat_loading') || '...'}</span> : <Send size={20} className={isArabic ? "rotate-180" : ""} />}
                 </button>
               </div>
             </motion.div>
