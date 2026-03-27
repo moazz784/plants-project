@@ -31,17 +31,29 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// --- تعديل جزء الـ CORS هنا ---
 builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(p =>
     {
         p.SetIsOriginAllowed(origin =>
         {
-            if (string.IsNullOrEmpty(origin)) return false;
-            if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:")) return true;
+            if (string.IsNullOrEmpty(origin)) return true; // السماح للطلبات التي لا تملك Origin (مثل تطبيقات معينة)
+            
+            // السماح للمتصفح (Localhost)
+            if (origin.StartsWith("http://localhost") || origin.StartsWith("https://localhost")) return true;
+            
+            // السماح لتطبيقات الموبايل (Capacitor)
+            if (origin == "capacitor://localhost" || origin.StartsWith("http://10.0.2.2")) return true; 
+
+            // السماح لروابط الـ Vercel
             if (origin.EndsWith(".vercel.app")) return true;
+            
             return origin == "https://plants-project-lszl.vercel.app" || origin == "https://plants-project-p7j7.vercel.app";
-        }).AllowAnyHeader().AllowAnyMethod();
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials(); // مهم جداً لدعم تسجيل الدخول المستقر
     });
 });
 
@@ -82,12 +94,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// تأكد أن UseCors تأتي قبل Authentication و Authorization
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Health / info endpoint at root — visible in the browser
 app.MapGet("/", () => Results.Json(new
 {
     message = "LeafScan API",

@@ -35,7 +35,7 @@ export default function Header() {
       const headerHeight = header.offsetHeight;
       for (let i = 0; i < 15; i++) {
         const leaf = document.createElement("div");
-        leaf.innerHTML = "🍃"; 
+        leaf.innerHTML = "🍀"; 
         // ✨,🌷,🌹,🌸,🌻,🍂,🍀,🌿,🌺
         leaf.style.position = "absolute";
         leaf.style.top = "-50px";
@@ -46,7 +46,6 @@ export default function Header() {
         leaf.style.opacity = Math.random() * 0.7 + 0.3;
         leaf.style.filter = "drop-shadow(2px 2px 2px rgba(0,0,0,0.1))";
         container.appendChild(leaf);
-
         const duration = 2.5 + Math.random() * 0.5;
         const xMove = Math.random() > 0.5 ? 80 : -80;
         const rotation = Math.random() * 20;

@@ -56,3 +56,13 @@
   font-variant-numeric: tabular-nums;
   z-index: 10;
 }
+@keyframes rainFall {
+  0% { transform: translateY(-10px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(300px); opacity: 0; }
+}
+
+.animate-rain {
+  animation: rainFall linear infinite;
+}

@@ -1,5 +1,7 @@
 // src/api.js
-const API_BASE = import.meta.env.VITE_API_URL || 'https://plantgraduationproject.runasp.net/api'; 
+// استبدل السطر الأول بهذا السطر
+// const API_BASE = 'http://192.168.1.8:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://plantgraduationproject.runasp.net/api';
 
 function getToken() {
   return localStorage.getItem('access_token');

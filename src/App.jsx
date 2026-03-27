@@ -5,7 +5,7 @@ import Header from "./Header";
 import Home from "./Home";
 import About from "./About";
 import Loginpage from "./Loginpage";
-import error from "./assets/error.png";
+// import error from "./assets/error.png";
 import Preloader from "./Preloader";
 import Contact from "./Contact";
 import Momo from "./Momo";
@@ -19,6 +19,7 @@ import Dashboard from "./Dashboard";
 import { AuthProvider } from './AuthContext';
 import AdminGuard from './AdminGuard';
 import Messages from "./Messages";
+import ResultPage from "./ResultPage";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -49,6 +50,7 @@ export default function App() {
                 <Route path="/services" element={<Services />} />
                 <Route path="/contact-us" element={<Contact />} />
                 <Route path="/plants" element={<Plantscategoriy />} />
+                <Route path="/result" element={<ResultPage />} />
               </Route>
 
             

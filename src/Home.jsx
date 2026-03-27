@@ -11,19 +11,31 @@ import plantsVideo from "./assets/plantvideo.mp4";
 import tree from "./assets/tree.png";
 import tree22 from "./assets/tree22.png";
 import tree33 from "./assets/tree33.png";
-
+import WeatherCard from './WeatherCard';
 import Footer from './Footer';
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, StopCircle, Send, Play, ChevronRight, X } from "lucide-react"; 
+import { 
+  Mic, 
+  StopCircle, 
+  Send, 
+  Play, 
+  ChevronRight, 
+  X, 
+  Sun, 
+  Wind, 
+  Droplets, 
+  MessageSquarePlus, 
+  History as HistoryIcon 
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
   const navigate = useNavigate();
   const isArabic = i18n.language === 'ar';
-
+  const [coords, setCoords] = useState({ lat: null, lon: null });
   const [showText, setShowText] = useState(false);
   const [openChat, setOpenChat] = useState(false);
   const [showVideo, setShowVideo] = useState(false); 
@@ -33,70 +45,185 @@ export default function AboutPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [[current, direction], setCurrent] = useState([0, 0]);
+  // 1. حالة تخزين السجل (بنجيبها من ذاكرة المتصفح لو موجودة)
+const [chatHistory, setChatHistory] = useState(() => {
+  const saved = localStorage.getItem("leafScan_history");
+  return saved ? JSON.parse(saved) : [];
+});
+const startNewChat = () => {
+  if (messages.length > 0) {
+    const newEntry = {
+      id: Date.now(),
+      title: messages[0].content.substring(0, 25) + "...", // بياخد أول كام حرف كعنوان
+      messages: messages
+    };
+    setChatHistory(prev => [newEntry, ...prev]);
+    setMessages([]); // بيمسح الشاشة للمحادثة الجديدة
+  }
+};
+// 2. حالة إظهار وإخفاء قائمة السجل
+const [showHistory, setShowHistory] = useState(false);
+  // Weather Data State
+//  const [weather, setWeather] = useState({
+//   temp: "--",
+//   condition: isArabic ? "جاري التحميل..." : "Loading...",
+//   humidity: 0,
+//   wind: 0,
+//   city: isArabic ? "جاري تحديد الموقع..." : "Locating...",
+//   icon: null
+// });
 
   const fileInputRef = useRef(null); 
   const mediaRecorderRef = useRef(null);
+   
+  const sendMessage = async () => {
+  if (!inputValue.trim()) return;
 
+  const userText = inputValue;
+  const userMessage = { type: 'text', content: userText, sender: 'user' };
+  setMessages((prev) => [...prev, userMessage]);
+  setInputValue(""); 
+
+  // إضافة رسالة "جاري التفكير" مع ID فريد لتسهيل استبدالها لاحقاً
+  const thinkingId = Date.now();
+  setMessages((prev) => [...prev, { id: thinkingId, type: 'text', content: isArabic ? "جاري التفكير..." : "Thinking...", sender: 'bot' }]);
+
+  try {
+    const response = await fetch("http://localhost:11434/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gemma:2b", 
+        prompt: userText,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Ollama connection failed");
+
+    const data = await response.json();
+
+    // استبدال رسالة "جاري التفكير" بالرد الحقيقي
+    setMessages((prev) => 
+      prev.map(msg => msg.id === thinkingId ? { ...msg, content: data.response } : msg)
+    );
+
+  } catch (error) {
+    setMessages((prev) => 
+      prev.map(msg => msg.id === thinkingId ? { ...msg, content: isArabic ? "عذراً، الروبوت غير متصل." : "Bot offline." } : msg)
+    );
+  }
+};
   const plants = [
     { id: 1, name: "Calathea Plant", image: tree},
     { id: 2, name: "Snake Plant", image: tree22 },
     { id: 3, name: "Aloe Vera", image: tree33 },
   ];
+  // 3. كل ما السجل يتغير، نحفظه في ذاكرة المتصفح تلقائياً
+useEffect(() => {
+  localStorage.setItem("leafScan_history", JSON.stringify(chatHistory));
+}, [chatHistory]);
+// المحرك اللي بيظهر ويخفي كلمة Chat with me كل 3 ثواني
+useEffect(() => {
+  const interval = setInterval(() => {
+    setShowText((prev) => !prev);
+  }, 3000); // تظهر وتختفي كل 3 ثواني
 
-
+  return () => clearInterval(interval);
+}, []);
   useEffect(() => {
     const hasloged = localStorage.getItem("hasloged") === "true";
     if (!hasloged) navigate("/login");
   }, [navigate]);
+// useEffect(() => {
+//   let watchId;
 
+//   const fetchWeather = async (lat, lon) => {
+//     try {
+//       const lang = i18n.language;
+//       const url = `https://api.weatherapi.com/v1/current.json?key=332999ba288d41549d1112711261403&q=${lat},${lon}&lang=${lang}`;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowText(true);
-      setTimeout(() => setShowText(false), 3000);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+//       console.log("API URL:", url); // طباعة الرابط
 
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent(([prev]) => [(prev + 1) % plants.length, 1]);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, []);
+//       const res = await fetch(url);
+//       const data = await res.json();
 
-  const nextSlide = () => setCurrent(([prev]) => [(prev + 1) % plants.length, 1]);
-  const prevSlide = () => setCurrent(([prev]) => [(prev - 1 + plants.length) % plants.length, -1]);
+//       console.log("Weather API Response:", data); // طباعة الداتا كاملة
 
-  const variants = {
-    enter: (direction) => ({ x: direction > 0 ? 300 : -300, opacity: 0, position: "absolute" }),
-    center: { x: 0, opacity: 1, position: "relative" },
-    exit: (direction) => ({ x: direction > 0 ? -300 : 300, opacity: 0, position: "absolute" }),
-  };
+//       if (data.location) {
 
-  
+//         console.log("City:", data.location.name);
+//         console.log("Region:", data.location.region);
+
+//         setWeather({
+//           temp: Math.round(data.current.temp_c),
+//           condition: data.current.condition.text,
+//           humidity: data.current.humidity,
+//           wind: data.current.wind_kph,
+//           icon: "https:" + data.current.condition.icon,
+//           city: isArabic
+//             ? `${data.location.name}، ${data.location.region}`
+//             : `${data.location.name}, ${data.location.region}`
+//         });
+//       }
+//     } catch (error) {
+//       console.error("Weather API Error:", error);
+//     }
+//   };
+
+//   if (navigator.geolocation) {
+//     watchId = navigator.geolocation.watchPosition(
+//       (position) => {
+//         const { latitude, longitude } = position.coords;
+
+//         // طباعة الإحداثيات
+//         console.log("Latitude:", latitude);
+//         console.log("Longitude:", longitude);
+
+//         setCoords({ lat: latitude, lon: longitude });
+
+//         fetchWeather(latitude, longitude);
+//       },
+//       (error) => {
+//         console.warn("Geolocation error:", error.message);
+//         if (!coords.lat) fetchWeather(30.0444, 31.2357);
+//       },
+//       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+//     );
+//   }
+
+//   return () => {
+//     if (watchId) navigator.geolocation.clearWatch(watchId);
+//   };
+// }, [isArabic]);
+  // ==========================================
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     processFiles(files);
   };
 
   const processFiles = (files) => {
-    const newFiles = files.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: (file.size / 1024).toFixed(1) + " KB",
-      type: file.type.split('/')[1]?.toUpperCase() || "IMG",
-      preview: URL.createObjectURL(file)
-    }));
-    setSelectedFiles(prev => [...prev, ...newFiles]);
+  const file = files[0]; 
+  const imageUrl = URL.createObjectURL(file);
+
+  const newFile = {
+    id: Math.random().toString(36).substr(2, 9),
+    name: file.name,
+    size: (file.size / 1024).toFixed(1) + " KB",
+    type: file.type.split('/')[1]?.toUpperCase() || "IMG",
+    preview: imageUrl
   };
+
+  setSelectedFiles([newFile]);
+
+
+};
 
   const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
   const handleDrop = (e) => { e.preventDefault(); e.stopPropagation(); processFiles(Array.from(e.dataTransfer.files)); };
   const removeFile = (id) => setSelectedFiles(prev => prev.filter(file => file.id !== id));
+  // ==========================================
 
-  
   const startRecording = async () => {
     if (!navigator.mediaDevices) return alert("Your browser does not support audio recording");
     try {
@@ -117,22 +244,32 @@ export default function AboutPage() {
     }
   };
   const stopRecording = () => { if (mediaRecorderRef.current) { mediaRecorderRef.current.stop(); setRecording(false); } };
+  // const sendMessage = () => { if (inputValue.trim() !== '') { setMessages(prev => [...prev, { type: 'text', content: inputValue }]); setInputValue(''); } };
+ // 1. تعريف دالة السلايدر التالي
+const nextSlide = () => setCurrent(([prev]) => [(prev + 1) % plants.length, 1]);
 
-  const sendMessage = () => {
-    if (inputValue.trim() !== '') { setMessages(prev => [...prev, { type: 'text', content: inputValue }]); setInputValue(''); }
-  };
+// 2. تعريف دالة السلايدر السابق
+const prevSlide = () => setCurrent(([prev]) => [(prev - 1 + plants.length) % plants.length, -1]);
 
-
+// 3. إضافة الـ Interval لتحريك السلايدر تلقائياً (أنت كنت ماسحها برضه)
+useEffect(() => {
+  const interval = setInterval(() => {
+    nextSlide();
+  }, 3500);
+  return () => clearInterval(interval);
+}, []);
   return (
     <div className="relative" dir={isArabic ? "rtl" : "ltr"}>
       
       <section className='w-full min-h-screen bg-[url(/background.jpg)] relative bg-cover bg-center overflow-hidden px-5 md:px-10'>
-        
-  
+
+{/* <WeatherCard isArabic={isArabic} /> */}
+  /
        <AnimatePresence>
   {showUploadModal && (
     <div className="absolute inset-0 z-[100] flex items-center justify-center p-4">
       
+    
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -145,11 +282,10 @@ export default function AboutPage() {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        
         dir={isArabic ? "rtl" : "ltr"}
         className="relative z-[110] bg-white shadow-2xl w-full max-w-[480px] text-black border border-gray-100 rounded-3xl overflow-hidden flex flex-col"
       >
-        
+    
         <div className="p-6 pb-0 flex items-center justify-between">
           <h2 className="font-bold text-gray-800 text-lg">
             {isArabic ? "تحميل الملفات" : "Upload files"}
@@ -158,12 +294,14 @@ export default function AboutPage() {
             onClick={() => setShowUploadModal(false)}
             className="text-gray-400 hover:text-red-500 transition-colors"
           >
-            <AiOutlineCloseCircle className='cursor-pointer' size={32} />
+            <AiOutlineCloseCircle size={32} />
           </button>
         </div>
 
+        
         <div className='p-6 flex flex-col gap-5 overflow-y-auto max-h-[70vh]'>
           
+    
           <div 
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -181,6 +319,20 @@ export default function AboutPage() {
                   className="text-xs font-bold text-green-600 hover:underline"
                 >
                   {isArabic ? "تغيير الملف المختار" : "Change Selection"}
+                </button>
+
+                
+                <button
+                  onClick={() => navigate("/result", {
+                    state: {
+                      image: selectedFiles[0].preview,
+                      disease: "Tomato Early Blight",
+                      treatment: "Remove infected leaves and spray fungicide weekly."
+                    }
+                  })}
+                  className="mt-4 px-6 py-2 bg-green-700 text-white rounded-full hover:bg-green-800 transition shadow-lg"
+                >
+                  {isArabic ? "احصل على النتيجة" : "Get Result"}
                 </button>
               </div>
             ) : (
@@ -207,7 +359,7 @@ export default function AboutPage() {
             />
           </div>
 
-          
+      
           <div className="flex flex-col gap-3">
             {selectedFiles.map((file) => (
               <motion.div 
@@ -220,7 +372,7 @@ export default function AboutPage() {
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-700 truncate max-w-[180px]">{file.name}</span>
-                    <button onClick={() => removeFile(file.id)} className="text-gray-400 cur\ hover:text-red-500">🗑️</button>
+                    <button onClick={() => removeFile(file.id)} className="text-gray-400 hover:text-red-500">🗑️</button>
                   </div>
                   <div className="text-[10px] text-green-600 font-bold mt-1">
                     ✓ {file.size} • {isArabic ? "تم التحميل" : "Completed"}
@@ -229,12 +381,12 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
+
         </div>
       </motion.div>
     </div>
   )}
 </AnimatePresence>
-        
 
         <img
           src={image201}
@@ -301,59 +453,139 @@ export default function AboutPage() {
           />
         </div>
 
-        <AnimatePresence>
-          {openChat && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 50 }}
-              className={`absolute z-50 w-[320px] h-[450px] md:w-[450px] md:h-[550px] bg-white shadow-2xl rounded-3xl flex flex-col overflow-hidden border border-green-200 bottom-[80px] ${isArabic ? 'left-4 md:left-[100px]' : 'right-4 md:right-[100px]'}`}
+       <AnimatePresence>
+  {openChat && (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.8, y: 50 }}
+      className={`absolute z-50 w-[320px] h-[450px] md:w-[450px] md:h-[550px] bg-white shadow-2xl rounded-3xl flex flex-col overflow-hidden border border-green-200 bottom-[80px] ${isArabic ? 'left-4 md:left-[100px]' : 'right-4 md:right-[100px]'}`}
+    >
+      {/* --- الهيدر (العنوان + أزرار التحكم) --- */}
+      <div className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold p-4 flex items-center justify-between shadow-md">
+        <div className="flex items-center gap-2">
+          {/* زرار السجل */}
+          {/* الجزء ده جوه الهيدر */}
+<button 
+  onClick={() => setShowHistory(!showHistory)} 
+  className="hover:bg-white/20 p-2 rounded-full transition-all"
+  title="History"
+>
+  {/* التغيير هنا: خليها HistoryIcon */}
+  <HistoryIcon size={20} /> 
+</button>
+          <h1 className="text-sm">💬 {t("customer_chat")}</h1>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* زرار محادثة جديدة */}
+          <button 
+            onClick={startNewChat}
+            className="hover:bg-white/20 p-2 rounded-full transition-all"
+            title="New Chat"
+          >
+            <MessageSquarePlus size={20} />
+          </button>
+          <button onClick={() => setOpenChat(false)} className="text-2xl hover:rotate-90 transition-transform px-2">×</button>
+        </div>
+      </div>
+
+      {/* --- قائمة السجل الجانبية (Sidebar) --- */}
+      <AnimatePresence>
+        {showHistory && (
+          <motion.div
+            initial={{ x: isArabic ? 300 : -300 }}
+            animate={{ x: 0 }}
+            exit={{ x: isArabic ? 300 : -300 }}
+            className={`absolute inset-y-0 z-[60] w-64 bg-white shadow-2xl p-4 flex flex-col border-gray-100 ${isArabic ? 'right-0 border-l' : 'left-0 border-r'}`}
+          >
+            <div className="flex justify-between items-center mb-6 border-b pb-2">
+              <span className="font-bold text-green-700 text-sm">{isArabic ? "المحادثات السابقة" : "History"}</span>
+              <button onClick={() => setShowHistory(false)}><X size={18} /></button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2">
+              {chatHistory.length === 0 ? (
+                <p className="text-center text-gray-400 text-xs mt-10">لا يوجد سجل حالياً</p>
+              ) : (
+                chatHistory.map((item) => (
+                  <button 
+                    key={item.id}
+                    onClick={() => {
+                      setMessages(item.messages);
+                      setShowHistory(false);
+                    }}
+                    className="w-full text-right p-3 text-[11px] bg-gray-50 hover:bg-green-50 rounded-xl border border-transparent hover:border-green-100 transition-all truncate"
+                  >
+                    {item.title}
+                  </button>
+                ))
+              )}
+            </div>
+            
+            <button 
+              onClick={() => { if(confirm(isArabic ? "مسح السجل؟" : "Clear History?")) setChatHistory([]) }}
+              className="mt-4 text-[10px] text-red-500 hover:underline"
             >
-              <div className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold p-4 flex items-center justify-between">
-                <h1 className="flex items-center gap-2">💬 {t("customer_chat")}</h1>
-                <button onClick={() => setOpenChat(false)} className="text-white text-3xl font-bold cursor-pointer hover:rotate-90 transition-transform">×</button>
-              </div>
+              {isArabic ? "مسح السجل بالكامل" : "Clear History"}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              <div className="flex-1 p-4 overflow-y-auto bg-green-50 space-y-3 text-black">
-                {messages.length === 0 && <p className="text-center text-gray-400 mt-10 text-sm">ابدأ المحادثة الآن...</p>}
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`p-3 rounded-2xl shadow-sm max-w-[90%]   ${msg.type === 'text' ? 'bg-white border' : 'bg-green-100'}`}>
-                    {/* break-words overflow-hidden whitespace-pre-wrap  */}
-                    {msg.type === 'text' ? (
-                      <p className="text-sm">{msg.content}</p>
-                    ) : (
-                      <audio controls src={msg.content} className="w-full h-8" />
-                    )}
-                  </div>
-                ))}
-              </div>
+      {/* --- منطقة الرسائل --- */}
+      <div className="flex-1 p-4 overflow-y-auto bg-green-50 space-y-3 text-black flex flex-col">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full opacity-40 grayscale">
+            <img src={chatbotImg} alt="bot" className="w-16 h-16 mb-2" />
+            <p className="text-sm italic">{isArabic ? "كيف يمكنني مساعدتك؟" : "How can I help you?"}</p>
+          </div>
+        )}
+        {messages.map((msg, idx) => (
+          <div 
+            key={idx} 
+            className={`p-3 rounded-2xl shadow-sm max-w-[85%] ${
+              msg.sender === 'user' 
+                ? 'bg-green-600 text-white self-end ml-auto rounded-tr-none' 
+                : 'bg-white border border-green-200 text-black self-start rounded-tl-none'
+            }`}
+          >
+            {msg.type === 'text' ? (
+              <p className="text-sm">{msg.content}</p>
+            ) : (
+              <audio controls src={msg.content} className="w-full h-8" />
+            )}
+          </div>
+        ))}
+      </div>
 
-              <div className="p-3 bg-white border-t flex items-center gap-2">
-                <button 
-                  onClick={recording ? stopRecording : startRecording}
-                  className={`p-3 rounded-full transition-all ${recording ? 'bg-red-500 animate-pulse text-white' : 'bg-gray-100 text-green-600 hover:bg-green-100'}`}
-                >
-                  {recording ? <StopCircle size={22} /> : <Mic size={22} />}
-                </button>
+      {/* --- منطقة الإدخال (Input) --- */}
+      <div className="p-3 bg-white border-t flex items-center gap-2">
+        <button 
+          onClick={recording ? stopRecording : startRecording}
+          className={`p-3 rounded-full transition-all ${recording ? 'bg-red-500 animate-pulse text-white' : 'bg-gray-100 text-green-600 hover:bg-green-100'}`}
+        >
+          {recording ? <StopCircle size={22} /> : <Mic size={22} />}
+        </button>
 
-                <input
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="flex-1 p-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 text-sm text-black outline-none"
-                  placeholder={t("type_message")}
-                />
-                
-                <button 
-                  onClick={sendMessage} 
-                  className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors shadow-md"
-                >
-                  <Send  size={20} className={  isArabic ? "rotate-180" : ""} />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <input
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          className="flex-1 p-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 text-sm text-black outline-none"
+          placeholder={t("type_message")}
+        />
+        
+        <button 
+          onClick={sendMessage} 
+          className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors shadow-md"
+        >
+          <Send size={20} className={isArabic ? "rotate-180" : ""} />
+        </button>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
       </section>
 
       <section className='w-full h-auto bg-white flex justify-center items-center'>

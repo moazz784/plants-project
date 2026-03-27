@@ -46,7 +46,7 @@ const LeafScanDashboard = () => {
     <div className="flex min-h-screen bg-[#FDFDFD] text-[#1A1C1E] font-sans">
       
       
-      <aside className="flex w-10 md:w-20 flex-col items-center py-8 border-r border-gray-100 bg-white">
+      {/* <aside className="flex w-10 md:w-20 flex-col items-center py-8 border-r border-gray-100 bg-white">
         <div className="space-y-10">
           <div className="p-2 text-gray-400 hover:text-green-700 cursor-pointer transition-all flex flex-col items-center" 
                onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' });}}>
@@ -58,7 +58,7 @@ const LeafScanDashboard = () => {
             <span className="text-[8px] md:text-[10px] block text-center mt-1 text-nowrap">Messages</span>
           </div>
         </div>
-      </aside>
+      </aside> */}
 
       
       <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
