@@ -117,9 +117,9 @@ const WeatherCard = ({ isArabic }) => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
-      className={`absolute z-50 top-28 md:top-32 flex flex-col gap-3 p-3 md:p-6 rounded-[2.5rem] 
+      className={`absolute z-50 top-29 md:top-32 flex flex-col gap-3 p-3 md:p-6 rounded-[2.5rem] 
         backdrop-blur-[1px] border border-white/30 shadow-2xl overflow-hidden
-        w-[90%] left-1/2 -translate-x-1/2 md:translate-x-0  
+        w-[88%] left-1/2 -translate-x-1/2 md:translate-x-0  
         /* التعديل هنا: كبرنا الـ max-width سنة */
         lg:max-w-[370px] md:max-w-[400px] 
         ${isArabic ? 'md:left-40 md:right-auto' : 'md:right-40 md:left-auto'}`}

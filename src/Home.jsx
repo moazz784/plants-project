@@ -264,7 +264,7 @@ useEffect(() => {
       <section className='w-full min-h-screen bg-[url(/background.jpg)] relative bg-cover bg-center overflow-hidden px-5 md:px-10'>
 
 <WeatherCard isArabic={isArabic} />
-  /
+  
        <AnimatePresence>
   {showUploadModal && (
     <div className="absolute inset-0 z-[100] flex items-center justify-center p-4">
