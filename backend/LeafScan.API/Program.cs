@@ -120,6 +120,10 @@ app.MapGet("/", () => Results.Json(new
         {
             send = "POST /api/messages"
         },
+        chat = new
+        {
+            send = "POST /api/chat"
+        },
         admin = new
         {
             listMessages = "GET /api/admin/messages",

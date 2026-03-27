@@ -24,6 +24,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<Crop> Crops => Set<Crop>();
     public DbSet<CropSoilClimate> CropSoilClimates => Set<CropSoilClimate>();
     public DbSet<CropRequirement> CropRequirements => Set<CropRequirement>();
+    public DbSet<SoilTypeTranslation> SoilTypeTranslations => Set<SoilTypeTranslation>();
+    public DbSet<ClimateTranslation> ClimateTranslations => Set<ClimateTranslation>();
+    public DbSet<CropTranslation> CropTranslations => Set<CropTranslation>();
+    public DbSet<KimiChatMessage> KimiChatMessages => Set<KimiChatMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -153,6 +157,39 @@ public class ApplicationDbContext : DbContext
             e.HasOne(x => x.Crop).WithMany().HasForeignKey(x => x.CropId);
             e.Property(x => x.WaterLitersPerAcrePerWeek).HasPrecision(18, 2);
             e.Property(x => x.FertilizerKgPerAcre).HasPrecision(18, 2);
+        });
+
+        modelBuilder.Entity<SoilTypeTranslation>(e =>
+        {
+            e.HasKey(x => new { x.SoilTypeId, x.LanguageCode });
+            e.HasOne(x => x.SoilType).WithMany().HasForeignKey(x => x.SoilTypeId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.LanguageCode).HasMaxLength(10);
+            e.Property(x => x.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<ClimateTranslation>(e =>
+        {
+            e.HasKey(x => new { x.ClimateId, x.LanguageCode });
+            e.HasOne(x => x.Climate).WithMany().HasForeignKey(x => x.ClimateId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.LanguageCode).HasMaxLength(10);
+            e.Property(x => x.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<CropTranslation>(e =>
+        {
+            e.HasKey(x => new { x.CropId, x.LanguageCode });
+            e.HasOne(x => x.Crop).WithMany().HasForeignKey(x => x.CropId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.LanguageCode).HasMaxLength(10);
+            e.Property(x => x.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<KimiChatMessage>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.User).WithMany(u => u.KimiChatMessages).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.Role).HasMaxLength(20);
+            e.HasIndex(x => new { x.UserId, x.SessionId });
+            e.HasIndex(x => x.CreatedAtUtc);
         });
     }
 }

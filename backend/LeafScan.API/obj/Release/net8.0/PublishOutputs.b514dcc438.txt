@@ -25,6 +25,9 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensi
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Configuration.Json.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Diagnostics.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Http.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Logging.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\publish\Microsoft.Extensions.Options.dll

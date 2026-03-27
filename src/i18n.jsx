@@ -37,6 +37,9 @@ const resources = {
       customer_chat: "Customer Chat",
       type_message: "Type your message...",
       send: "Send",
+      login_to_chat: "Please log in to chat",
+      chat_loading: "Sending...",
+      chat_start: "Start the conversation now...",
 
       // ===== About Section =====
       about_title: "ABOUT US",
@@ -302,6 +305,9 @@ no_crops_found: "No crops found",
       customer_chat: "دردشة العملاء",
       type_message: "اكتب رسالتك هنا...",
       send: "إرسال",
+      login_to_chat: "يرجى تسجيل الدخول للمحادثة",
+      chat_loading: "جاري الإرسال...",
+      chat_start: "ابدأ المحادثة الآن...",
 
       // ===== About Section =====
       about_title: "من نحن",

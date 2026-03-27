@@ -55,15 +55,19 @@ export const api = {
     create: (body) => api.post('/messages', body),
   },
 
-  // الجزء اللي كان ناقص وكان بيسبب الخطأ في صفحة الخدمات
+  chat: {
+    send: (sessionId, messages, language) =>
+      api.post('/chat', { sessionId, messages, language }),
+  },
+
   services: {
-    getRecommendations: (soilType, climate) =>
-      api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}`),
-    calculate: (soilType, climate, crop, landArea) =>
-      api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}`),
-    getSoilTypes: () => api.get('/services/soil-types'),
-    getClimates: () => api.get('/services/climates'),
-    getCrops: () => api.get('/services/crops'),
+    getSoilTypes: (lang) => api.get(`/services/soil-types${lang ? `?lang=${lang}` : ''}`),
+    getClimates: (lang) => api.get(`/services/climates${lang ? `?lang=${lang}` : ''}`),
+    getCrops: (lang) => api.get(`/services/crops${lang ? `?lang=${lang}` : ''}`),
+    getRecommendations: (soilType, climate, lang) =>
+      api.get(`/services/recommendations?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}${lang ? `&lang=${lang}` : ''}`),
+    calculate: (soilType, climate, crop, landArea, lang) =>
+      api.get(`/services/calculate?soilType=${encodeURIComponent(soilType)}&climate=${encodeURIComponent(climate)}&crop=${encodeURIComponent(crop)}&landArea=${encodeURIComponent(landArea)}${lang ? `&lang=${lang}` : ''}`),
   },
 
   admin: {

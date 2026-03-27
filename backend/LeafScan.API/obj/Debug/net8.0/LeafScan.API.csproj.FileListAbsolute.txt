@@ -159,3 +159,6 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.api\bin\Debug\ne
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.api\bin\Debug\net8.0\appsettings.Production.json
 c:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Debug\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll
 c:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Json.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Debug\net8.0\Microsoft.Extensions.Http.dll

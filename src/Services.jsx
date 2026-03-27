@@ -25,14 +25,15 @@ const AgricultureServices = () => {
   const [recLoading, setRecLoading] = useState(false);
   const [calcLoading, setCalcLoading] = useState(false);
 
-  // 3. جلب خيارات القوائم عند فتح الصفحة
+  // 3. جلب خيارات القوائم عند فتح الصفحة وعند تغيير اللغة
   useEffect(() => {
-    api.services.getSoilTypes().then(setSoilOptions).catch(() => setSoilOptions([]));
-    api.services.getClimates().then(setClimateOptions).catch(() => setClimateOptions([]));
-    api.services.getCrops().then(setCropOptions).catch(() => setCropOptions([]));
-  }, []);
+    const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+    api.services.getSoilTypes(lang).then(setSoilOptions).catch(() => setSoilOptions([]));
+    api.services.getClimates(lang).then(setClimateOptions).catch(() => setClimateOptions([]));
+    api.services.getCrops(lang).then(setCropOptions).catch(() => setCropOptions([]));
+  }, [i18n.language]);
 
-  // 4. دالة جلب التوصيات (المعدلة للترجمة)
+  // 4. دالة جلب التوصيات (API يعيد أسماء مترجمة مباشرة)
   const handleGetRecommendation = async () => {
     if (!recommendationData.soilType || !recommendationData.climate) {
       toast.error(t("alert_missing_rec"));
@@ -41,22 +42,17 @@ const AgricultureServices = () => {
     setRecLoading(true);
     setRecResult(null);
     try {
-      const data = await api.services.getRecommendations(recommendationData.soilType, recommendationData.climate);
-      
-      // تحويل أسماء المحاصيل القادمة من السيرفر لمفاتيح ترجمة (مثلاً Tomato تصبح opt_tomato)
-      const translatedCrops = data.crops?.map(crop => {
-        const key = `opt_${crop.toLowerCase().trim().replace(/\s+/g, '_')}`;
-        return t(key) !== key ? t(key) : crop; // إذا لم يجد ترجمة يعرض الاسم الأصلي
-      });
-
+      const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+      const soilType = normalizeForApi(recommendationData.soilType);
+      const climate = normalizeForApi(recommendationData.climate);
+      const data = await api.services.getRecommendations(soilType, climate, lang);
       const separator = isArabic ? " و " : " & ";
-      const cropDisplay = translatedCrops?.length > 0 ? translatedCrops.join(separator) : t("no_crops_found");
-      
+      const cropDisplay = data.crops?.length > 0 ? data.crops.join(separator) : t("no_crops_found");
       setRecResult({
         bestCrop: cropDisplay,
         reason: t("res_reason", {
-          soil: t(`opt_${recommendationData.soilType.toLowerCase()}`) || recommendationData.soilType,
-          climate: t(`opt_${recommendationData.climate.toLowerCase()}`) || recommendationData.climate
+          soil: formatOptionDisplay(recommendationData.soilType),
+          climate: formatOptionDisplay(recommendationData.climate)
         })
       });
     } catch (err) {
@@ -76,7 +72,11 @@ const AgricultureServices = () => {
     setCalcLoading(true);
     setCalcResult(null);
     try {
-      const data = await api.services.calculate(soilType, climate, crop, parseFloat(landArea));
+      const lang = i18n.language?.startsWith('ar') ? 'ar' : 'en';
+      const cropToSend = normalizeForApi(crop);
+      const soilToSend = normalizeForApi(soilType);
+      const climateToSend = normalizeForApi(climate);
+      const data = await api.services.calculate(soilToSend, climateToSend, cropToSend, parseFloat(landArea), lang);
       
       // تحديد التنسيق المحلي للأرقام (بالعربي تظهر ١٢٣ وبالإنجليزي 123)
       const locale = isArabic ? 'ar-EG' : 'en-US';
@@ -200,6 +200,17 @@ const AgricultureServices = () => {
   );
 };
 
+const formatOptionDisplay = (opt) => {
+  if (typeof opt !== 'string') return String(opt);
+  if (opt.startsWith('opt_')) {
+    const name = opt.replace(/^opt_/, '').replace(/_/g, ' ');
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+  return opt;
+};
+
+const normalizeForApi = (val) => (typeof val === 'string' && val.startsWith('opt_') ? formatOptionDisplay(val) : val);
+
 const InputField = ({ label, value, options, onChange, t }) => (
   <div className={`flex flex-col ${t.language === 'ar' ? 'text-right' : 'text-left'}`}>
     <label className="text-[#2D5A43] font-bold text-sm mb-1">{label}</label>
@@ -210,10 +221,7 @@ const InputField = ({ label, value, options, onChange, t }) => (
     >
       <option value="" disabled>{t("choose_prefix")} {label}...</option>
       {options.map(opt => (
-        <option key={opt} value={opt}>
-          
-          {t(`opt_${opt.toLowerCase().trim().replace(/\s+/g, '_')}`) || opt}
-        </option>
+        <option key={opt} value={opt}>{formatOptionDisplay(opt)}</option>
       ))}
     </select>
   </div>

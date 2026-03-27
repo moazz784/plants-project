@@ -229,6 +229,8 @@ IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] =
     INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260213190000_AddErDiagramTables', N'8.0.11');
 IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'20260221120000_AddCropServices')
     INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260221120000_AddCropServices', N'8.0.11');
+IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'20260224164004_AddTranslationTables')
+    INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20260224164004_AddTranslationTables', N'8.0.11');
 GO
 
 -- =====================================================
@@ -297,19 +299,59 @@ BEGIN
     (9,2,3),(10,2,3),(10,2,2),(10,3,3),(10,3,2),(11,1,1),(11,1,2),(11,3,1),(11,3,2),(11,4,4),(11,4,5),
     (12,2,1),(12,2,3),(12,3,1),(12,3,3),(13,3,2),(13,2,2),(14,4,4),(14,2,2),(15,4,4),(15,1,2),(16,1,4),(16,4,3);
 
+    -- Practical values (relative accuracy from FAO/extension). Water L/acre/week, Fertilizer kg/acre
     INSERT INTO [dbo].[CropRequirements] ([CropId],[WaterLitersPerAcrePerWeek],[FertilizerKgPerAcre]) VALUES
-    (1,550,18),(2,400,12),(3,350,10),(4,300,8),(5,700,25),(6,400,12),(7,450,14),(8,500,22),(9,400,12),(10,420,11),
-    (11,550,18),(12,450,12),(13,600,25),(14,450,15),(15,500,16),(16,450,14);
+    (1,520,18),(2,500,12),(3,480,10),(4,460,8),(5,700,22),(6,620,14),(7,580,12),(8,550,20),
+    (9,400,12),(10,410,11),(11,540,18),(12,420,12),(13,500,22),(14,480,14),(15,510,15),(16,490,14);
 END
 GO
 
--- Patch: Add CropRequirements for Peanuts, Sorghum, Millet, Spinach, Barley, Oats (if missing)
--- Run this if your database was seeded before these 6 crops had irrigation data
+-- 15. Translation tables for localization (en/ar)
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SoilTypeTranslations')
+BEGIN
+    CREATE TABLE [dbo].[SoilTypeTranslations] (
+        [SoilTypeId] INT NOT NULL,
+        [LanguageCode] NVARCHAR(10) NOT NULL,
+        [Name] NVARCHAR(100) NOT NULL,
+        CONSTRAINT [PK_SoilTypeTranslations] PRIMARY KEY ([SoilTypeId], [LanguageCode]),
+        CONSTRAINT [FK_SoilTypeTranslations_SoilTypes_SoilTypeId] FOREIGN KEY ([SoilTypeId]) REFERENCES [dbo].[SoilTypes] ([Id]) ON DELETE CASCADE
+    );
+    CREATE TABLE [dbo].[ClimateTranslations] (
+        [ClimateId] INT NOT NULL,
+        [LanguageCode] NVARCHAR(10) NOT NULL,
+        [Name] NVARCHAR(100) NOT NULL,
+        CONSTRAINT [PK_ClimateTranslations] PRIMARY KEY ([ClimateId], [LanguageCode]),
+        CONSTRAINT [FK_ClimateTranslations_Climates_ClimateId] FOREIGN KEY ([ClimateId]) REFERENCES [dbo].[Climates] ([Id]) ON DELETE CASCADE
+    );
+    CREATE TABLE [dbo].[CropTranslations] (
+        [CropId] INT NOT NULL,
+        [LanguageCode] NVARCHAR(10) NOT NULL,
+        [Name] NVARCHAR(100) NOT NULL,
+        CONSTRAINT [PK_CropTranslations] PRIMARY KEY ([CropId], [LanguageCode]),
+        CONSTRAINT [FK_CropTranslations_Crops_CropId] FOREIGN KEY ([CropId]) REFERENCES [dbo].[Crops] ([Id]) ON DELETE CASCADE
+    );
+END
+GO
+
+-- Seed translation tables (en + ar) when empty
+IF NOT EXISTS (SELECT 1 FROM [dbo].[SoilTypeTranslations])
+BEGIN
+    INSERT INTO [dbo].[SoilTypeTranslations] ([SoilTypeId],[LanguageCode],[Name]) VALUES
+    (1,'en','Sandy'),(1,'ar',N'رملية'),(2,'en','Clay'),(2,'ar',N'طينية'),(3,'en','Silt'),(3,'ar',N'غرينية'),(4,'en','Loam'),(4,'ar',N'طمي');
+    INSERT INTO [dbo].[ClimateTranslations] ([ClimateId],[LanguageCode],[Name]) VALUES
+    (1,'en','Arid'),(1,'ar',N'قاحل'),(2,'en','Humid'),(2,'ar',N'رطب'),(3,'en','Cold'),(3,'ar',N'بارد'),(4,'en','Temperate'),(4,'ar',N'معتدل'),(5,'en','Tropical'),(5,'ar',N'استوائي');
+    INSERT INTO [dbo].[CropTranslations] ([CropId],[LanguageCode],[Name]) VALUES
+    (1,'en','Watermelon'),(1,'ar',N'بطيخ'),(2,'en','Peanuts'),(2,'ar',N'فول سوداني'),(3,'en','Sorghum'),(3,'ar',N'ذرة بيضاء'),(4,'en','Millet'),(4,'ar',N'دخن'),(5,'en','Rice'),(5,'ar',N'أرز'),(6,'en','Lettuce'),(6,'ar',N'خس'),(7,'en','Spinach'),(7,'ar',N'سبانخ'),(8,'en','Potato'),(8,'ar',N'بطاطا'),(9,'en','Barley'),(9,'ar',N'شعير'),(10,'en','Oats'),(10,'ar',N'شوفان'),(11,'en','Tomato'),(11,'ar',N'طماطم'),(12,'en','Wheat'),(12,'ar',N'قمح'),(13,'en','Corn'),(13,'ar',N'ذرة'),(14,'en','Soybean'),(14,'ar',N'فول صويا'),(15,'en','Cucumber'),(15,'ar',N'خيار'),(16,'en','Carrot'),(16,'ar',N'جزر');
+END
+GO
+
+-- Patch: Add CropRequirements for ALL 16 crops if missing (idempotent)
 INSERT INTO [dbo].[CropRequirements] ([CropId],[WaterLitersPerAcrePerWeek],[FertilizerKgPerAcre])
 SELECT v.CropId, v.Water, v.Fertilizer
 FROM (VALUES 
-    (2, 400.00, 12.00), (3, 350.00, 10.00), (4, 300.00, 8.00),
-    (7, 450.00, 14.00), (9, 400.00, 12.00), (10, 420.00, 11.00)
+    (1, 520.00, 18.00), (2, 500.00, 12.00), (3, 480.00, 10.00), (4, 460.00, 8.00), (5, 700.00, 22.00),
+    (6, 620.00, 14.00), (7, 580.00, 12.00), (8, 550.00, 20.00), (9, 400.00, 12.00), (10, 410.00, 11.00),
+    (11, 540.00, 18.00), (12, 420.00, 12.00), (13, 500.00, 22.00), (14, 480.00, 14.00), (15, 510.00, 15.00), (16, 490.00, 14.00)
 ) AS v(CropId, Water, Fertilizer)
 WHERE EXISTS (SELECT 1 FROM [dbo].[Crops] c WHERE c.Id = v.CropId)
 AND NOT EXISTS (SELECT 1 FROM [dbo].[CropRequirements] cr WHERE cr.CropId = v.CropId);
