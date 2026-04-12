@@ -8,6 +8,7 @@ using LeafScan.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using LeafScan.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,29 +32,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// --- تعديل جزء الـ CORS هنا ---
+// CORS: AllowCredentials requires a reflected specific Origin (never *). Needed for HttpOnly auth cookies on cross-origin SPA requests.
 builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(p =>
     {
         p.SetIsOriginAllowed(origin =>
         {
-            if (string.IsNullOrEmpty(origin)) return true; // السماح للطلبات التي لا تملك Origin (مثل تطبيقات معينة)
-            
-            // السماح للمتصفح (Localhost)
-            if (origin.StartsWith("http://localhost") || origin.StartsWith("https://localhost")) return true;
-            
-            // السماح لتطبيقات الموبايل (Capacitor)
-            if (origin == "capacitor://localhost" || origin.StartsWith("http://10.0.2.2")) return true; 
+            if (string.IsNullOrEmpty(origin)) return true;
 
-            // السماح لروابط الـ Vercel
-            if (origin.EndsWith(".vercel.app")) return true;
-            
-            return origin == "https://plants-project-lszl.vercel.app" || origin == "https://plants-project-p7j7.vercel.app";
+            if (origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
+                origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (origin == "capacitor://localhost" || origin.StartsWith("http://10.0.2.2", StringComparison.Ordinal))
+                return true;
+
+            if (origin.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return origin is "https://plants-project-lszl.vercel.app" or "https://plants-project-p7j7.vercel.app";
         })
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials(); // مهم جداً لدعم تسجيل الدخول المستقر
+        .AllowCredentials();
     });
 });
 
@@ -68,6 +70,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "LeafScan",
             ValidAudience = builder.Configuration["Jwt:Audience"] ?? "LeafScan",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "LeafScanSecretKeyForJWTTokenGeneration12345"))
+        };
+        o.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrEmpty(context.Token) &&
+                    context.Request.Cookies.TryGetValue(AuthCookie.Name, out var token) &&
+                    !string.IsNullOrEmpty(token))
+                    context.Token = token;
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -110,6 +123,7 @@ app.MapGet("/", () => Results.Json(new
         {
             login = "POST /api/auth/login",
             register = "POST /api/auth/register",
+            logout = "POST /api/auth/logout",
             me = "GET /api/auth/me"
         },
         users = new

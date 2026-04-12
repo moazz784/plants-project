@@ -30,10 +30,12 @@ import {
   History as HistoryIcon 
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "./AuthContext";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const isArabic = i18n.language === 'ar';
   const [coords, setCoords] = useState({ lat: null, lon: null });
   const [showText, setShowText] = useState(false);
@@ -132,9 +134,8 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, []);
   useEffect(() => {
-    const hasloged = localStorage.getItem("hasloged") === "true";
-    if (!hasloged) navigate("/login");
-  }, [navigate]);
+    if (!authLoading && !user) navigate("/login");
+  }, [authLoading, user, navigate]);
 // useEffect(() => {
 //   let watchId;
 

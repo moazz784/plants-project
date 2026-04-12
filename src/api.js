@@ -1,17 +1,8 @@
 // src/api.js
-// استبدل السطر الأول بهذا السطر
-// const API_BASE = 'http://192.168.1.8:5000/api';
 const API_BASE = import.meta.env.VITE_API_URL || 'https://plantgraduationproject.runasp.net/api';
 
-function getToken() {
-  return localStorage.getItem('access_token');
-}
-
 function getAuthHeaders() {
-  const token = getToken();
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  return headers;
+  return { 'Content-Type': 'application/json' };
 }
 
 export function getErrorMessage(err, fallback = 'Something went wrong') {
@@ -25,7 +16,8 @@ export const api = {
     const res = await fetch(`${API_BASE}${path}`, {
       method,
       headers: getAuthHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include',
+      body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw { status: res.status, ...data };
@@ -40,6 +32,7 @@ export const api = {
   auth: {
     login: (email, password) => api.post('/auth/login', { email, password }),
     register: (name, email, password) => api.post('/auth/register', { name, email, password }),
+    logout: () => api.post('/auth/logout'),
     me: () => api.get('/auth/me'),
   },
 
@@ -72,7 +65,7 @@ export const api = {
 
   admin: {
     getMessages: () => api.get('/admin/messages'),
-    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }), 
+    patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
   },
 };

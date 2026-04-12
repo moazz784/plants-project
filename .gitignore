@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 # Backend secrets (production connection string, etc.)
 backend/LeafScan.API/appsettings.Production.json
+
+# .NET build output
+backend/**/bin/
+backend/**/obj/
