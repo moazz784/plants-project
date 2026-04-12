@@ -28,3 +28,5 @@ backend/LeafScan.API/appsettings.Production.json
 # .NET build output
 backend/**/bin/
 backend/**/obj/
+backend/**/publish/
+publish/
