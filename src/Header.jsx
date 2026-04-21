@@ -196,13 +196,14 @@ export default function Header() {
                 </div>
               </>
             ) : (
-              <button 
-                onClick={() => navigate('/login')} 
-                className="bg-green-700 text-white cursor-pointer px-2 md:px-5 py-2 rounded-full hover:bg-green-800 transition whitespace-nowrap flex-shrink-0 text-[12px] md:text-base font-medium z-10"
-              >
               
-                {t('login')}
-              </button>
+             <button 
+  onClick={() => navigate('/login')} 
+  className="sound-btn bg-green-700 text-white cursor-pointer px-2 md:px-5 py-2 rounded-full hover:bg-green-800 transition whitespace-nowrap flex-shrink-0 text-[12px] md:text-base font-medium z-10"
+>
+  {t('login')}
+</button>
+              
             )}
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-1 text-green-800 active:scale-90 relative z-[200]"><svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">{isMenuOpen ? <path strokeWidth="2" d="M6 18L18 6M6 6l12 12" /> : <path strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />}</svg></button>
           </div>
