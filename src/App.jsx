@@ -23,10 +23,10 @@ import ResultPage from "./ResultPage";
 export default function App() {
   const [loading, setLoading] = useState(true);
 
-  // الصوت هنا لازم يكون داخل App وليس داخل useEffect
+  
  const [play] = useSound(clickSound);
 
-  // أنميشن العنوان - منعزل تماماً ولا يؤثر على الـ Auth
+  
 useEffect(() => {
   const handleClick = (e) => {
     const el = e.target.closest("a, button");
@@ -43,7 +43,7 @@ useEffect(() => {
   };
 }, [play]);
   useEffect(() => {
-    const titles = ["LeafScan 🍀", "AI Plant Doctor 🌺", "Smart Detection 🌸"];
+    const titles = ["LeafScan ", "AI Plant Doctor ", "Smart Detection "];
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;

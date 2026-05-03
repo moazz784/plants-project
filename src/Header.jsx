@@ -116,8 +116,8 @@ export default function Header() {
     }
   };
 
-  const handleLogout = () => {
-    authLogout();
+  const handleLogout = async () => {
+    await authLogout();
     toast.success(t("logout_success"));
     navigate("/login");
   };

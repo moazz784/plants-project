@@ -1,3 +1,4 @@
+using LeafScan.API;
 using LeafScan.Application.DTOs;
 using LeafScan.Application.Services;
 using LeafScan.Application.Validators;
@@ -33,7 +34,8 @@ public class AuthController : ControllerBase
         try
         {
             var response = await _auth.RegisterAsync(request, ct);
-            return Ok(response);
+            Response.Cookies.Append(AuthCookie.Name, response.Token, AuthCookie.CreateAuthCookieOptions());
+            return Ok(new { user = response.User });
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("already registered"))
         {
@@ -52,7 +54,16 @@ public class AuthController : ControllerBase
         if (response == null)
             return Unauthorized(new { code = "INVALID_CREDENTIALS", message = "Wrong email or password" });
 
-        return Ok(response);
+        Response.Cookies.Append(AuthCookie.Name, response.Token, AuthCookie.CreateAuthCookieOptions());
+        return Ok(new { user = response.User });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete(AuthCookie.Name, AuthCookie.CreateDeleteCookieOptions());
+        return Ok();
     }
 
     [Authorize]

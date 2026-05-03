@@ -21,7 +21,7 @@ export default function Login() {
       const response = await api.auth.login(values.email, values.password);
   
       
-      authLogin(response.token, response.user);
+      authLogin(response.user);
       
       toast.success(t("login_success"));
       navigate("/");
@@ -37,7 +37,7 @@ export default function Login() {
     try {
       const response = await api.auth.register(values.name, values.email, values.password);
       
-      authLogin(response.token, response.user);
+      authLogin(response.user);
       
       toast.success(t("signup_success"));
       navigate("/");

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api } from './api';
 
 const AuthContext = createContext(null);
@@ -7,36 +7,45 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const login = (token, userData) => {
-    localStorage.setItem('access_token', token);
-    setUser(userData);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('access_token');
+  const logout = useCallback(async () => {
+    try {
+      await api.auth.logout();
+    } catch (_) {}
+    try {
+      localStorage.removeItem('hasloged');
+    } catch (_) {}
     setUser(null);
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const login = useCallback((userData) => {
+    setUser(userData);
+  }, []);
+
+  const refreshUser = useCallback(async () => {
     try {
       const data = await api.auth.me();
       setUser(data);
     } catch {
-      logout();
+      await logout();
     }
-  };
+  }, [logout]);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    api.auth.me()
-      .then(setUser)
-      .catch(logout)
-      .finally(() => setLoading(false));
-  }, []);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await api.auth.me();
+        if (!cancelled) setUser(data);
+      } catch {
+        await logout();
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [logout]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, refreshUser, loading }}>

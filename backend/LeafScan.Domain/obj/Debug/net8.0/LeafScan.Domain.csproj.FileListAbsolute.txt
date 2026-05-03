@@ -10,3 +10,15 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.Domain\obj\Debug
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.Domain\obj\Debug\net8.0\refint\LeafScan.Domain.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.pdb
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.Domain\obj\Debug\net8.0\ref\LeafScan.Domain.dll
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\bin\Debug\net8.0\LeafScan.Domain.deps.json
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\bin\Debug\net8.0\LeafScan.Domain.dll
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\bin\Debug\net8.0\LeafScan.Domain.pdb
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.AssemblyInfoInputs.cache
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.AssemblyInfo.cs
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.csproj.CoreCompileInputs.cache
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.sourcelink.json
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.dll
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\refint\LeafScan.Domain.dll
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\LeafScan.Domain.pdb
+C:\Users\alsad\Desktop\projects\graduation-project\@latest\backend\LeafScan.Domain\obj\Debug\net8.0\ref\LeafScan.Domain.dll
