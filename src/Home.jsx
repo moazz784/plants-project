@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "./AuthContext";
+import { api } from "./api";
+import toast from "react-hot-toast";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
@@ -150,27 +152,38 @@ export default function AboutPage() {
     };
   }, [cameraOpen, isArabic]);
 
-  const capturePhoto = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const imageDataUrl = canvas.toDataURL('image/jpeg');
-      
-      setCameraOpen(false);
-      setIsAnalyzing(true);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        navigate("/result", {
-          state: {
-            image: imageDataUrl,
-            disease: "Tomato Early Blight",
-            treatment: "Remove infected leaves and spray fungicide weekly."
-          }
-        });
-      }, 5000);
+  const capturePhoto = async () => {
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const imageDataUrl = canvas.toDataURL('image/jpeg');
+
+    // Convert data URL to a File for the API
+    const res = await fetch(imageDataUrl);
+    const blob = await res.blob();
+    const imageFile = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
+
+    setCameraOpen(false);
+    setIsAnalyzing(true);
+
+    try {
+      const data = await api.plant.predict(imageFile);
+      navigate("/result", {
+        state: {
+          image: imageDataUrl,
+          predictedClass: data.predictedClass,
+          confidence: data.confidence,
+          top3: data.top3,
+        },
+      });
+    } catch (err) {
+      toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -187,7 +200,8 @@ export default function AboutPage() {
       name: file.name,
       size: (file.size / 1024).toFixed(1) + " KB",
       type: file.type.split('/')[1]?.toUpperCase() || "IMG",
-      preview: imageUrl
+      preview: imageUrl,
+      originalFile: file,
     };
     setSelectedFiles([newFile]);
   };
@@ -261,18 +275,26 @@ export default function AboutPage() {
                         <img src={selectedFiles[0].preview} alt="preview" className="max-h-[160px] rounded-xl object-contain shadow-sm mb-4" />
                         <button onClick={() => fileInputRef.current.click()} className="text-xs font-bold text-green-600 hover:underline">{isArabic ? "تغيير الملف المختار" : "Change Selection"}</button>
                         <button
-                          onClick={() => {
+                          onClick={async () => {
+                            const fileEntry = selectedFiles[0];
+                            if (!fileEntry?.originalFile) return;
+                            setShowUploadModal(false);
                             setIsAnalyzing(true);
-                            setTimeout(() => {
-                              setIsAnalyzing(false);
+                            try {
+                              const data = await api.plant.predict(fileEntry.originalFile);
                               navigate("/result", {
                                 state: {
-                                  image: selectedFiles[0].preview,
-                                  disease: "Tomato Early Blight",
-                                  treatment: "Remove infected leaves and spray fungicide weekly."
-                                }
+                                  image: fileEntry.preview,
+                                  predictedClass: data.predictedClass,
+                                  confidence: data.confidence,
+                                  top3: data.top3,
+                                },
                               });
-                            }, 5000);
+                            } catch (err) {
+                              toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+                            } finally {
+                              setIsAnalyzing(false);
+                            }
                           }}
                           className="mt-4 px-6 py-2 bg-green-700 text-white rounded-full hover:bg-green-800 transition shadow-lg"
                         >

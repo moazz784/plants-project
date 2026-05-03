@@ -68,4 +68,20 @@ export const api = {
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
   },
+
+  plant: {
+    predict: async (imageFile) => {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      const res = await fetch(`${API_BASE}/plant/predict`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+        // Do NOT set Content-Type — browser sets multipart boundary automatically
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw { status: res.status, ...data };
+      return data;
+    },
+  },
 };

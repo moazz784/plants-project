@@ -5,6 +5,7 @@ using LeafScan.Application.Services;
 using LeafScan.Application.Validators;
 using LeafScan.Infrastructure.Data;
 using LeafScan.Infrastructure.Extensions;
+using LeafScan.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,6 +89,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+builder.Services.AddHttpClient<IPlantDiseaseService, PlantDiseaseService>();
 
 var app = builder.Build();
 
