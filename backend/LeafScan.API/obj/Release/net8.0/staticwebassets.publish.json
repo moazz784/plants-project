@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "18UItqebriGVZ8c03QR+bDZ5Be/cxR4dDPknL3QERTk=",
-  "Source": "LeafScan.API",
-  "BasePath": "_content/LeafScan.API",
-  "Mode": "Default",
-  "ManifestType": "Publish",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"FlL3s+O8pRI9E59Eb5f7EivMYkaUCGwDtIiF+kAfapk=","Source":"LeafScan.API","BasePath":"/","Mode":"Root","ManifestType":"Publish","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

@@ -143,11 +143,6 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\LeafScan.API.sourcelink.json
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets.build.json
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets.development.json
-C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets\msbuild.LeafScan.API.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets\msbuild.build.LeafScan.API.props
-C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets\msbuild.buildMultiTargeting.LeafScan.API.props
-C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets\msbuild.buildTransitive.LeafScan.API.props
-C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets.pack.json
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\scopedcss\bundle\LeafScan.API.styles.css
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\LeafScan.EC6CBC48.Up2Date
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\LeafScan.API.dll
@@ -162,3 +157,11 @@ C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Release\
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Release\net8.0\Microsoft.Extensions.Diagnostics.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Release\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
 C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Release\net8.0\Microsoft.Extensions.Http.dll
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\bin\Release\net8.0\LeafScan.API.staticwebassets.endpoints.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\rpswa.dswa.cache.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\rjimswa.dswa.cache.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets.build.json.cache
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\staticwebassets.build.endpoints.json
+C:\Users\youss\OneDrive\Desktop\plants-project\backend\LeafScan.API\obj\Release\net8.0\swae.build.ex.cache

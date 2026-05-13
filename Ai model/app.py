@@ -71,6 +71,20 @@ if not os.path.exists(MODEL_PATH):
     print("Download complete.")
 
 print("Loading model...")
+
+# Monkey-patch keras Dense.__init__ so it silently drops quantization_config.
+# The model was saved with a Keras version that stores quantization_config in
+# every Dense layer's config; the deployed Keras does not accept that kwarg.
+# custom_objects does not work here because Keras resolves built-in layers by
+# their full module path, bypassing the custom_objects dict entirely.
+import keras.src.layers.core.dense as _keras_dense_mod
+_orig_dense_init = _keras_dense_mod.Dense.__init__
+
+def _patched_dense_init(self, *args, quantization_config=None, **kwargs):
+    _orig_dense_init(self, *args, **kwargs)
+
+_keras_dense_mod.Dense.__init__ = _patched_dense_init
+
 model = tf.keras.models.load_model(MODEL_PATH)
 # Warmup call to avoid slow first prediction request
 model.predict(np.zeros((1, 224, 224, 3)), verbose=0)
