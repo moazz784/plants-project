@@ -23,8 +23,7 @@ public class AuthService : IAuthService
         if (user == null) return null;
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return null;
 
-        var token = _jwt.GenerateToken(user.Id, user.Email, user.Role);
-        return new AuthResponse(token, MapUser(user));
+        return await IssueTokensAsync(user, ct);
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
@@ -45,8 +44,28 @@ public class AuthService : IAuthService
         _db.Users.Add(user);
         await _db.SaveChangesAsync(ct);
 
-        var token = _jwt.GenerateToken(user.Id, user.Email, user.Role);
-        return new AuthResponse(token, MapUser(user));
+        return await IssueTokensAsync(user, ct);
+    }
+
+    public async Task<AuthResponse?> RefreshAsync(string refreshToken, CancellationToken ct = default)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, ct);
+        if (user == null) return null;
+        if (user.RefreshTokenExpiresAtUtc == null || user.RefreshTokenExpiresAtUtc < DateTime.UtcNow) return null;
+
+        return await IssueTokensAsync(user, ct);
+    }
+
+    private async Task<AuthResponse> IssueTokensAsync(User user, CancellationToken ct)
+    {
+        var accessToken = _jwt.GenerateToken(user.Id, user.Email, user.Role);
+        var refreshToken = _jwt.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiresAtUtc = DateTime.UtcNow.AddDays(7);
+        await _db.SaveChangesAsync(ct);
+
+        return new AuthResponse(accessToken, refreshToken, MapUser(user));
     }
 
     public async Task<AuthUserDto?> GetMeAsync(Guid userId, CancellationToken ct = default)
