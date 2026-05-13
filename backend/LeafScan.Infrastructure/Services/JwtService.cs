@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +10,7 @@ namespace LeafScan.Infrastructure.Services;
 public interface IJwtService
 {
     string GenerateToken(Guid userId, string email, string role);
+    string GenerateRefreshToken();
 }
 
 public class JwtService : IJwtService
@@ -33,10 +35,13 @@ public class JwtService : IJwtService
             issuer: _config["Jwt:Issuer"] ?? "LeafScan",
             audience: _config["Jwt:Audience"] ?? "LeafScan",
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(30),
+            expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public string GenerateRefreshToken()
+        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 }

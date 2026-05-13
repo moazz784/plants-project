@@ -8,6 +8,8 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public string Role { get; set; } = "User"; // "User" | "Admin"
     public string? ProfileImageBase64 { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
 

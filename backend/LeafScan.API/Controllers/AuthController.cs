@@ -35,6 +35,7 @@ public class AuthController : ControllerBase
         {
             var response = await _auth.RegisterAsync(request, ct);
             Response.Cookies.Append(AuthCookie.Name, response.Token, AuthCookie.CreateAuthCookieOptions());
+            Response.Cookies.Append(RefreshCookie.Name, response.RefreshToken, RefreshCookie.CreateRefreshCookieOptions());
             return Ok(new { user = response.User });
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("already registered"))
@@ -55,6 +56,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { code = "INVALID_CREDENTIALS", message = "Wrong email or password" });
 
         Response.Cookies.Append(AuthCookie.Name, response.Token, AuthCookie.CreateAuthCookieOptions());
+        Response.Cookies.Append(RefreshCookie.Name, response.RefreshToken, RefreshCookie.CreateRefreshCookieOptions());
         return Ok(new { user = response.User });
     }
 
@@ -63,7 +65,28 @@ public class AuthController : ControllerBase
     public IActionResult Logout()
     {
         Response.Cookies.Delete(AuthCookie.Name, AuthCookie.CreateDeleteCookieOptions());
+        Response.Cookies.Delete(RefreshCookie.Name, RefreshCookie.CreateDeleteCookieOptions());
         return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest? body, CancellationToken ct)
+    {
+        // Accept token from HttpOnly cookie first, fall back to request body.
+        var token = Request.Cookies[RefreshCookie.Name]
+                    ?? body?.RefreshToken;
+
+        if (string.IsNullOrWhiteSpace(token))
+            return Unauthorized(new { code = "MISSING_REFRESH_TOKEN", message = "No refresh token provided" });
+
+        var response = await _auth.RefreshAsync(token, ct);
+        if (response == null)
+            return Unauthorized(new { code = "INVALID_REFRESH_TOKEN", message = "Refresh token is invalid or expired" });
+
+        Response.Cookies.Append(AuthCookie.Name, response.Token, AuthCookie.CreateAuthCookieOptions());
+        Response.Cookies.Append(RefreshCookie.Name, response.RefreshToken, RefreshCookie.CreateRefreshCookieOptions());
+        return Ok(new { user = response.User });
     }
 
     [Authorize]
