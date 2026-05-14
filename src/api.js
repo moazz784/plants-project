@@ -1,4 +1,3 @@
-// src/api.js
 const API_BASE = import.meta.env.VITE_API_URL || 'https://plantgraduationproject.runasp.net/api';
 
 function getAuthHeaders() {
@@ -67,5 +66,8 @@ export const api = {
     getMessages: () => api.get('/admin/messages'),
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
+    getStats: () => api.get('/admin/stats'), // الأضافة الجديدة للداش بورد
   },
 };
+
+export default api;

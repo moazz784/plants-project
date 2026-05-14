@@ -18,7 +18,7 @@ export default function ResultPage() {
     <div className="min-h-screen bg-white text-gray-800 p-4 md:p-10 font-sans">
       <div className="max-w-6xl mx-auto">
         
-        {/* --- Header Section --- */}
+        
         <div className="flex flex-col md:flex-row justify-between gap-10 mb-16">
           <div className="flex-1">
             <h1 className="text-4xl md:text-3xl font-black uppercase tracking-tight mb-4">
@@ -29,9 +29,9 @@ export default function ResultPage() {
             </p>
           </div>
 
-          {/* Plant Image with Callouts */}
+          
           <div className="relative flex-1 flex justify-center">
-             {/* Callout 1 */}
+             
              <div className="absolute -top-10 left-0 bg-[#166534] text-white p-3 rounded-md w-48 shadow-lg hidden md:block">
                 <h4 className="font-bold text-sm border-b border-green-400 mb-1 pb-1">Leaf Component</h4>
                 <p className="text-[10px] leading-tight opacity-90">Lorem ipsum dolor sit amet consectetur. Lectus elit quam massa aliquam.</p>
@@ -44,7 +44,7 @@ export default function ResultPage() {
               className="w-64 h-64 md:w-80 md:h-80 object-contain"
             />
 
-            {/* Callout 2 */}
+            
             <div className="absolute top-0 -right-4 bg-[#166534] text-white p-3 rounded-md w-48 shadow-lg hidden md:block">
                 <h4 className="font-bold text-sm border-b border-green-400 mb-1 pb-1">Leaf Component</h4>
                 <p className="text-[10px] leading-tight opacity-90">Lorem ipsum dolor sit amet consectetur. Lectus elit quam massa aliquam.</p>
@@ -53,9 +53,9 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {/* --- Grid Section (Symptoms, Care, etc.) --- */}
+      
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {/* Symptoms - Dark Card */}
+          
           <div className="bg-[#166534] text-white p-8 rounded-sm">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">◆</span>
@@ -66,7 +66,7 @@ export default function ResultPage() {
             </p>
           </div>
 
-          {/* How to care - Light Card */}
+          
           <div className="bg-[#E5E7EB] p-8 rounded-sm">
             <div className="flex items-center gap-2 mb-3 text-green-800">
               <span className="text-xl">🌿</span>
@@ -77,7 +77,7 @@ export default function ResultPage() {
             </p>
           </div>
 
-          {/* Treatment - Light Card */}
+          
           <div className="bg-[#E5E7EB] p-8 rounded-sm">
             <div className="flex items-center gap-2 mb-3 text-green-800">
               <span className="text-xl">💊</span>
@@ -88,7 +88,7 @@ export default function ResultPage() {
             </p>
           </div>
 
-          {/* Tips & Tricks - Light Card */}
+      
           <div className="bg-[#E5E7EB] p-8 rounded-sm">
             <div className="flex items-center gap-2 mb-3 text-green-800">
               <span className="text-xl">💡</span>
@@ -100,7 +100,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {/* --- Risk Prediction Bar --- */}
+        
         <div className="border-2 border-green-800 rounded-xl p-6 mb-10">
           <h3 className="text-2xl font-bold text-green-900 mb-4">Risk Life Prediction</h3>
           <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
@@ -112,7 +112,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {/* Back Button */}
+      
         <button 
           onClick={() => navigate("/")}
           className="bg-green-800 text-white px-10 py-3 rounded-full font-bold hover:bg-green-900 transition-colors shadow-lg"
