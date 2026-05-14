@@ -89,7 +89,11 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
-builder.Services.AddHttpClient<IPlantDiseaseService, PlantDiseaseService>();
+// Long timeout to survive Hugging Face Spaces cold-start (~30-60 s after inactivity).
+builder.Services.AddHttpClient<IPlantDiseaseService, PlantDiseaseService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(120);
+});
 
 var app = builder.Build();
 
