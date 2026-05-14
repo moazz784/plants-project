@@ -11,10 +11,19 @@ namespace LeafScan.API.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IMessageService _messageService;
+    private readonly IAdminService _adminService;
 
-    public AdminController(IMessageService messageService)
+    public AdminController(IMessageService messageService, IAdminService adminService)
     {
         _messageService = messageService;
+        _adminService = adminService;
+    }
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetStats(CancellationToken ct)
+    {
+        var stats = await _adminService.GetStatsAsync(ct);
+        return Ok(stats);
     }
 
     [HttpGet("messages")]

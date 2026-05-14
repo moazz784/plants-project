@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(conn));
         services.AddHttpClient();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IKimiChatService, KimiChatService>();
         services.AddSingleton<IJwtService, JwtService>();
