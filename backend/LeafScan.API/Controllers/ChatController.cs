@@ -54,6 +54,48 @@ public class ChatController : ControllerBase
             return StatusCode(500, new { code = "CONFIG_ERROR", message = "Chat service is not configured." });
         }
     }
+
+    /// <summary>List all chat sessions for the current user, newest first.</summary>
+    [HttpGet("sessions")]
+    public async Task<IActionResult> GetSessions(CancellationToken ct)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var sessions = await _kimiChatService.GetSessionsAsync(userId, ct);
+        return Ok(sessions);
+    }
+
+    /// <summary>Load all messages in a single chat session, in chronological order.</summary>
+    [HttpGet("sessions/{sessionId:guid}")]
+    public async Task<IActionResult> GetSessionMessages(Guid sessionId, CancellationToken ct)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var messages = await _kimiChatService.GetSessionMessagesAsync(userId, sessionId, ct);
+        if (messages.Count == 0)
+            return NotFound(new { code = "SESSION_NOT_FOUND", message = "No chat session found with that id." });
+
+        return Ok(messages);
+    }
+
+    /// <summary>Permanently delete a chat session belonging to the current user.</summary>
+    [HttpDelete("sessions/{sessionId:guid}")]
+    public async Task<IActionResult> DeleteSession(Guid sessionId, CancellationToken ct)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var deleted = await _kimiChatService.DeleteSessionAsync(userId, sessionId, ct);
+        if (!deleted)
+            return NotFound(new { code = "SESSION_NOT_FOUND", message = "No chat session found with that id." });
+
+        return NoContent();
+    }
 }
 
 public class ChatRequest

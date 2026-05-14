@@ -131,11 +131,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
+      "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
       "projectName": "LeafScan.Application",
-      "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
+      "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
       "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\obj\\",
+      "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -153,8 +153,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
-              "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
+            "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
+              "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
             }
           }
         }
@@ -168,7 +168,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -190,6 +191,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.26, 8.0.26]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.26, 8.0.26]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[8.0.26, 8.0.26]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -198,7 +213,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

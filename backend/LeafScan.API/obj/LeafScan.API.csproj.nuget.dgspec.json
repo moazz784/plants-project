@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.API\\LeafScan.API.csproj": {}
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.API\\LeafScan.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.API\\LeafScan.API.csproj": {
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.API\\LeafScan.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.API\\LeafScan.API.csproj",
+        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.API\\LeafScan.API.csproj",
         "projectName": "LeafScan.API",
-        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.API\\LeafScan.API.csproj",
+        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.API\\LeafScan.API.csproj",
         "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.API\\obj\\",
+        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -29,11 +29,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
               },
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj"
               }
             }
           }
@@ -47,7 +47,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -83,6 +84,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -91,18 +110,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
+        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
         "projectName": "LeafScan.Application",
-        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
+        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj",
         "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\obj\\",
+        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -120,8 +139,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
               }
             }
           }
@@ -135,7 +154,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -157,6 +177,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -165,18 +199,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj",
         "projectName": "LeafScan.Domain",
-        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj",
+        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj",
         "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\obj\\",
+        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -205,7 +239,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -221,23 +256,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj": {
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj",
         "projectName": "LeafScan.Infrastructure",
-        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -255,11 +304,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
               },
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\.claude\\worktrees\\zen-goldstine-83b2ac\\backend\\LeafScan.Domain\\LeafScan.Domain.csproj"
               }
             }
           }
@@ -273,7 +322,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -321,12 +371,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
