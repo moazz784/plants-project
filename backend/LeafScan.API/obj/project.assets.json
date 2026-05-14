@@ -4864,8 +4864,8 @@
     },
     "LeafScan.Infrastructure/1.0.0": {
       "type": "project",
-      "path": "../leafscan.infrastructure/LeafScan.Infrastructure.csproj",
-      "msbuildProject": "../leafscan.infrastructure/LeafScan.Infrastructure.csproj"
+      "path": "../LeafScan.Infrastructure/LeafScan.Infrastructure.csproj",
+      "msbuildProject": "../LeafScan.Infrastructure/LeafScan.Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -4909,8 +4909,8 @@
             "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
               "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
             },
-            "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj"
+            "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj"
             }
           }
         }

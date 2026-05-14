@@ -32,8 +32,8 @@
               "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj": {
                 "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Application\\LeafScan.Application.csproj"
               },
-              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj"
+              "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj"
               }
             }
           }
@@ -279,14 +279,14 @@
         }
       }
     },
-    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj": {
+    "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj",
         "projectName": "LeafScan.Infrastructure",
-        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\LeafScan.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\LeafScan.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\youss\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\leafscan.infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\youss\\OneDrive\\Desktop\\plants-project\\backend\\LeafScan.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\youss\\AppData\\Roaming\\NuGet\\NuGet.Config",
