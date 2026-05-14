@@ -1,12 +1,12 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from PIL import Image
 import numpy as np
-import io
 import os
 import gdown
+
+from inference import format_prediction
+from preprocessing import normalize_image, resize_image
 
 app = FastAPI(title="Plant Disease Prediction API")
 
@@ -61,20 +61,47 @@ CLASS_NAMES = [
 MODEL_PATH = "best_model_final.keras"
 GDRIVE_FILE_ID = os.environ.get("GDRIVE_MODEL_FILE_ID", "")
 
-if not os.path.exists(MODEL_PATH):
-    if not GDRIVE_FILE_ID:
-        raise RuntimeError(
-            "Model file not found locally and GDRIVE_MODEL_FILE_ID env var is not set."
-        )
-    print(f"Downloading model from Google Drive (ID: {GDRIVE_FILE_ID})...")
-    gdown.download(id=GDRIVE_FILE_ID, output=MODEL_PATH, quiet=False)
-    print("Download complete.")
+_SKIP_MODEL = os.environ.get("SKIP_PLANT_MODEL_LOAD", "").lower() in ("1", "true", "yes")
 
-print("Loading model...")
-model = tf.keras.models.load_model(MODEL_PATH)
-# Warmup call to avoid slow first prediction request
-model.predict(np.zeros((1, 224, 224, 3)), verbose=0)
-print("Model loaded and warmed up successfully.")
+
+class _StubModel:
+    """Deterministic softmax-like output for CI/tests without a .keras file."""
+
+    def predict(self, x, verbose=0):
+        n = len(CLASS_NAMES)
+        logits = np.arange(n, dtype=np.float32)
+        ex = np.exp(logits - np.max(logits))
+        probs = ex / np.sum(ex)
+        return np.expand_dims(probs, axis=0)
+
+
+if _SKIP_MODEL:
+    print("SKIP_PLANT_MODEL_LOAD: using stub model (tests / no weights file).")
+    model = _StubModel()
+else:
+    if not os.path.exists(MODEL_PATH):
+        if not GDRIVE_FILE_ID:
+            raise RuntimeError(
+                "Model file not found locally and GDRIVE_MODEL_FILE_ID env var is not set."
+            )
+        print(f"Downloading model from Google Drive (ID: {GDRIVE_FILE_ID})...")
+        gdown.download(id=GDRIVE_FILE_ID, output=MODEL_PATH, quiet=False)
+        print("Download complete.")
+
+    print("Loading model...")
+
+    import keras.src.layers.core.dense as _keras_dense_mod
+
+    _orig_dense_init = _keras_dense_mod.Dense.__init__
+
+    def _patched_dense_init(self, *args, quantization_config=None, **kwargs):
+        _orig_dense_init(self, *args, **kwargs)
+
+    _keras_dense_mod.Dense.__init__ = _patched_dense_init
+
+    model = tf.keras.models.load_model(MODEL_PATH)
+    model.predict(np.zeros((1, 224, 224, 3)), verbose=0)
+    print("Model loaded and warmed up successfully.")
 
 
 @app.get("/health")
@@ -91,25 +118,15 @@ async def predict(file: UploadFile = File(...)):
         )
 
     contents = await file.read()
-    img = Image.open(io.BytesIO(contents)).convert("RGB").resize((224, 224))
-    img_array = np.array(img, dtype=np.float32)
-    img_preprocessed = preprocess_input(img_array.copy())
-    img_preprocessed = np.expand_dims(img_preprocessed, axis=0)
+    try:
+        img_array = resize_image(contents)
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not read image. Upload a valid JPEG, PNG, or WebP image.",
+        ) from None
 
+    img_preprocessed = normalize_image(img_array)
     predictions = model.predict(img_preprocessed, verbose=0)[0]
 
-    predicted_index = int(np.argmax(predictions))
-    predicted_class = CLASS_NAMES[predicted_index]
-    confidence = float(np.max(predictions)) * 100
-
-    top3_indices = np.argsort(predictions)[::-1][:3]
-    top3 = [
-        {"class": CLASS_NAMES[i], "confidence": round(float(predictions[i]) * 100, 2)}
-        for i in top3_indices
-    ]
-
-    return {
-        "predicted_class": predicted_class,
-        "confidence": round(confidence, 2),
-        "top3": top3,
-    }
+    return format_prediction(predictions, CLASS_NAMES)
