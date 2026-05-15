@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IJwtService, JwtService>();
         services.AddScoped<ICropRecommendationService, CropRecommendationService>();
         services.AddScoped<IIrrigationCalculatorService, IrrigationCalculatorService>();
+        services.AddScoped<IPredictionPersistenceService, PredictionPersistenceService>();
 
         return services;
     }

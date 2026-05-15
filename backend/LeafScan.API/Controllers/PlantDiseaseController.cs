@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using LeafScan.Application.Services;
 using LeafScan.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +10,19 @@ namespace LeafScan.API.Controllers;
 public class PlantDiseaseController : ControllerBase
 {
     private readonly IPlantDiseaseService _service;
+    private readonly IPredictionPersistenceService _persistence;
+    private readonly ILogger<PlantDiseaseController> _logger;
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
 
-    public PlantDiseaseController(IPlantDiseaseService service)
+    public PlantDiseaseController(
+        IPlantDiseaseService service,
+        IPredictionPersistenceService persistence,
+        ILogger<PlantDiseaseController> logger)
     {
         _service = service;
+        _persistence = persistence;
+        _logger = logger;
     }
 
     [HttpPost("predict")]
@@ -33,6 +41,21 @@ public class PlantDiseaseController : ControllerBase
         try
         {
             var result = await _service.PredictAsync(image);
+
+            try
+            {
+                Guid? userId = null;
+                var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (Guid.TryParse(sub, out var parsed))
+                    userId = parsed;
+
+                await _persistence.PersistSuccessfulPredictionAsync(userId, result, HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to persist plant prediction for dashboard stats.");
+            }
+
             return Ok(result);
         }
         catch (ModelWarmingUpException ex)
