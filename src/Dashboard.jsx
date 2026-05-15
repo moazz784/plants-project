@@ -36,6 +36,9 @@ const LeafScanDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [diagnostics, setDiagnostics] = useState(null);
+  const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
+  const [diagnosticsErr, setDiagnosticsErr] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +51,30 @@ const LeafScanDashboard = () => {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (!stats || stats.totalImages > 0 || stats.totalDiagnoses > 0) {
+      setDiagnostics(null);
+      setDiagnosticsErr(null);
+      setDiagnosticsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setDiagnosticsLoading(true);
+    setDiagnosticsErr(null);
+    api.admin.getDiagnostics()
+      .then(d => {
+        if (!cancelled) setDiagnostics(d);
+      })
+      .catch(err => {
+        console.error('Failed to load admin diagnostics:', err);
+        if (!cancelled) setDiagnosticsErr(getErrorMessage(err, 'Could not load diagnostics'));
+      })
+      .finally(() => {
+        if (!cancelled) setDiagnosticsLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [stats]);
 
   if (loading) {
     return (
@@ -106,6 +133,33 @@ const LeafScanDashboard = () => {
           </div>
         </header>
 
+        {stats.totalImages === 0 && stats.totalDiagnoses === 0 && (
+          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
+            <p className="font-semibold text-amber-900">Stats are empty</p>
+            <p className="mt-1 text-amber-900/90">
+              Totals come from saved scans in the database. If users get results but this stays at zero, the API may not be persisting predictions (often missing seed migration on the server).
+            </p>
+            {diagnosticsLoading && (
+              <p className="mt-2 text-xs text-amber-800/80">Loading server diagnostics…</p>
+            )}
+            {diagnosticsErr && (
+              <p className="mt-2 text-xs text-red-700">{diagnosticsErr}</p>
+            )}
+            {diagnostics && !diagnosticsLoading && (
+              <ul className="mt-3 space-y-1 text-xs font-mono text-amber-950/90">
+                <li>plantImageRowCount: {diagnostics.plantImageRowCount}</li>
+                <li>diagnosisRowCount: {diagnostics.diagnosisRowCount}</li>
+                <li>systemAnonymousUserExists: {String(diagnostics.systemAnonymousUserExists)}</li>
+                <li>defaultScanPlantExists: {String(diagnostics.defaultScanPlantExists)}</li>
+                <li>seedSystemPredictionEntitiesMigrationApplied: {String(diagnostics.seedSystemPredictionEntitiesMigrationApplied)}</li>
+                {diagnostics.hint && (
+                  <li className="mt-2 whitespace-pre-wrap font-sans text-amber-900">{diagnostics.hint}</li>
+                )}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           <div className="lg:col-span-8 space-y-8">
@@ -121,8 +175,8 @@ const LeafScanDashboard = () => {
                   </div>
                   <button className="text-[10px] border px-3 py-1 rounded-full text-gray-400">📅 last 7 days</button>
                 </div>
-                <div className="h-44 w-full mt-6 relative">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="h-44 min-h-[176px] w-full min-w-0 mt-6 relative">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={0}>
                     <BarChart data={weeklyData}>
                       <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
                       <Bar dataKey="value" fill="#2D6A4F" radius={[5, 5, 0, 0]} barSize={32} />
@@ -177,8 +231,8 @@ const LeafScanDashboard = () => {
 
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative">
               <h3 className="text-lg font-bold mb-8">Daily Image Analysis</h3>
-              <div className="h-48 w-full">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-48 min-h-[192px] w-full min-w-0">
+                <ResponsiveContainer width="100%" height="100%" minHeight={0}>
                   <LineChart data={analysisData}>
                     <Tooltip content={<CustomTooltip />} />
                     <Line type="monotone" dataKey="v" stroke="#1A4D2E" strokeWidth={3} dot={{ r: 0 }} activeDot={{ r: 6, fill: '#1A4D2E', strokeWidth: 2, stroke: '#fff' }} />
@@ -234,12 +288,12 @@ const LeafScanDashboard = () => {
               {pieData.length === 0 ? (
                 <p className="text-[11px] text-gray-400 text-center py-10">No diagnoses yet.</p>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="w-1/2 h-40 relative">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-1/2 h-40 min-h-[160px] min-w-0 relative">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <span className="text-lg font-black text-green-900">{activePieValue !== null ? `${activePieValue}%` : ''}</span>
                     </div>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minHeight={0}>
                       <PieChart>
                         <Pie data={pieData} innerRadius={35} outerRadius={52} paddingAngle={4} dataKey="value"
                              onMouseEnter={(_, index) => setActivePieValue(pieData[index].percent)}

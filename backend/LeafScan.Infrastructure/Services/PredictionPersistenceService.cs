@@ -19,7 +19,7 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
         _logger = logger;
     }
 
-    public async Task PersistSuccessfulPredictionAsync(
+    public async Task<bool> PersistSuccessfulPredictionAsync(
         Guid? authenticatedUserId,
         PredictionResult result,
         string? imageRelativeUrl,
@@ -28,12 +28,12 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
         if (string.IsNullOrWhiteSpace(result.PredictedClass))
         {
             _logger.LogWarning("Skipping prediction persistence: empty PredictedClass.");
-            return;
+            return false;
         }
 
         var plantId = await ResolvePlantIdAsync(result.PredictedClass, ct).ConfigureAwait(false);
         if (plantId is null)
-            return;
+            return false;
 
         var userIdForImageRow = authenticatedUserId ?? PredictionSystemIds.AnonymousScannerUserId;
         if (!await _db.Users.AsNoTracking().AnyAsync(u => u.Id == userIdForImageRow, ct).ConfigureAwait(false))
@@ -71,6 +71,7 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
             result.PredictedClass,
             userIdForImageRow,
             !string.IsNullOrWhiteSpace(imageRelativeUrl));
+        return true;
     }
 
     private async Task<int?> ResolvePlantIdAsync(string predictedClass, CancellationToken ct)

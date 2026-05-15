@@ -67,6 +67,8 @@ public class PlantDiseaseController : ControllerBase
                 _logger.LogWarning(ex, "Failed to save scan image to disk.");
             }
 
+            var persisted = false;
+            var persistenceThrew = false;
             try
             {
                 Guid? userId = null;
@@ -74,13 +76,20 @@ public class PlantDiseaseController : ControllerBase
                 if (Guid.TryParse(sub, out var parsed))
                     userId = parsed;
 
-                await _persistence.PersistSuccessfulPredictionAsync(userId, result, scanUrl,
+                persisted = await _persistence.PersistSuccessfulPredictionAsync(userId, result, scanUrl,
                     HttpContext.RequestAborted);
             }
             catch (Exception ex)
             {
+                persistenceThrew = true;
                 _logger.LogWarning(ex, "Failed to persist plant prediction for dashboard stats.");
             }
+
+            result.PersistedToDashboard = persisted;
+            if (!persisted && !persistenceThrew)
+                _logger.LogWarning(
+                    "Prediction completed with PersistedToDashboard=false (dashboard totals unchanged). PredictedClass={PredictedClass}",
+                    result.PredictedClass);
 
             return Ok(result);
         }

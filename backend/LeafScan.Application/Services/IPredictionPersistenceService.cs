@@ -8,7 +8,8 @@ namespace LeafScan.Application.Services;
 /// </summary>
 public interface IPredictionPersistenceService
 {
-    Task PersistSuccessfulPredictionAsync(
+    /// <summary>Returns whether a <see cref="PlantImage"/> row was inserted for this prediction.</summary>
+    Task<bool> PersistSuccessfulPredictionAsync(
         Guid? authenticatedUserId,
         PredictionResult result,
         string? imageRelativeUrl,

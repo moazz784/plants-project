@@ -121,6 +121,17 @@ export default function AboutPage() {
     if (!authLoading && !user) navigate("/login");
   }, [authLoading, user, navigate]);
 
+  const notifyIfScanNotPersisted = (data) => {
+    if (data && data.persistedToDashboard === false) {
+      toast(
+        isArabic
+          ? 'اكتمل التحليل، لكن لم تُحدَّث إحصائيات لوحة التحكم على الخادم (تحقق من ترحيل قاعدة البيانات).'
+          : 'Analysis complete, but this scan was not saved for dashboard statistics. Ensure API database migrations—including the seed migration—have been applied.',
+        { duration: 8500 },
+      );
+    }
+  };
+
   // Start camera when cameraOpen becomes true
   useEffect(() => {
     if (cameraOpen) {
@@ -174,6 +185,7 @@ export default function AboutPage() {
 
     try {
       const data = await api.plant.predict(imageFile);
+      notifyIfScanNotPersisted(data);
       navigate("/result", {
         state: {
           image: imageDataUrl,
@@ -284,6 +296,7 @@ export default function AboutPage() {
                             setIsAnalyzing(true);
                             try {
                               const data = await api.plant.predict(fileEntry.originalFile);
+                              notifyIfScanNotPersisted(data);
                               navigate("/result", {
                                 state: {
                                   image: fileEntry.preview,
