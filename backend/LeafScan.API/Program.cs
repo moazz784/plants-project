@@ -13,7 +13,11 @@ using LeafScan.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -115,6 +119,7 @@ using (var scope = app.Services.CreateScope())
 
 // تأكد أن UseCors تأتي قبل Authentication و Authorization
 app.UseCors();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -147,7 +152,9 @@ app.MapGet("/", () => Results.Json(new
         admin = new
         {
             listMessages = "GET /api/admin/messages",
-            updateMessage = "PATCH /api/admin/messages/{id}"
+            updateMessage = "PATCH /api/admin/messages/{id}",
+            stats = "GET /api/admin/stats",
+            diagnostics = "GET /api/admin/diagnostics"
         },
         services = new
         {

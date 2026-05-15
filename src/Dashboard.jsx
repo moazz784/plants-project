@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { Home, MessageSquare, Edit3, Link2, Bug, Leaf, CheckCircle } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import { api } from './api';
+import { api, getErrorMessage } from './api';
 
 const DISEASE_PALETTE = ['#1A4D2E', '#D32F2F', '#E67E22', '#3b82f6', '#a855f7'];
 const DISEASE_BG_CLASSES = ['bg-purple-600', 'bg-green-500', 'bg-orange-500', 'bg-blue-500', 'bg-fuchsia-500'];
@@ -43,7 +43,7 @@ const LeafScanDashboard = () => {
       .then(data => { if (!cancelled) setStats(data); })
       .catch(err => {
         console.error('Failed to load dashboard stats:', err);
-        if (!cancelled) setError(err?.message || 'Failed to load stats');
+        if (!cancelled) setError(getErrorMessage(err, 'Failed to load stats'));
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
@@ -200,7 +200,14 @@ const LeafScanDashboard = () => {
                 <span className="bg-purple-50 text-purple-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">Advanced</span>
               </div>
               <h3 className="text-xl font-bold mb-2">Healthy vs Diseased</h3>
-              <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">Share of uploaded leaf images classified as healthy vs. diseased.</p>
+              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">Share of uploaded leaf images classified as healthy vs. diseased.</p>
+
+              <div className="grid grid-cols-2 gap-2 mb-6 text-[11px] border border-gray-100 rounded-2xl p-3 bg-gray-50/50">
+                <span className="text-gray-500">Total diagnoses</span>
+                <span className="font-bold text-right tabular-nums">{stats.totalDiagnoses != null ? stats.totalDiagnoses.toLocaleString() : '—'}</span>
+                <span className="text-gray-500">Diagnoses today</span>
+                <span className="font-bold text-right tabular-nums">{stats.diagnosesToday != null ? stats.diagnosesToday.toLocaleString() : '—'}</span>
+              </div>
 
               <div className="space-y-6">
 

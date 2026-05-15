@@ -22,6 +22,7 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
     public async Task PersistSuccessfulPredictionAsync(
         Guid? authenticatedUserId,
         PredictionResult result,
+        string? imageRelativeUrl,
         CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(result.PredictedClass))
@@ -51,7 +52,7 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
             UploadDate = now,
             PlantId = plantId.Value,
             UserId = userIdForImageRow,
-            ImageUrl = null
+            ImageUrl = string.IsNullOrWhiteSpace(imageRelativeUrl) ? null : imageRelativeUrl
         };
 
         plantImage.Diagnoses.Add(new Diagnosis
@@ -63,6 +64,13 @@ public sealed class PredictionPersistenceService : IPredictionPersistenceService
 
         _db.PlantImages.Add(plantImage);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Persisted scan to dashboard DB: ImageId={ImageId} PredictedClass={PredictedClass} UserId={UserId} HasImageUrl={HasUrl}",
+            plantImage.ImageId,
+            result.PredictedClass,
+            userIdForImageRow,
+            !string.IsNullOrWhiteSpace(imageRelativeUrl));
     }
 
     private async Task<int?> ResolvePlantIdAsync(string predictedClass, CancellationToken ct)

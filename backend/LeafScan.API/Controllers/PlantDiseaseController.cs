@@ -11,6 +11,7 @@ public class PlantDiseaseController : ControllerBase
 {
     private readonly IPlantDiseaseService _service;
     private readonly IPredictionPersistenceService _persistence;
+    private readonly IScanImageStorageService _scanStorage;
     private readonly ILogger<PlantDiseaseController> _logger;
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
@@ -18,10 +19,12 @@ public class PlantDiseaseController : ControllerBase
     public PlantDiseaseController(
         IPlantDiseaseService service,
         IPredictionPersistenceService persistence,
+        IScanImageStorageService scanStorage,
         ILogger<PlantDiseaseController> logger)
     {
         _service = service;
         _persistence = persistence;
+        _scanStorage = scanStorage;
         _logger = logger;
     }
 
@@ -40,7 +43,29 @@ public class PlantDiseaseController : ControllerBase
 
         try
         {
-            var result = await _service.PredictAsync(image);
+            await using var buffer = new MemoryStream();
+            await image.CopyToAsync(buffer, HttpContext.RequestAborted);
+            var imageBytes = buffer.ToArray();
+
+            var result = await _service.PredictAsync(
+                imageBytes,
+                image.ContentType ?? string.Empty,
+                image.FileName ?? "image.jpg",
+                HttpContext.RequestAborted);
+
+            string? scanUrl = null;
+            try
+            {
+                scanUrl = await _scanStorage.TrySaveScanAsync(
+                    imageBytes,
+                    image.ContentType ?? string.Empty,
+                    image.FileName ?? "image.jpg",
+                    HttpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to save scan image to disk.");
+            }
 
             try
             {
@@ -49,7 +74,8 @@ public class PlantDiseaseController : ControllerBase
                 if (Guid.TryParse(sub, out var parsed))
                     userId = parsed;
 
-                await _persistence.PersistSuccessfulPredictionAsync(userId, result, HttpContext.RequestAborted);
+                await _persistence.PersistSuccessfulPredictionAsync(userId, result, scanUrl,
+                    HttpContext.RequestAborted);
             }
             catch (Exception ex)
             {

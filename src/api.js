@@ -8,7 +8,15 @@ function getAuthHeaders() {
 export function getErrorMessage(err, fallback = 'Something went wrong') {
   if (!err) return fallback;
   if (typeof err === 'string') return err;
-  return err.message || err.code || fallback;
+  if (err.message) return err.message;
+  if (typeof err.error === 'string') return err.error;
+  if (typeof err.detail === 'string') return err.detail;
+  if (err.title && err.title !== 'One or more validation errors occurred') return err.title;
+  if (err.code) {
+    if (typeof err.error === 'string') return `${err.code}: ${err.error}`;
+    return String(err.code);
+  }
+  return fallback;
 }
 
 export const api = {
@@ -68,6 +76,7 @@ export const api = {
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
     getStats: () => api.get('/admin/stats'),
+    getDiagnostics: () => api.get('/admin/diagnostics'),
   },
 
   plant: {

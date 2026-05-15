@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICropRecommendationService, CropRecommendationService>();
         services.AddScoped<IIrrigationCalculatorService, IrrigationCalculatorService>();
         services.AddScoped<IPredictionPersistenceService, PredictionPersistenceService>();
+        services.AddScoped<IScanImageStorageService, ScanImageStorageService>();
 
         return services;
     }

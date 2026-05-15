@@ -26,6 +26,16 @@ public class AdminController : ControllerBase
         return Ok(stats);
     }
 
+    /// <summary>
+    /// Row counts and seed/migration checks. Use when dashboard stats are zero but scans succeed (troubleshooting).
+    /// </summary>
+    [HttpGet("diagnostics")]
+    public async Task<IActionResult> GetDiagnostics(CancellationToken ct)
+    {
+        var d = await _adminService.GetOperationalDiagnosticsAsync(ct);
+        return Ok(d);
+    }
+
     [HttpGet("messages")]
     public async Task<IActionResult> GetMessages(CancellationToken ct)
     {
