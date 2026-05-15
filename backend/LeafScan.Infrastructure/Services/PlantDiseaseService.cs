@@ -17,7 +17,8 @@ public class PlantDiseaseService : IPlantDiseaseService
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
     };
 
     public PlantDiseaseService(HttpClient httpClient, IConfiguration config)

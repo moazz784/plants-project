@@ -101,6 +101,9 @@ const LeafScanDashboard = () => {
     percent: d.percent,
   }));
 
+  const emptyDiseaseChartsMessage =
+    stats.totalDiagnoses === 0 ? 'No diagnoses yet.' : 'No diseased scans yet — all diagnoses are healthy.';
+
   const topThree = stats.topDiseases.slice(0, 3);
   const topThreeTotal = topThree.reduce((sum, d) => sum + d.count, 0) || 1;
   const topThreeShares = topThree.map(d => Math.round((d.count / topThreeTotal) * 100));
@@ -188,24 +191,28 @@ const LeafScanDashboard = () => {
 
               <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
                 <h3 className="text-gray-400 text-sm font-medium mb-1">Disease Distribution</h3>
-                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">Total Disease</span></h2>
-                <div className="flex h-2.5 w-full rounded-full overflow-hidden mb-1">
-                  {topThree.map((_, i) => (
-                    <div
-                      key={i}
-                      className={`${DISEASE_BAR_CLASSES[i % DISEASE_BAR_CLASSES.length]} ${i < topThree.length - 1 ? 'mr-0.5' : ''}`}
-                      style={{ width: `${topThreeShares[i]}%` }}
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-between text-[10px] text-gray-400 mb-8 font-bold px-1">
-                  {topThreeShares.map((share, i) => (
-                    <span key={i}>{share}%</span>
-                  ))}
-                </div>
+                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">Non-healthy diagnoses</span></h2>
+                {topThree.length > 0 && (
+                  <>
+                    <div className="flex h-2.5 w-full rounded-full overflow-hidden mb-1">
+                      {topThree.map((_, i) => (
+                        <div
+                          key={i}
+                          className={`${DISEASE_BAR_CLASSES[i % DISEASE_BAR_CLASSES.length]} ${i < topThree.length - 1 ? 'mr-0.5' : ''}`}
+                          style={{ width: `${topThreeShares[i]}%` }}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-[10px] text-gray-400 mb-8 font-bold px-1">
+                      {topThreeShares.map((share, i) => (
+                        <span key={i}>{share}%</span>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div className="flex justify-between gap-2">
                   {topThree.length === 0 ? (
-                    <p className="text-[10px] text-gray-400 w-full text-center py-4">No diagnoses yet.</p>
+                    <p className="text-[10px] text-gray-400 w-full text-center py-4">{emptyDiseaseChartsMessage}</p>
                   ) : topThree.map((d, idx) => {
                     const label = prettifyDiseaseName(d.diseaseName);
                     const statText = `${d.percent}%`;
@@ -254,7 +261,7 @@ const LeafScanDashboard = () => {
                 <span className="bg-purple-50 text-purple-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">Advanced</span>
               </div>
               <h3 className="text-xl font-bold mb-2">Healthy vs Diseased</h3>
-              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">Share of uploaded leaf images classified as healthy vs. diseased.</p>
+              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">Share of AI diagnoses with a healthy class (<code className="text-[10px] bg-gray-100 px-1 rounded">*___healthy</code>) vs any other label.</p>
 
               <div className="grid grid-cols-2 gap-2 mb-6 text-[11px] border border-gray-100 rounded-2xl p-3 bg-gray-50/50">
                 <span className="text-gray-500">Total diagnoses</span>
@@ -286,7 +293,7 @@ const LeafScanDashboard = () => {
             <div className="bg-white p-6 rounded-[2.5rem] shadow-sm flex-1">
               <h3 className="text-sm font-bold text-center mb-6">Most Common Diseases</h3>
               {pieData.length === 0 ? (
-                <p className="text-[11px] text-gray-400 text-center py-10">No diagnoses yet.</p>
+                <p className="text-[11px] text-gray-400 text-center py-10">{emptyDiseaseChartsMessage}</p>
               ) : (
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-1/2 h-40 min-h-[160px] min-w-0 relative">

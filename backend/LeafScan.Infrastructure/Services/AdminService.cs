@@ -37,16 +37,25 @@ public class AdminService : IAdminService
         var newMessagesToday = await _db.Messages
             .CountAsync(x => x.CreatedAtUtc >= today && x.CreatedAtUtc < today.AddDays(1), ct);
 
-        // ── Disease / healthy rate ────────────────────────────────────────────
-        var imagesWithDiagnosis = await _db.Diagnoses
-            .Select(d => d.ImageId)
-            .Distinct()
-            .CountAsync(ct);
+        // ── Healthy vs diseased share (per AI diagnosis row, PlantVillage-style *___healthy labels) ──
+        var healthyDiagnosisCount = await _db.Diagnoses.CountAsync(
+            d => d.Disease.DiseaseName != null &&
+                 d.Disease.DiseaseName.ToLower().EndsWith(PredictionLabels.HealthyNameSuffixLower),
+            ct);
 
-        var diseaseRate = totalImages == 0
-            ? 0.0
-            : Math.Round(imagesWithDiagnosis * 100.0 / totalImages, 1);
-        var healthyRate = Math.Round(100.0 - diseaseRate, 1);
+        double healthyRate;
+        double diseaseRate;
+        if (totalDiagnoses == 0)
+        {
+            healthyRate = 0;
+            diseaseRate = 0;
+        }
+        else
+        {
+            var diseasedDiagnosisCount = totalDiagnoses - healthyDiagnosisCount;
+            healthyRate = Math.Round(healthyDiagnosisCount * 100.0 / totalDiagnoses, 1);
+            diseaseRate = Math.Round(diseasedDiagnosisCount * 100.0 / totalDiagnoses, 1);
+        }
 
         // ── Last 7 days — images per day ──────────────────────────────────────
         var rawWeekly = await _db.PlantImages
@@ -63,8 +72,11 @@ public class AdminService : IAdminService
                 rawWeekly.FirstOrDefault(x => SameCalendarDay(x.Date, d))?.Count ?? 0))
             .ToList();
 
-        // ── Top diseases ──────────────────────────────────────────────────────
+        // ── Top diseases (exclude healthy classifications from distribution) ───
         var topRaw = await _db.Diagnoses
+            .Where(d =>
+                d.Disease.DiseaseName == null ||
+                !d.Disease.DiseaseName.ToLower().EndsWith(PredictionLabels.HealthyNameSuffixLower))
             .GroupBy(x => x.DiseaseId)
             .Select(g => new { DiseaseId = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)

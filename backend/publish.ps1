@@ -33,14 +33,19 @@ $prodPath = Join-Path (Join-Path $PSScriptRoot "LeafScan.API") "appsettings.Prod
 
 if (Test-Path $prodPath) {
     $prod = Get-Content -Path $prodPath -Raw | ConvertFrom-Json
-    $connStr = $prod.ConnectionStrings.DefaultConnection -replace '"', '\"'
-    $jwtKey = $prod.Jwt.Key -replace '"', '\"'
-    $deployJson = "{`"Logging`":{`"LogLevel`":{`"Default`":`"Information`",`"Microsoft.AspNetCore`":`"Warning`"}},`"AllowedHosts`":`"plantgraduationproject.runasp.net;*.runasp.net;*`",`"ConnectionStrings`":{`"DefaultConnection`":`"$connStr`"},`"Jwt`":{`"Key`":`"$jwtKey`",`"Issuer`":`"LeafScan`",`"Audience`":`"LeafScan`"}}"
+    $deployObject = @{
+        Logging           = @{ LogLevel = @{ Default = "Information"; "Microsoft.AspNetCore" = "Warning" } }
+        AllowedHosts      = "plantgraduationproject.runasp.net;*.runasp.net;*"
+        ConnectionStrings = @{ DefaultConnection = $prod.ConnectionStrings.DefaultConnection }
+        Jwt               = @{ Key = $prod.Jwt.Key; Issuer = "LeafScan"; Audience = "LeafScan" }
+    }
+    $deployJson = ($deployObject | ConvertTo-Json -Compress -Depth 6)
     [System.IO.File]::WriteAllText((Join-Path $publishDir "appsettings.json"), $deployJson, [System.Text.UTF8Encoding]::new($false))
     Write-Host "Deployment appsettings.json updated with production config" -ForegroundColor Gray
 } else {
-    Write-Host "Missing appsettings.Production.json — keeping appsettings emitted by dotnet publish." -ForegroundColor Yellow
+    Write-Host "Missing appsettings.Production.json - keeping publish output appsettings unchanged." -ForegroundColor Yellow
 }
 
-Write-Host "`nPublish complete! Output: publish/" -ForegroundColor Green
-Write-Host "Upload the contents of this folder via FTP/hosting tooling." -ForegroundColor Gray
+Write-Host ''
+Write-Host 'Publish complete. Output folder: publish' -ForegroundColor Green
+Write-Host 'Upload the contents via FTP / hosting tooling.' -ForegroundColor Gray
