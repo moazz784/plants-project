@@ -53,7 +53,8 @@ export default function AboutPage() {
     const saved = localStorage.getItem("leafScan_history");
     return saved ? JSON.parse(saved) : [];
   });
-  
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+
   const startNewChat = () => {
     if (messages.length > 0) {
       const newEntry = {
@@ -64,6 +65,7 @@ export default function AboutPage() {
       setChatHistory(prev => [newEntry, ...prev]);
       setMessages([]);
     }
+    setCurrentSessionId(null);
   };
   
   const [showHistory, setShowHistory] = useState(false);
@@ -75,20 +77,20 @@ export default function AboutPage() {
     const userText = inputValue;
     const userMessage = { type: 'text', content: userText, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
-    setInputValue(""); 
+    setInputValue("");
     const thinkingId = Date.now();
     setMessages((prev) => [...prev, { id: thinkingId, type: 'text', content: isArabic ? "جاري التفكير..." : "Thinking...", sender: 'bot' }]);
     try {
-      const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "gemma:2b", prompt: userText, stream: false }),
-      });
-      if (!response.ok) throw new Error("Ollama connection failed");
-      const data = await response.json();
-      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: data.response } : msg));
+      const conversation = [...messages, userMessage]
+        .filter(m => m.type === 'text')
+        .map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.content }));
+
+      const res = await api.chat.send(currentSessionId, conversation, isArabic ? 'ar' : 'en');
+      setCurrentSessionId(res.sessionId);
+      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: res.content } : msg));
     } catch (error) {
-      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: isArabic ? "عذراً، الروبوت غير متصل." : "Bot offline." } : msg));
+      console.error('Chat failed:', error);
+      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: isArabic ? "عذراً، حدث خطأ." : "Sorry, something went wrong." } : msg));
     }
   };
   

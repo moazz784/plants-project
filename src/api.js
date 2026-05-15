@@ -67,6 +67,7 @@ export const api = {
     getMessages: () => api.get('/admin/messages'),
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
+    getStats: () => api.get('/admin/stats'),
   },
 
   plant: {
