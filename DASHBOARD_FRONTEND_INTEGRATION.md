@@ -1,5 +1,10 @@
 # Dashboard Frontend Integration Guide
 
+> ✅ **Implemented** in `src/Dashboard.jsx`. This file remains as a spec/reference for future endpoint changes.
+
+---
+
+
 ## Endpoint
 
 ```
