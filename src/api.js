@@ -7,7 +7,15 @@ function getAuthHeaders() {
 export function getErrorMessage(err, fallback = 'Something went wrong') {
   if (!err) return fallback;
   if (typeof err === 'string') return err;
-  return err.message || err.code || fallback;
+  if (err.message) return err.message;
+  if (typeof err.error === 'string') return err.error;
+  if (typeof err.detail === 'string') return err.detail;
+  if (err.title && err.title !== 'One or more validation errors occurred') return err.title;
+  if (err.code) {
+    if (typeof err.error === 'string') return `${err.code}: ${err.error}`;
+    return String(err.code);
+  }
+  return fallback;
 }
 
 export const api = {
@@ -66,8 +74,25 @@ export const api = {
     getMessages: () => api.get('/admin/messages'),
     patchMessage: (id, status) => api.patch(`/admin/messages/${id}`, { status }),
     deleteMessage: (id) => api.request('DELETE', `/admin/messages/${id}`),
-    getStats: () => api.get('/admin/stats'), // الأضافة الجديدة للداش بورد
+    getStats: () => api.get('/admin/stats'), // الإضافة الجديدة للداشبورد تم دمجها هنا
+    getDiagnostics: () => api.get('/admin/diagnostics'),
   },
+
+  plant: {
+    predict: async (imageFile) => {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      const res = await fetch(`${API_BASE}/plant/predict`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+        // Do NOT set Content-Type — browser sets multipart boundary automatically
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw { status: res.status, ...data };
+      return data;
+    }
+  }
 };
 
 export default api;

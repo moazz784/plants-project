@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using LeafScan.Application.DTOs;
 using LeafScan.Application.Services;
 using LeafScan.Domain.Entities;
 using LeafScan.Infrastructure.Data;
@@ -98,6 +99,48 @@ public class KimiChatService : IKimiChatService
         await _db.SaveChangesAsync(ct);
 
         return (content, sid);
+    }
+
+    public async Task<IReadOnlyList<ChatSessionSummaryDto>> GetSessionsAsync(
+        Guid userId,
+        CancellationToken ct = default)
+    {
+        return await _db.KimiChatMessages
+            .Where(m => m.UserId == userId)
+            .GroupBy(m => m.SessionId)
+            .Select(g => new ChatSessionSummaryDto(
+                g.Key,
+                g.Where(x => x.Role == "user")
+                 .OrderBy(x => x.CreatedAtUtc)
+                 .Select(x => x.Content)
+                 .FirstOrDefault() ?? "(empty)",
+                g.Max(x => x.CreatedAtUtc),
+                g.Count()))
+            .OrderByDescending(s => s.LastActivityUtc)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<ChatHistoryMessageDto>> GetSessionMessagesAsync(
+        Guid userId,
+        Guid sessionId,
+        CancellationToken ct = default)
+    {
+        return await _db.KimiChatMessages
+            .Where(m => m.UserId == userId && m.SessionId == sessionId)
+            .OrderBy(m => m.CreatedAtUtc)
+            .Select(m => new ChatHistoryMessageDto(m.Role, m.Content, m.CreatedAtUtc))
+            .ToListAsync(ct);
+    }
+
+    public async Task<bool> DeleteSessionAsync(
+        Guid userId,
+        Guid sessionId,
+        CancellationToken ct = default)
+    {
+        var deleted = await _db.KimiChatMessages
+            .Where(m => m.UserId == userId && m.SessionId == sessionId)
+            .ExecuteDeleteAsync(ct);
+        return deleted > 0;
     }
 
     private static string BuildSystemPrompt(string? language)

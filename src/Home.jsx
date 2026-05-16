@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "./AuthContext";
+import { api } from "./api";
+import toast from "react-hot-toast";
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation(); 
@@ -51,7 +53,8 @@ export default function AboutPage() {
     const saved = localStorage.getItem("leafScan_history");
     return saved ? JSON.parse(saved) : [];
   });
-  
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+
   const startNewChat = () => {
     if (messages.length > 0) {
       const newEntry = {
@@ -62,6 +65,7 @@ export default function AboutPage() {
       setChatHistory(prev => [newEntry, ...prev]);
       setMessages([]);
     }
+    setCurrentSessionId(null);
   };
   
   const [showHistory, setShowHistory] = useState(false);
@@ -73,20 +77,20 @@ export default function AboutPage() {
     const userText = inputValue;
     const userMessage = { type: 'text', content: userText, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
-    setInputValue(""); 
+    setInputValue("");
     const thinkingId = Date.now();
     setMessages((prev) => [...prev, { id: thinkingId, type: 'text', content: isArabic ? "جاري التفكير..." : "Thinking...", sender: 'bot' }]);
     try {
-      const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "gemma:2b", prompt: userText, stream: false }),
-      });
-      if (!response.ok) throw new Error("Ollama connection failed");
-      const data = await response.json();
-      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: data.response } : msg));
+      const conversation = [...messages, userMessage]
+        .filter(m => m.type === 'text')
+        .map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.content }));
+
+      const res = await api.chat.send(currentSessionId, conversation, isArabic ? 'ar' : 'en');
+      setCurrentSessionId(res.sessionId);
+      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: res.content } : msg));
     } catch (error) {
-      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: isArabic ? "عذراً، الروبوت غير متصل." : "Bot offline." } : msg));
+      console.error('Chat failed:', error);
+      setMessages((prev) => prev.map(msg => msg.id === thinkingId ? { ...msg, content: isArabic ? "عذراً، حدث خطأ." : "Sorry, something went wrong." } : msg));
     }
   };
   
@@ -116,6 +120,17 @@ export default function AboutPage() {
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [authLoading, user, navigate]);
+
+  const notifyIfScanNotPersisted = (data) => {
+    if (data && data.persistedToDashboard === false) {
+      toast(
+        isArabic
+          ? 'اكتمل التحليل، لكن لم تُحدَّث إحصائيات لوحة التحكم على الخادم (تحقق من ترحيل قاعدة البيانات).'
+          : 'Analysis complete, but this scan was not saved for dashboard statistics. Ensure API database migrations—including the seed migration—have been applied.',
+        { duration: 8500 },
+      );
+    }
+  };
 
   // Start camera when cameraOpen becomes true
   useEffect(() => {
@@ -150,27 +165,39 @@ export default function AboutPage() {
     };
   }, [cameraOpen, isArabic]);
 
-  const capturePhoto = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const imageDataUrl = canvas.toDataURL('image/jpeg');
-      
-      setCameraOpen(false);
-      setIsAnalyzing(true);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        navigate("/result", {
-          state: {
-            image: imageDataUrl,
-            disease: "Tomato Early Blight",
-            treatment: "Remove infected leaves and spray fungicide weekly."
-          }
-        });
-      }, 5000);
+  const capturePhoto = async () => {
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const imageDataUrl = canvas.toDataURL('image/jpeg');
+
+    // Convert data URL to a File for the API
+    const res = await fetch(imageDataUrl);
+    const blob = await res.blob();
+    const imageFile = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
+
+    setCameraOpen(false);
+    setIsAnalyzing(true);
+
+    try {
+      const data = await api.plant.predict(imageFile);
+      notifyIfScanNotPersisted(data);
+      navigate("/result", {
+        state: {
+          image: imageDataUrl,
+          predictedClass: data.predictedClass,
+          confidence: data.confidence,
+          top3: data.top3,
+        },
+      });
+    } catch (err) {
+      toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -187,7 +214,8 @@ export default function AboutPage() {
       name: file.name,
       size: (file.size / 1024).toFixed(1) + " KB",
       type: file.type.split('/')[1]?.toUpperCase() || "IMG",
-      preview: imageUrl
+      preview: imageUrl,
+      originalFile: file,
     };
     setSelectedFiles([newFile]);
   };
@@ -261,18 +289,27 @@ export default function AboutPage() {
                         <img src={selectedFiles[0].preview} alt="preview" className="max-h-[160px] rounded-xl object-contain shadow-sm mb-4" />
                         <button onClick={() => fileInputRef.current.click()} className="text-xs font-bold text-green-600 hover:underline">{isArabic ? "تغيير الملف المختار" : "Change Selection"}</button>
                         <button
-                          onClick={() => {
+                          onClick={async () => {
+                            const fileEntry = selectedFiles[0];
+                            if (!fileEntry?.originalFile) return;
+                            setShowUploadModal(false);
                             setIsAnalyzing(true);
-                            setTimeout(() => {
-                              setIsAnalyzing(false);
+                            try {
+                              const data = await api.plant.predict(fileEntry.originalFile);
+                              notifyIfScanNotPersisted(data);
                               navigate("/result", {
                                 state: {
-                                  image: selectedFiles[0].preview,
-                                  disease: "Tomato Early Blight",
-                                  treatment: "Remove infected leaves and spray fungicide weekly."
-                                }
+                                  image: fileEntry.preview,
+                                  predictedClass: data.predictedClass,
+                                  confidence: data.confidence,
+                                  top3: data.top3,
+                                },
                               });
-                            }, 5000);
+                            } catch (err) {
+                              toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+                            } finally {
+                              setIsAnalyzing(false);
+                            }
                           }}
                           className="mt-4 px-6 py-2 bg-green-700 text-white rounded-full hover:bg-green-800 transition shadow-lg"
                         >
@@ -360,20 +397,21 @@ export default function AboutPage() {
           <div className="flex flex-col items-start gap-4 md:gap-[100px] pt-6 md:pt-0 md:items-center md:flex-row md:justify-between w-full">
             <div className={`flex flex-col items-start gap-10 md:gap-60 max-w-2xl text-black py-2 md:py-5 ${isArabic ? 'text-right' : 'text-left'}`}>
               <h1 className='text-[30px] md:text-[40px] lg:text-[70px] leading-[0.95]'>{t("hero_title")}</h1>
-              <div>
+              {/* Hero model name and description: hidden on mobile, visible on md+ */}
+              <div className="hidden md:block">
                 <h2 className='text-[25px] md:text-[30px] lg:text-[40px] font-poppins mb-1'>{t("hero_model_name")}</h2>
                 <p className='text-[10px] md:text-[11px] lg:text-[15px] font-poppins text-gray-600 md:max-w-[270px] lg:max-w-[500px]'>{t("hero_description")}</p>
               </div>
             </div>
-            <div className="flex flex-row md:flex-col items-center justify-between gap-2 md:gap-10 mt-8 md:mt-10 w-full md:w-auto px-2">
+            <div className="flex flex-row md:flex-col items-center justify-between gap-2 md:gap-10 mt-45 md:mt-10 w-full md:w-auto px-2">
               
-              {/* زر المسح (Scan) - يفتح الكاميرا */}
+              {/* زر المسح (Scan) - يفتح مودال رفع الملفات (UPLOAD) */}
               <div className="flex flex-row md:flex-col items-center flex-1 md:flex-none relative">
-                <div  onClick={() => setShowUploadModal(true)} className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center cursor-pointer justify-center shadow-lg shrink-0">
-                  <img src={scanIcon} className="w-5 h-5 md:w-7 md:h-7 invert" alt="scan" />
+                <div onClick={() => setShowUploadModal(true)} className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center cursor-pointer justify-center shadow-lg shrink-0">
+                  <img src={scanIcon} className="w-6 h-6 md:w-7 md:h-7 brightness-0 invert" alt="scan" />
                 </div>
                 <div className="flex-1 md:flex-none h-[2px] md:h-24 w-full md:w-px border-t-2 md:border-l-2 border-dotted border-green-700/30 mx-2 md:mx-0"></div>
-                {/* Popup for scan icon - appears above the icon */}
+                {/* Popup for scan icon - appears only on md screens and larger */}
                 <AnimatePresence>
                   {popupTarget === 'scan' && (
                     <motion.div
@@ -381,9 +419,9 @@ export default function AboutPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 pointer-events-none whitespace-nowrap
-                        bg-gradient-to-r from-green-500 to-green-700 text-white font-bold text-xs md:text-sm px-3 md:px-5 py-1 md:py-2 rounded-full shadow-md"
+                        bg-gradient-to-r from-green-500 to-green-700 text-white font-bold text-xs md:text-sm px-3 md:px-5 py-1 md:py-2 rounded-full shadow-md hidden md:block"
                     >
-                      {isArabic ?"ارفع النبات" : "upload your plant"}
+                      {isArabic ? "ارفع النبات" : "upload your plant"}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -391,18 +429,18 @@ export default function AboutPage() {
               
               {/* الزر الأوسط (Check) - ليس له وظيفة حالياً */}
               <div className="flex flex-row md:flex-col items-center flex-1 md:flex-none">
-                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center cursor-pointer shadow-lg border shrink-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center cursor-pointer shadow-lg border shrink-0">
                   <img src={checkIcon} className="w-6 h-6 md:w-8 md:h-8" alt="check" />
                 </div>
                 <div className="flex-1 md:flex-none h-[2px] md:h-24 w-full md:w-px border-t-2 md:border-l-2 border-dotted border-green-700/30 mx-2 md:mx-0"></div>
               </div>
               
-              {/* زر الرفع (Upload) - يفتح مودال رفع الملفات */}
+              {/* زر الرفع (Upload) - يفتح الكاميرا */}
               <div className="flex flex-col items-center relative">
-                <div  onClick={() => setCameraOpen(true)} className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center cursor-pointer shadow-lg shrink-0">
-                  <img src={uploadIcon} className="w-5 h-5 md:w-6 md:h-6 invert" alt="upload" />
+                <div onClick={() => setCameraOpen(true)} className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#34A853] flex items-center justify-center cursor-pointer shadow-lg shrink-0">
+                  <img src={uploadIcon} className="w-6 h-6 md:w-6 md:h-6 brightness-0 invert" alt="upload" />
                 </div>
-                {/* Popup for upload icon - appears above the icon */}
+                {/* Popup for upload icon - appears only on md screens and larger */}
                 <AnimatePresence>
                   {popupTarget === 'upload' && (
                     <motion.div
@@ -410,9 +448,9 @@ export default function AboutPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 pointer-events-none whitespace-nowrap
-                        bg-gradient-to-r from-green-500 to-green-700 text-white font-bold text-xs md:text-sm px-3 md:px-5 py-1 md:py-2 rounded-full shadow-md"
+                        bg-gradient-to-r from-green-500 to-green-700 text-white font-bold text-xs md:text-sm px-3 md:px-5 py-1 md:py-2 rounded-full shadow-md hidden md:block"
                     >
-                      {isArabic ? "امسح النبات" : "scan your plant "}
+                      {isArabic ? "امسح النبات" : "scan your plant"}
                     </motion.div>
                   )}
                 </AnimatePresence>

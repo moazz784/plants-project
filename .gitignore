@@ -29,4 +29,4 @@ backend/LeafScan.API/appsettings.Production.json
 backend/**/bin/
 backend/**/obj/
 backend/**/publish/
-publish/
+./backend/publish/

@@ -5,6 +5,7 @@ using LeafScan.Application.Services;
 using LeafScan.Application.Validators;
 using LeafScan.Infrastructure.Data;
 using LeafScan.Infrastructure.Extensions;
+using LeafScan.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +13,11 @@ using LeafScan.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -88,6 +93,11 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+// Long timeout to survive Hugging Face Spaces cold-start (~30-60 s after inactivity).
+builder.Services.AddHttpClient<IPlantDiseaseService, PlantDiseaseService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(120);
+});
 
 var app = builder.Build();
 
@@ -109,6 +119,7 @@ using (var scope = app.Services.CreateScope())
 
 // تأكد أن UseCors تأتي قبل Authentication و Authorization
 app.UseCors();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -141,7 +152,9 @@ app.MapGet("/", () => Results.Json(new
         admin = new
         {
             listMessages = "GET /api/admin/messages",
-            updateMessage = "PATCH /api/admin/messages/{id}"
+            updateMessage = "PATCH /api/admin/messages/{id}",
+            stats = "GET /api/admin/stats",
+            diagnostics = "GET /api/admin/diagnostics"
         },
         services = new
         {

@@ -5,7 +5,15 @@ import {
 } from 'recharts';
 import { Home, MessageSquare, Edit3, Link2, Bug, Leaf, CheckCircle } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import api from './api'; // استيراد ملف الـ api
+import { api, getErrorMessage } from './api';
+
+const DISEASE_PALETTE = ['#1A4D2E', '#D32F2F', '#E67E22', '#3b82f6', '#a855f7'];
+const DISEASE_BG_CLASSES = ['bg-purple-600', 'bg-green-500', 'bg-orange-500', 'bg-blue-500', 'bg-fuchsia-500'];
+const DISEASE_BAR_CLASSES = ['bg-purple-500', 'bg-green-400', 'bg-orange-400', 'bg-blue-400', 'bg-fuchsia-400'];
+const DISEASE_ICONS = [<Bug />, <Leaf />, <CheckCircle />];
+
+const prettifyDiseaseName = (raw) =>
+  raw.replace(/___/g, ' — ').replace(/_/g, ' ');
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -19,49 +27,88 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-// ألوان ثابتة للأمراض
-const DISEASE_COLORS = ['#1A4D2E', '#D32F2F', '#E67E22', '#8E44AD', '#2980B9'];
-
 const LeafScanDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [diagnostics, setDiagnostics] = useState(null);
+  const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
+  const [diagnosticsErr, setDiagnosticsErr] = useState(null);
   const [hoveredInfo, setHoveredInfo] = useState("");
-  const [hoveredRightBar, setHoveredRightBar] = useState(null); 
-  const [activePieValue, setActivePieValue] = useState(null); 
+  const [hoveredRightBar, setHoveredRightBar] = useState(null);
+  const [activePieValue, setActivePieValue] = useState(null);
   const navigate = useNavigate();
 
-  // جلب البيانات من الباك إند
   useEffect(() => {
+    let cancelled = false;
     api.admin.getStats()
-      .then(data => setStats(data))
-      .catch(err => console.error('Dashboard error:', err))
-      .finally(() => setLoading(false));
+      .then(data => { if (!cancelled) setStats(data); })
+      .catch(err => {
+        console.error('Failed to load dashboard stats:', err);
+        if (!cancelled) setError(getErrorMessage(err, 'Failed to load stats'));
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
-  // دالة لتنظيف أسماء الأمراض
-  const formatName = (name) => name.replace(/___/g, ' - ').replace(/_/g, ' ');
+  useEffect(() => {
+    if (!stats || stats.totalImages > 0 || stats.totalDiagnoses > 0) {
+      setDiagnostics(null);
+      setDiagnosticsErr(null);
+      setDiagnosticsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setDiagnosticsLoading(true);
+    setDiagnosticsErr(null);
+    api.admin.getDiagnostics()
+      .then(d => {
+        if (!cancelled) setDiagnostics(d);
+      })
+      .catch(err => {
+        console.error('Failed to load admin diagnostics:', err);
+        if (!cancelled) setDiagnosticsErr(getErrorMessage(err, 'Could not load diagnostics'));
+      })
+      .finally(() => {
+        if (!cancelled) setDiagnosticsLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [stats]);
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
-  if (!stats) return <div className="flex min-h-screen items-center justify-center">Error loading dashboard.</div>;
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans">
+        <p className="text-gray-400">Loading dashboard…</p>
+      </div>
+    );
+  }
 
-  // تحويل بيانات الباك إند لتناسب الـ Charts بتاعتك
-  const dynamicWeeklyData = stats.last7DaysImages.map(d => ({ day: d.day, value: d.count }));
-  const dynamicPieData = stats.topDiseases.map((d, i) => ({
-    name: formatName(d.diseaseName),
-    value: d.percent, // هنعرض النسبة المئوية في الـ Pie
-    color: DISEASE_COLORS[i] || '#94a3b8'
+  if (error || !stats) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans">
+        <p className="text-red-500">{error || 'No data available.'}</p>
+      </div>
+    );
+  }
+
+  const weeklyData = stats.last7DaysImages.map(d => ({ day: d.day, value: d.count }));
+  const analysisData = stats.last7DaysImages.map(d => ({ name: d.day, v: d.count }));
+  const pieData = stats.topDiseases.map((d, i) => ({
+    name: prettifyDiseaseName(d.diseaseName),
+    value: d.count,
+    color: DISEASE_PALETTE[i % DISEASE_PALETTE.length],
+    percent: d.percent,
   }));
 
-  // داتا الـ Analysis الثابتة (لأن الباك مبعتهاش)
-  const analysisData = [
-    { name: '02', v: 25 }, { name: '03', v: 28 }, { name: '04', v: 15 },
-    { name: '05', v: 30 }, { name: '06', v: 25 }, { name: '07', v: 32 },
-    { name: '08', v: 30 }, { name: '09', v: 45 }, { name: '10', v: 48 }
-  ];
+  const emptyDiseaseChartsMessage =
+    stats.totalDiagnoses === 0 ? 'No diagnoses yet.' : 'No diseased scans yet — all diagnoses are healthy.';
+
+  const topThree = stats.topDiseases.slice(0, 3);
+  const topThreeTotal = topThree.reduce((sum, d) => sum + d.count, 0) || 1;
+  const topThreeShares = topThree.map(d => Math.round((d.count / topThreeTotal) * 100));
 
   return (
     <div className="flex min-h-screen bg-[#FDFDFD] text-[#1A1C1E] font-sans">
-      
       <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
         <header className="flex justify-between items-center mb-10">
           <div className="flex items-center gap-3">
@@ -71,8 +118,34 @@ const LeafScanDashboard = () => {
           </div>
         </header>
 
+        {stats.totalImages === 0 && stats.totalDiagnoses === 0 && (
+          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
+            <p className="font-semibold text-amber-900">Stats are empty</p>
+            <p className="mt-1 text-amber-900/90">
+              Totals come from saved scans in the database. If users get results but this stays at zero, the API may not be persisting predictions (often missing seed migration on the server).
+            </p>
+            {diagnosticsLoading && (
+              <p className="mt-2 text-xs text-amber-800/80">Loading server diagnostics…</p>
+            )}
+            {diagnosticsErr && (
+              <p className="mt-2 text-xs text-red-700">{diagnosticsErr}</p>
+            )}
+            {diagnostics && !diagnosticsLoading && (
+              <ul className="mt-3 space-y-1 text-xs font-mono text-amber-950/90">
+                <li>plantImageRowCount: {diagnostics.plantImageRowCount}</li>
+                <li>diagnosisRowCount: {diagnostics.diagnosisRowCount}</li>
+                <li>systemAnonymousUserExists: {String(diagnostics.systemAnonymousUserExists)}</li>
+                <li>defaultScanPlantExists: {String(diagnostics.defaultScanPlantExists)}</li>
+                <li>seedSystemPredictionEntitiesMigrationApplied: {String(diagnostics.seedSystemPredictionEntitiesMigrationApplied)}</li>
+                {diagnostics.hint && (
+                  <li className="mt-2 whitespace-pre-wrap font-sans text-amber-900">{diagnostics.hint}</li>
+                )}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
           <div className="lg:col-span-8 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
@@ -86,12 +159,9 @@ const LeafScanDashboard = () => {
                   </div>
                   <button className="text-[10px] border px-3 py-1 rounded-full text-gray-400">📅 last 7 days</button>
                 </div>
-                <div className="h-44 w-full mt-6 relative">
-                  <div className="absolute top-[40%] left-0 w-full border-t border-dashed border-gray-300 z-0">
-                    <span className="absolute -top-3 left-[40%] bg-black text-white text-[9px] px-2 py-0.5 rounded shadow-lg">Live Stats</span>
-                  </div>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dynamicWeeklyData}>
+                <div className="h-44 min-h-[176px] w-full min-w-0 mt-6 relative">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={0}>
+                    <BarChart data={weeklyData}>
                       <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}} />
                       <Bar dataKey="value" fill="#2D6A4F" radius={[5, 5, 0, 0]} barSize={32} />
                       <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#9ca3af'}} dy={10} />
@@ -102,41 +172,55 @@ const LeafScanDashboard = () => {
 
               <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
                 <h3 className="text-gray-400 text-sm font-medium mb-1">Disease Distribution</h3>
-                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">Total Disease</span></h2>
-                <div className="flex h-2.5 w-full rounded-full overflow-hidden mb-1">
-                  <div className="bg-red-500 mr-0.5" style={{ width: `${stats.diseaseRatePercent}%` }}></div>
-                  <div className="bg-green-400" style={{ width: `${stats.healthyRatePercent}%` }}></div>
-                </div>
-                <div className="flex justify-between text-[10px] text-gray-400 mb-8 font-bold px-1">
-                  <span>{stats.diseaseRatePercent}%</span><span>{stats.healthyRatePercent}%</span>
-                </div>
-                <div className="flex justify-between gap-2">
-                  {[
-                    { icon: <Bug />, label: "Diseased", color: "bg-red-500", stats: `${stats.diseaseRatePercent}% Rate` },
-                    { icon: <CheckCircle />, label: "Healthy", color: "bg-green-500", stats: `${stats.healthyRatePercent}% Safe` }
-                  ].map((item, idx) => (
-                    <div key={idx} className="text-center group relative cursor-pointer" 
-                         onMouseEnter={() => setHoveredInfo(item.stats)} 
-                         onMouseLeave={() => setHoveredInfo("")}>
-                      <div className={`${item.color} p-4 rounded-2xl text-white mb-2 transition-transform group-hover:scale-110 shadow-lg`}>
-                        {item.icon}
-                      </div>
-                      <p className="text-[10px] font-bold">{item.label}</p>
-                      {hoveredInfo === item.stats && (
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] py-1 px-2 rounded-md z-10">
-                          {item.stats}
-                        </div>
-                      )}
+                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">Non-healthy diagnoses</span></h2>
+                {topThree.length > 0 && (
+                  <>
+                    <div className="flex h-2.5 w-full rounded-full overflow-hidden mb-1">
+                      {topThree.map((_, i) => (
+                        <div
+                          key={i}
+                          className={`${DISEASE_BAR_CLASSES[i % DISEASE_BAR_CLASSES.length]} ${i < topThree.length - 1 ? 'mr-0.5' : ''}`}
+                          style={{ width: `${topThreeShares[i]}%` }}
+                        />
+                      ))}
                     </div>
-                  ))}
+                    <div className="flex justify-between text-[10px] text-gray-400 mb-8 font-bold px-1">
+                      {topThreeShares.map((share, i) => (
+                        <span key={i}>{share}%</span>
+                      ))}
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between gap-2">
+                  {topThree.length === 0 ? (
+                    <p className="text-[10px] text-gray-400 w-full text-center py-4">{emptyDiseaseChartsMessage}</p>
+                  ) : topThree.map((d, idx) => {
+                    const label = prettifyDiseaseName(d.diseaseName);
+                    const statText = `${d.percent}%`;
+                    return (
+                      <div key={idx} className="text-center group relative cursor-pointer"
+                           onMouseEnter={() => setHoveredInfo(`${idx}-${statText}`)}
+                           onMouseLeave={() => setHoveredInfo("")}>
+                        <div className={`${DISEASE_BG_CLASSES[idx % DISEASE_BG_CLASSES.length]} p-4 rounded-2xl text-white mb-2 transition-transform group-hover:scale-110 shadow-lg`}>
+                          {DISEASE_ICONS[idx % DISEASE_ICONS.length]}
+                        </div>
+                        <p className="text-[10px] font-bold">{label}</p>
+                        {hoveredInfo === `${idx}-${statText}` && (
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] py-1 px-2 rounded-md z-10">
+                            {statText}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative">
               <h3 className="text-lg font-bold mb-8">Daily Image Analysis</h3>
-              <div className="h-48 w-full">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-48 min-h-[192px] w-full min-w-0">
+                <ResponsiveContainer width="100%" height="100%" minHeight={0}>
                   <LineChart data={analysisData}>
                     <Tooltip content={<CustomTooltip />} />
                     <Line type="monotone" dataKey="v" stroke="#1A4D2E" strokeWidth={3} dot={{ r: 0 }} activeDot={{ r: 6, fill: '#1A4D2E', strokeWidth: 2, stroke: '#fff' }} />
@@ -145,7 +229,7 @@ const LeafScanDashboard = () => {
                 </ResponsiveContainer>
               </div>
               <div className="flex justify-between text-[10px] text-gray-300 px-4 mt-2">
-                <span>02</span><span>04</span><span>06</span><span>08</span><span>10</span>
+                {analysisData.map((d, i) => <span key={i}>{d.name}</span>)}
               </div>
             </div>
           </div>
@@ -157,22 +241,29 @@ const LeafScanDashboard = () => {
                 <span className="bg-purple-50 text-purple-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">Live</span>
               </div>
               <h3 className="text-xl font-bold mb-2">Healthy vs Diseased</h3>
-              <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">Detailed breakdown of current plant health status across all scans.</p>
+              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">Share of AI diagnoses with a healthy class (<code className="text-[10px] bg-gray-100 px-1 rounded">*___healthy</code>) vs any other label.</p>
+
+              <div className="grid grid-cols-2 gap-2 mb-6 text-[11px] border border-gray-100 rounded-2xl p-3 bg-gray-50/50">
+                <span className="text-gray-500">Total diagnoses</span>
+                <span className="font-bold text-right tabular-nums">{stats.totalDiagnoses != null ? stats.totalDiagnoses.toLocaleString() : '—'}</span>
+                <span className="text-gray-500">Diagnoses today</span>
+                <span className="font-bold text-right tabular-nums">{stats.diagnosesToday != null ? stats.diagnosesToday.toLocaleString() : '—'}</span>
+              </div>
 
               <div className="space-y-6">
                 <div className={`p-2 rounded-2xl transition-all duration-300 ${hoveredRightBar === 'h' ? 'bg-green-50 scale-105' : ''}`}
                      onMouseEnter={() => setHoveredRightBar('h')} onMouseLeave={() => setHoveredRightBar(null)}>
                   <div className="flex justify-between text-xs font-bold mb-2"><span>Healthy</span><span>{stats.healthyRatePercent}%</span></div>
                   <div className="w-full bg-gray-100 h-8 rounded-xl overflow-hidden p-1">
-                    <div className="bg-green-900 h-full rounded-lg transition-all duration-700" style={{width: `${stats.healthyRatePercent}%`}}></div>
+                    <div className="bg-green-900 h-full rounded-lg transition-all duration-700" style={{ width: `${stats.healthyRatePercent}%` }}></div>
                   </div>
                 </div>
-                
+
                 <div className={`p-2 rounded-2xl transition-all duration-300 ${hoveredRightBar === 'd' ? 'bg-red-50 scale-105' : ''}`}
                      onMouseEnter={() => setHoveredRightBar('d')} onMouseLeave={() => setHoveredRightBar(null)}>
                   <div className="flex justify-between text-xs font-bold mb-2"><span>Diseased</span><span>{stats.diseaseRatePercent}%</span></div>
                   <div className="w-full bg-gray-100 h-8 rounded-xl overflow-hidden p-1">
-                    <div className="bg-red-500 h-full rounded-lg transition-all duration-700" style={{width: `${stats.diseaseRatePercent}%`}}></div>
+                    <div className="bg-red-500 h-full rounded-lg transition-all duration-700" style={{ width: `${stats.diseaseRatePercent}%` }}></div>
                   </div>
                 </div>
               </div>
@@ -180,36 +271,40 @@ const LeafScanDashboard = () => {
 
             <div className="bg-white p-6 rounded-[2.5rem] shadow-sm flex-1">
               <h3 className="text-sm font-bold text-center mb-6">Most Common Diseases</h3>
-              <div className="flex items-center gap-2">
-                <div className="w-1/2 h-40 relative">
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                     <span className="text-lg font-black text-green-900">{activePieValue ? `${activePieValue}%` : ''}</span>
-                  </div>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={dynamicPieData} innerRadius={35} outerRadius={52} paddingAngle={4} dataKey="value"
-                           onMouseEnter={(_, index) => setActivePieValue(dynamicPieData[index].value)}
-                           onMouseLeave={() => setActivePieValue(null)}>
-                        {dynamicPieData.map((entry, index) => (
-                          <Cell key={index} fill={entry.color} stroke="none" 
-                                style={{ filter: activePieValue === entry.value ? 'brightness(1.2)' : 'none', cursor: 'pointer' }} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="w-1/2 space-y-3">
-                  {dynamicPieData.map((item, i) => (
-                    <div key={i} className={`p-2.5 rounded-xl flex justify-between items-center transition-all cursor-pointer 
-                        ${activePieValue === item.value ? 'bg-green-200 translate-x-1 shadow-md' : 'bg-green-50'}`}
-                        onMouseEnter={() => setActivePieValue(item.value)}
-                        onMouseLeave={() => setActivePieValue(null)}>
-                      <span className="text-[8px] font-bold text-green-800 break-words w-2/3 leading-tight">{item.name}</span>
-                      <span className="text-[10px] font-bold text-green-800">{item.value}%</span>
+              {pieData.length === 0 ? (
+                <p className="text-[11px] text-gray-400 text-center py-10">{emptyDiseaseChartsMessage}</p>
+              ) : (
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-1/2 h-40 min-h-[160px] min-w-0 relative">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="text-lg font-black text-green-900">{activePieValue !== null ? `${activePieValue}%` : ''}</span>
                     </div>
-                  ))}
+                    <ResponsiveContainer width="100%" height="100%" minHeight={0}>
+                      <PieChart>
+                        <Pie data={pieData} innerRadius={35} outerRadius={52} paddingAngle={4} dataKey="value"
+                             onMouseEnter={(_, index) => setActivePieValue(pieData[index].percent)}
+                             onMouseLeave={() => setActivePieValue(null)}>
+                          {pieData.map((entry, index) => (
+                            <Cell key={index} fill={entry.color} stroke="none"
+                                  style={{ filter: activePieValue === entry.percent ? 'brightness(1.2)' : 'none', cursor: 'pointer' }} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="w-1/2 space-y-3">
+                    {pieData.map((item, i) => (
+                      <div key={i} className={`p-2.5 rounded-xl flex justify-between items-center transition-all cursor-pointer
+                          ${activePieValue === item.percent ? 'bg-green-200 translate-x-1 shadow-md' : 'bg-green-50'}`}
+                          onMouseEnter={() => setActivePieValue(item.percent)}
+                          onMouseLeave={() => setActivePieValue(null)}>
+                        <span className="text-[10px] font-bold text-green-800 truncate">{item.name}</span>
+                        <span className="text-[10px] font-bold text-green-800">{item.percent}%</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -218,4 +313,4 @@ const LeafScanDashboard = () => {
   );
 };
 
-export default LeafScanDashboard;
+export default LeafScanDashboard; 
