@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { Home, MessageSquare, Edit3, Link2, Bug, Leaf, CheckCircle } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { api, getErrorMessage } from './api';
 
 const DISEASE_PALETTE = ['#1A4D2E', '#D32F2F', '#E67E22', '#3b82f6', '#a855f7'];
@@ -16,10 +17,11 @@ const prettifyDiseaseName = (raw) =>
   raw.replace(/___/g, ' — ').replace(/_/g, ' ');
 
 const CustomTooltip = ({ active, payload }) => {
+  const { t } = useTranslation();
   if (active && payload && payload.length) {
     return (
       <div className="bg-black text-white px-3 py-1.5 rounded-lg text-[10px] shadow-xl relative">
-        <p className="font-bold">{payload[0].value} images</p>
+        <p className="font-bold">{payload[0].value} {t('images')}</p>
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black rotate-45"></div>
       </div>
     );
@@ -28,6 +30,7 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const LeafScanDashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,11 +48,11 @@ const LeafScanDashboard = () => {
       .then(data => { if (!cancelled) setStats(data); })
       .catch(err => {
         console.error('Failed to load dashboard stats:', err);
-        if (!cancelled) setError(getErrorMessage(err, 'Failed to load stats'));
+        if (!cancelled) setError(getErrorMessage(err, t('failed_to_load_stats')));
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!stats || stats.totalImages > 0 || stats.totalDiagnoses > 0) {
@@ -67,26 +70,26 @@ const LeafScanDashboard = () => {
       })
       .catch(err => {
         console.error('Failed to load admin diagnostics:', err);
-        if (!cancelled) setDiagnosticsErr(getErrorMessage(err, 'Could not load diagnostics'));
+        if (!cancelled) setDiagnosticsErr(getErrorMessage(err, t('could_not_load_diagnostics')));
       })
       .finally(() => {
         if (!cancelled) setDiagnosticsLoading(false);
       });
     return () => { cancelled = true; };
-  }, [stats]);
+  }, [stats, t]);
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans">
-        <p className="text-gray-400">Loading dashboard…</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans" dir={t('dir')}>
+        <p className="text-gray-400">{t('loading_dashboard')}</p>
       </div>
     );
   }
 
   if (error || !stats) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans">
-        <p className="text-red-500">{error || 'No data available.'}</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#FDFDFD] text-[#1A1C1E] font-sans" dir={t('dir')}>
+        <p className="text-red-500">{error || t('no_data_available')}</p>
       </div>
     );
   }
@@ -100,19 +103,18 @@ const LeafScanDashboard = () => {
     percent: d.percent,
   }));
 
-  const emptyDiseaseChartsMessage =
-    stats.totalDiagnoses === 0 ? 'No diagnoses yet.' : 'No diseased scans yet — all diagnoses are healthy.';
+  const emptyDiseaseChartsMessage = stats.totalDiagnoses === 0 ? t('no_diagnoses_yet') : t('no_diseased_scans');
 
   const topThree = stats.topDiseases.slice(0, 3);
   const topThreeTotal = topThree.reduce((sum, d) => sum + d.count, 0) || 1;
   const topThreeShares = topThree.map(d => Math.round((d.count / topThreeTotal) * 100));
 
   return (
-    <div className="flex min-h-screen bg-[#FDFDFD] text-[#1A1C1E] font-sans">
+    <div className="flex min-h-screen bg-[#FDFDFD] text-[#1A1C1E] font-sans" dir={t('dir')}>
       <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
         <header className="flex justify-between items-center mb-10">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold">LeafScan Dashboard</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">{t('leafscan_dashboard')}</h1>
             <button className="p-2 bg-purple-50 text-purple-500 rounded-xl hover:bg-purple-100"><Edit3 size={18} /></button>
             <button className="p-2 bg-purple-50 text-purple-500 rounded-xl hover:bg-purple-100"><Link2 size={18} /></button>
           </div>
@@ -120,12 +122,10 @@ const LeafScanDashboard = () => {
 
         {stats.totalImages === 0 && stats.totalDiagnoses === 0 && (
           <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
-            <p className="font-semibold text-amber-900">Stats are empty</p>
-            <p className="mt-1 text-amber-900/90">
-              Totals come from saved scans in the database. If users get results but this stays at zero, the API may not be persisting predictions (often missing seed migration on the server).
-            </p>
+            <p className="font-semibold text-amber-900">{t('stats_empty_title')}</p>
+            <p className="mt-1 text-amber-900/90">{t('stats_empty_message')}</p>
             {diagnosticsLoading && (
-              <p className="mt-2 text-xs text-amber-800/80">Loading server diagnostics…</p>
+              <p className="mt-2 text-xs text-amber-800/80">{t('loading_server_diagnostics')}</p>
             )}
             {diagnosticsErr && (
               <p className="mt-2 text-xs text-red-700">{diagnosticsErr}</p>
@@ -151,13 +151,13 @@ const LeafScanDashboard = () => {
               <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <p className="text-gray-400 text-sm font-medium">Total images</p>
+                    <p className="text-gray-400 text-sm font-medium">{t('total_images')}</p>
                     <div className="flex items-baseline gap-2">
                       <h2 className="text-4xl font-bold">{stats.totalImages.toLocaleString()}</h2>
-                      <span className="text-[10px] text-gray-400 font-bold">+{stats.imagesAddedToday} Today</span>
+                      <span className="text-[10px] text-gray-400 font-bold">+{stats.imagesAddedToday} {t('today')}</span>
                     </div>
                   </div>
-                  <button className="text-[10px] border px-3 py-1 rounded-full text-gray-400">📅 last 7 days</button>
+                  <button className="text-[10px] border px-3 py-1 rounded-full text-gray-400">📅 {t('last_7_days')}</button>
                 </div>
                 <div className="h-44 min-h-[176px] w-full min-w-0 mt-6 relative">
                   <ResponsiveContainer width="100%" height="100%" minHeight={0}>
@@ -171,8 +171,8 @@ const LeafScanDashboard = () => {
               </div>
 
               <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <h3 className="text-gray-400 text-sm font-medium mb-1">Disease Distribution</h3>
-                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">Non-healthy diagnoses</span></h2>
+                <h3 className="text-gray-400 text-sm font-medium mb-1">{t('disease_distribution')}</h3>
+                <h2 className="text-4xl font-bold mb-4">{stats.diseaseRatePercent}% <span className="text-xs font-normal text-gray-400">{t('non_healthy_diagnoses')}</span></h2>
                 {topThree.length > 0 && (
                   <>
                     <div className="flex h-2.5 w-full rounded-full overflow-hidden mb-1">
@@ -218,7 +218,7 @@ const LeafScanDashboard = () => {
             </div>
 
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative">
-              <h3 className="text-lg font-bold mb-8">Daily Image Analysis</h3>
+              <h3 className="text-lg font-bold mb-8">{t('daily_image_analysis')}</h3>
               <div className="h-48 min-h-[192px] w-full min-w-0">
                 <ResponsiveContainer width="100%" height="100%" minHeight={0}>
                   <LineChart data={analysisData}>
@@ -237,23 +237,23 @@ const LeafScanDashboard = () => {
           <div className="lg:col-span-4 bg-[#F8F9FA] p-5 rounded-[3rem] flex flex-col gap-6">
             <div className="bg-white p-6 rounded-[2.5rem] shadow-sm">
               <div className="flex gap-2 mb-4">
-                <span className="bg-green-50 text-green-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">General Information</span>
-                <span className="bg-purple-50 text-purple-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">Live</span>
+                <span className="bg-green-50 text-green-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">{t('general_information')}</span>
+                <span className="bg-purple-50 text-purple-600 text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">{t('live')}</span>
               </div>
-              <h3 className="text-xl font-bold mb-2">Healthy vs Diseased</h3>
-              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">Share of AI diagnoses with a healthy class (<code className="text-[10px] bg-gray-100 px-1 rounded">*___healthy</code>) vs any other label.</p>
+              <h3 className="text-xl font-bold mb-2">{t('healthy_vs_diseased')}</h3>
+              <p className="text-[11px] text-gray-400 mb-4 leading-relaxed">{t('share_of_ai_diagnoses')}</p>
 
               <div className="grid grid-cols-2 gap-2 mb-6 text-[11px] border border-gray-100 rounded-2xl p-3 bg-gray-50/50">
-                <span className="text-gray-500">Total diagnoses</span>
+                <span className="text-gray-500">{t('total_diagnoses')}</span>
                 <span className="font-bold text-right tabular-nums">{stats.totalDiagnoses != null ? stats.totalDiagnoses.toLocaleString() : '—'}</span>
-                <span className="text-gray-500">Diagnoses today</span>
+                <span className="text-gray-500">{t('diagnoses_today')}</span>
                 <span className="font-bold text-right tabular-nums">{stats.diagnosesToday != null ? stats.diagnosesToday.toLocaleString() : '—'}</span>
               </div>
 
               <div className="space-y-6">
                 <div className={`p-2 rounded-2xl transition-all duration-300 ${hoveredRightBar === 'h' ? 'bg-green-50 scale-105' : ''}`}
                      onMouseEnter={() => setHoveredRightBar('h')} onMouseLeave={() => setHoveredRightBar(null)}>
-                  <div className="flex justify-between text-xs font-bold mb-2"><span>Healthy</span><span>{stats.healthyRatePercent}%</span></div>
+                  <div className="flex justify-between text-xs font-bold mb-2"><span>{t('healthy')}</span><span>{stats.healthyRatePercent}%</span></div>
                   <div className="w-full bg-gray-100 h-8 rounded-xl overflow-hidden p-1">
                     <div className="bg-green-900 h-full rounded-lg transition-all duration-700" style={{ width: `${stats.healthyRatePercent}%` }}></div>
                   </div>
@@ -261,7 +261,7 @@ const LeafScanDashboard = () => {
 
                 <div className={`p-2 rounded-2xl transition-all duration-300 ${hoveredRightBar === 'd' ? 'bg-red-50 scale-105' : ''}`}
                      onMouseEnter={() => setHoveredRightBar('d')} onMouseLeave={() => setHoveredRightBar(null)}>
-                  <div className="flex justify-between text-xs font-bold mb-2"><span>Diseased</span><span>{stats.diseaseRatePercent}%</span></div>
+                  <div className="flex justify-between text-xs font-bold mb-2"><span>{t('diseased')}</span><span>{stats.diseaseRatePercent}%</span></div>
                   <div className="w-full bg-gray-100 h-8 rounded-xl overflow-hidden p-1">
                     <div className="bg-red-500 h-full rounded-lg transition-all duration-700" style={{ width: `${stats.diseaseRatePercent}%` }}></div>
                   </div>
@@ -270,7 +270,7 @@ const LeafScanDashboard = () => {
             </div>
 
             <div className="bg-white p-6 rounded-[2.5rem] shadow-sm flex-1">
-              <h3 className="text-sm font-bold text-center mb-6">Most Common Diseases</h3>
+              <h3 className="text-sm font-bold text-center mb-6">{t('most_common_diseases')}</h3>
               {pieData.length === 0 ? (
                 <p className="text-[11px] text-gray-400 text-center py-10">{emptyDiseaseChartsMessage}</p>
               ) : (
@@ -313,4 +313,4 @@ const LeafScanDashboard = () => {
   );
 };
 
-export default LeafScanDashboard; 
+export default LeafScanDashboard;

@@ -55,6 +55,9 @@ export default function AboutPage() {
   });
   const [currentSessionId, setCurrentSessionId] = useState(null);
 
+  // ✅ ثابت تحكم في مدة ظهور اللودر (4 ثواني)
+  const LOADER_MIN_DURATION = 4000; // 4 ثواني
+
   const startNewChat = () => {
     if (messages.length > 0) {
       const newEntry = {
@@ -132,6 +135,43 @@ export default function AboutPage() {
     }
   };
 
+  // ✅ دالة موحدة لتحليل الصورة مع ضمان ظهور اللودر لمدة 4 ثواني على الأقل
+  const analyzeImageWithMinimumDuration = async (imageFile, previewUrl) => {
+    const startTime = Date.now();
+    setIsAnalyzing(true);
+    
+    try {
+      // استدعاء API التحليل
+      const data = await api.plant.predict(imageFile);
+      
+      // حساب الوقت المنقضي
+      const elapsedTime = Date.now() - startTime;
+      
+      // إذا كان الوقت المنقضي أقل من 4 ثواني، ننتظر باقي الوقت
+      if (elapsedTime < LOADER_MIN_DURATION) {
+        const remainingTime = LOADER_MIN_DURATION - elapsedTime;
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
+      
+      notifyIfScanNotPersisted(data);
+      
+      // الانتقال إلى صفحة النتائج
+      navigate("/result", {
+        state: {
+          image: previewUrl,
+          predictedClass: data.predictedClass,
+          confidence: data.confidence,
+          top3: data.top3,
+        },
+      });
+    } catch (err) {
+      console.error('Analysis error:', err);
+      toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   // Start camera when cameraOpen becomes true
   useEffect(() => {
     if (cameraOpen) {
@@ -165,6 +205,7 @@ export default function AboutPage() {
     };
   }, [cameraOpen, isArabic]);
 
+  // ✅ دالة التقاط الصورة من الكاميرا مع ضمان 4 ثواني
   const capturePhoto = async () => {
     if (!videoRef.current) return;
 
@@ -181,24 +222,9 @@ export default function AboutPage() {
     const imageFile = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
 
     setCameraOpen(false);
-    setIsAnalyzing(true);
-
-    try {
-      const data = await api.plant.predict(imageFile);
-      notifyIfScanNotPersisted(data);
-      navigate("/result", {
-        state: {
-          image: imageDataUrl,
-          predictedClass: data.predictedClass,
-          confidence: data.confidence,
-          top3: data.top3,
-        },
-      });
-    } catch (err) {
-      toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
+    
+    // ✅ استخدام الدالة الموحدة مع ضمان 4 ثواني
+    await analyzeImageWithMinimumDuration(imageFile, imageDataUrl);
   };
 
   const handleFileChange = (event) => {
@@ -293,23 +319,8 @@ export default function AboutPage() {
                             const fileEntry = selectedFiles[0];
                             if (!fileEntry?.originalFile) return;
                             setShowUploadModal(false);
-                            setIsAnalyzing(true);
-                            try {
-                              const data = await api.plant.predict(fileEntry.originalFile);
-                              notifyIfScanNotPersisted(data);
-                              navigate("/result", {
-                                state: {
-                                  image: fileEntry.preview,
-                                  predictedClass: data.predictedClass,
-                                  confidence: data.confidence,
-                                  top3: data.top3,
-                                },
-                              });
-                            } catch (err) {
-                              toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
-                            } finally {
-                              setIsAnalyzing(false);
-                            }
+                            // ✅ استخدام الدالة الموحدة مع ضمان 4 ثواني
+                            await analyzeImageWithMinimumDuration(fileEntry.originalFile, fileEntry.preview);
                           }}
                           className="mt-4 px-6 py-2 bg-green-700 text-white rounded-full hover:bg-green-800 transition shadow-lg"
                         >
@@ -533,7 +544,7 @@ export default function AboutPage() {
           )}
         </AnimatePresence>
 
-        {/* ========== LOADER - يظهر في الجزء العلوي من أول سكشن ========== */}
+        {/* ========== LOADER - يظهر لمدة 4 ثواني على الأقل ========== */}
         <AnimatePresence>
           {isAnalyzing && (
             <div className="fixed inset-0 z-[200] flex items-start justify-center bg-white/60 backdrop-blur-md pt-40 md:pt-56">
