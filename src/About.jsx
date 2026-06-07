@@ -2,10 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next'; 
 import plantImage from './assets/plant.png'; 
 import Footer from './Footer'; 
-
+import founder1 from './assets/youssef.jpeg';
+import founder2 from './assets/kadry.jpeg';
+import founder3 from './assets/moazz.jpeg';
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
-
+import Flag from 'react-world-flags';
 export default function AboutUs() {
   const { t } = useTranslation();
 
@@ -113,7 +115,143 @@ export default function AboutUs() {
           </div>
         </div>
       </div>
-      
+      {/* Founders Section */}
+<section className="w-full bg-white py-20 px-6">
+  <div className="max-w-7xl mx-auto">
+
+    <div className="text-center mb-14">
+      <h2 className="text-4xl md:text-5xl font-kufam font-semibold text-black uppercase">
+        Platform Founders
+      </h2>
+
+      <p className="mt-4 text-lg md:text-xl text-gray-600 font-light">
+        Meet the team behind leaf scan
+        
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+      {/* Mohamed Kadry */}
+      <div className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+        <img
+          src={founder2}
+          alt="Mohamed Kadry"
+          className="w-full h-[320px] object-cover"
+        />
+
+        <div className="p-6 text-center">
+          <h3 className="text-3xl font-bold text-black">
+            Mohamed Kadry
+          </h3>
+
+          <p className="text-blue-500 text-lg mt-2">
+            Founder • UI/UX Developer
+          </p>
+
+          <div className="mt-6 space-y-4 text-gray-600">
+<p className='flex justify-center items-center'>
+  <Flag code="EG" className="w-6 h-auto rounded-sm shadow-sm" />
+ </p>
+
+            <p className="flex items-center justify-center gap-2">
+              🎓Bachelor of Computer Science — Misr University for Science and Technology (MUST)
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📅 Class of 2026
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📍 Cairo, Egypt
+            </p>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Moazz Alsadeq */}
+      <div className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+        <img
+          src={founder3}
+          alt="Moazz Alsadeq"
+          className="w-full h-[320px] object-cover"
+        />
+
+        <div className="p-6 text-center">
+          <h3 className="text-3xl font-bold text-black">
+            Moazz Alsadeq
+          </h3>
+
+          <p className="text-blue-500 text-lg mt-2">
+            Founder • Frontend Developer
+          </p>
+
+          <div className="mt-6 space-y-4 text-gray-600">
+
+  <p className='flex justify-center items-center'>
+  <Flag code="EG" className="w-6 h-auto rounded-sm shadow-sm" />
+ </p>
+
+            <p className="flex items-center justify-center gap-2">
+           🎓Bachelor of Computer Science — Misr University for Science and Technology (MUST)
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📅 Class of 2026
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📍 Cairo, Egypt
+            </p>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Youssef Medhat */}
+      <div className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+        <img
+          src={founder1}
+          alt="Youssef Medhat"
+          className="w-full h-[320px] object-cover"
+        />
+
+        <div className="p-6 text-center">
+          <h3 className="text-3xl font-bold text-black">
+            Youssef Medhat
+          </h3>
+
+          <p className="text-blue-500 text-lg mt-2">
+            Founder • Backend Developer
+          </p>
+
+          <div className="mt-6 space-y-4 text-gray-600">
+
+<p className='flex justify-center items-center'>
+  <Flag code="EG" className="w-6 h-auto rounded-sm shadow-sm" />
+ </p>
+
+            <p className="flex items-center justify-center gap-2">
+              🎓Bachelor of Computer Science — Misr University for Science and Technology (MUST)
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📅 Class of 2026
+            </p>
+
+            <p className="flex items-center justify-center gap-2">
+              📍 Cairo, Egypt
+            </p>
+ 
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
       <Footer />
     </div>
   );

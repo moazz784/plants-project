@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LeafScan.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd0019cb885b4f1bde9108306899a4e264a6c169")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cddd1c359f06c8ea1cddcfa948ca0ace665528d")]
 [assembly: System.Reflection.AssemblyProductAttribute("LeafScan.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LeafScan.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
