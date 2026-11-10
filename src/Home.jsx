@@ -135,6 +135,16 @@ export default function AboutPage() {
     }
   };
 
+  const scanErrorMessage = (err) => {
+    const msgs = {
+      INVALID_FORMAT: ["صيغة الصورة غير مدعومة. استخدم JPG أو PNG.", "This photo format isn't supported. Use JPG or PNG."],
+      FILE_TOO_LARGE: ["الصورة كبيرة جدًا (الحد 10 ميجابايت).", "Photo is too large (10 MB max)."],
+      MODEL_WARMING_UP: ["النموذج يستعد للعمل، حاول بعد 30 ثانية.", "The AI model is starting up. Try again in ~30 seconds."],
+    };
+    const m = msgs[err?.code] || ["فشل تحليل الصورة. حاول مرة أخرى.", "Analysis failed. Please try again."];
+    return isArabic ? m[0] : m[1];
+  };
+
   // ✅ دالة موحدة لتحليل الصورة مع ضمان ظهور اللودر لمدة 4 ثواني على الأقل
   const analyzeImageWithMinimumDuration = async (imageFile, previewUrl) => {
     const startTime = Date.now();
@@ -166,7 +176,7 @@ export default function AboutPage() {
       });
     } catch (err) {
       console.error('Analysis error:', err);
-      toast.error(isArabic ? "فشل تحليل الصورة. حاول مرة أخرى." : "Analysis failed. Please try again.");
+      toast.error(scanErrorMessage(err));
     } finally {
       setIsAnalyzing(false);
     }
@@ -222,7 +232,7 @@ export default function AboutPage() {
     const imageFile = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
 
     setCameraOpen(false);
-    
+
     // ✅ استخدام الدالة الموحدة مع ضمان 4 ثواني
     await analyzeImageWithMinimumDuration(imageFile, imageDataUrl);
   };

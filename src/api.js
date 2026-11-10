@@ -18,6 +18,38 @@ export function getErrorMessage(err, fallback = 'Something went wrong') {
   return fallback;
 }
 
+// Re-encode to a small JPEG: the server only takes jpg/png/webp under 10 MB, and the model only needs 224x224.
+// If nothing can decode the file, send it as-is and let the server explain.
+async function decodeImage(file) {
+  try {
+    return await createImageBitmap(file); // applies EXIF rotation
+  } catch (err) {
+    // Only Safari decodes HEIC natively; load the decoder lazily for everyone else.
+    const { heicTo, isHeic } = await import('heic-to');
+    if (!(await isHeic(file))) throw err;
+    return heicTo({ blob: file, type: 'bitmap' });
+  }
+}
+
+async function toUploadJpeg(file, maxSide = 1600) {
+  try {
+    const bmp = await decodeImage(file);
+    const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff'; // JPEG has no alpha: transparent PNG areas become white, not black
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    bmp.close();
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+    return blob ? new File([blob], 'photo.jpg', { type: 'image/jpeg' }) : file;
+  } catch {
+    return file;
+  }
+}
+
 export const api = {
   async request(method, path, body) {
     const res = await fetch(`${API_BASE}${path}`, {
@@ -81,7 +113,7 @@ export const api = {
   plant: {
     predict: async (imageFile) => {
       const formData = new FormData();
-      formData.append('image', imageFile);
+      formData.append('image', await toUploadJpeg(imageFile));
       const res = await fetch(`${API_BASE}/plant/predict`, {
         method: 'POST',
         body: formData,
